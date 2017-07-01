@@ -36,7 +36,7 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W", stats = c("n.
     "max.patch.temp", "min.patch.temp")) {
 
     # Setup ----------------------------------------------------------------------
-    message("Processing photo number:", photo_no)
+    message("Processing photo number: ", photo_no)
 
     # Matrix needs to be long dataframe for calculating neighbour weights
     flir_df <- reshape2::melt(flir_matrix, varnames = c("y", "x"), value.name = "temp")
