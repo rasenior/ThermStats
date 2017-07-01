@@ -123,8 +123,15 @@ plot_patches <- function(flir_df, patches,
   # Printing/saving plots -----------------------------------------------------
 
   if(isTRUE (print_plot)){
-    suppressMessages(print(p1))
-    print(p2)
+
+    if (requireNamespace("gridExtra", quietly = TRUE)) {
+      suppressMessages(
+        gridExtra::grid.arrange(p1, p2, ncol=2)
+      )
+    } else {
+      suppressMessages(print(p1))
+      print(p2)
+    }
   }
 
   if(isTRUE (save_plot)){
