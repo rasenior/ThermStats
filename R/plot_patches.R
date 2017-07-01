@@ -1,0 +1,134 @@
+#' plot_patches
+#'
+#' Plot hot and cold spots from a FLIR thermal image.
+#' @param flir_df A dataframe returned from \code{get_patches}.
+#' @param patches A SpatialPolygonsDataFrame returned from \code{get_patches}.
+#' @param out_dir Path to directory where plots will be saved.
+#' @param lab_size Size of axes labels. Defaults to 8.
+#' @param text_size Size of axes text and legend text. Defaults to 6.
+#' @param temp_pal Colour palette to use for temperature. Defaults to palette derived from a FLIR jpeg.
+#' @param patch_cols Colours for the patch borders (hot spot colour followed by cold spot colour).
+#' @examples
+#' # Find hot and cold spots
+#' results <- get_patches(flir_matrix = flir11835$flir_matrix,photo_no = flir11835$photo_no)
+#'
+#' # Plot
+#' out_dir <- '~/Test'
+#' flir_df <- results$flir_df
+#' patches <- results$patches
+#' plot_patches(flir_df = flir_df, patches = patches, out_dir = out_dir)
+#'
+#' @export
+#' @import ggplot2
+#' @importClassesFrom sp SpatialPolygonsDataFrame
+#'
+plot_patches <- function(flir_df, patches, out_dir,
+                         lab_size = 8, text_size = 6,
+                         temp_pal = c("black", "#050155", "#120172",
+                                      "#3b008e", "#7200a9", "#8f00a0",
+                                      "#ba187f", "#d9365b", "#ed5930",
+                                      "#f76323", "#fa8600", "#f6a704",
+                                      "#fad61e", "#fad61e"),
+                         patch_cols = c("mistyrose", "cornflowerblue")) {
+
+  photo_no <- unique(flir_df$photo_no)
+
+  # Histogram --------------------------------------------------------------
+
+  cat("Plotting temperature distribution\n")
+
+  flir_df$G_bin <- factor(flir_df$G_bin, levels = c(0, 1, -1),
+                          labels = c("Background", "Hot spots", "Cold spots"))
+
+  p1 <-
+    ggplot() +
+    geom_histogram(data = flir_df,
+                   aes(x = temp, y = ..density..),
+                   colour = "black", fill = "white") +
+    geom_density(data = flir_df,
+                 aes(x = temp), alpha = 0.2, fill = "grey") +
+    xlab(expression(paste("Temperature (", degree * C, ")", sep = ""))) +
+    ylab("Density") +
+    theme_bw() +
+    theme(axis.title = element_text(size = lab_size),
+          axis.text = element_text(size = text_size),
+          panel.grid = element_blank(),
+          plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
+
+  p1_filename <-
+    file.path(out_dir, paste("FLIR", photo_no,
+                             "_distribution.png", sep = ""))
+
+  suppressMessages(
+    ggsave(plot = p1, filename = p1_filename,
+           dpi = 800, width = 80, height = 90, units = "mm")
+    )
+
+  # Thermal image ----------------------------------------------------------
+
+  cat("Plotting thermal image with hot and cold spots\n")
+
+  # Add comment attribute to correctly plot holes
+  for (x in 1:length(patches@polygons)) {
+    comment(patches@polygons[[x]]) =
+      rgeos::createPolygonsComment(patches@polygons[[x]])
+  }
+
+  # Fortify patch polygons to dataframe
+  patches <- fortify(patches, region = "layer")
+
+  # Get rid of the background patch
+  patches <- patches[patches$id != 0, ]
+
+  # Assign patch category to hot or cold spot
+  patches$id <- factor(patches$id, levels = c(1, -1),
+                       labels = c("Hot spots", "Cold spots"))
+
+  # Match coordinates up to those in the temperature dataframe
+  patches$long <- patches$long * 160 + 0.5
+  patches$lat <- patches$lat * 120 + 0.5
+
+  # Mirror latitude (flips wrong way when fortified)
+  patches$lat <- 121 - patches$lat
+
+  # Create the plot
+  p2 <- ggplot() +
+    geom_raster(data = flir_df,
+                aes(x = x, y = y, fill = temp)) +
+    geom_polygon(data = patches,
+                 aes(y = lat,x = long, group = group, colour = id),
+                 alpha = 0, size = 0.7) +
+    theme_classic() +
+    theme(axis.line = element_blank(),
+          axis.title = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          legend.box.spacing = unit(0,"cm"),
+          legend.position = "bottom",
+          legend.title = element_text(size = text_size),
+          legend.text = element_text(size = text_size),
+          legend.key = element_rect(fill = "black"),
+          plot.margin = margin(0.1, 0.1, 0, 0, unit = "cm")) +
+    scale_fill_gradientn(name = expression(paste("Temperature (",degree * C, ")",
+                                                 sep = "")), colours = temp_pal) +
+    scale_colour_manual(values = patch_cols, name = NULL) +
+    guides(fill = guide_colorbar(order = 1,
+                                 title.position = "top",
+                                 title.hjust = 0.5,
+                                 barheight = 0.8),
+           colour = guide_legend(order = 2,
+                                 keywidth = 0.7,
+                                 keyheight = 0.7,
+                                 direction = "vertical",
+                                 override.aes = list(alpha = 1,
+                                                     fill = "grey80"))) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0,0))
+
+  p2_filename <-
+    file.path(out_dir, paste("FLIR", photo_no, "_patches.png", sep = ""))
+
+  ggsave(plot = p2, filename = p2_filename,
+         dpi = 800, width = 80, height = 90, units = "mm")
+
+}
