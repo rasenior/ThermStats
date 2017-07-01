@@ -4,15 +4,20 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(flir_df, patches, out_dir, lab_size = 8, text_size = 6,
-  temp_pal = c("black", "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0",
-  "#ba187f", "#d9365b", "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e",
-  "#fad61e"), patch_cols = c("mistyrose", "cornflowerblue"))
+plot_patches(flir_df, patches, print_plot = FALSE, save_plot = TRUE,
+  out_dir, lab_size = 8, text_size = 6, temp_pal = c("black", "#050155",
+  "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
+  "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
+  patch_cols = c("mistyrose", "cornflowerblue"))
 }
 \arguments{
 \item{flir_df}{A dataframe returned from \code{get_patches}.}
 
 \item{patches}{A SpatialPolygonsDataFrame returned from \code{get_patches}.}
+
+\item{print_plot}{Should the resulting plots be printed? Defaults to FALSE.}
+
+\item{save_plot}{Should the resulting plots be saved? Defaults to TRUE.}
 
 \item{out_dir}{Path to directory where plots will be saved.}
 
@@ -32,9 +37,8 @@ Plot hot and cold spots from a FLIR thermal image.
 results <- get_patches(flir_matrix = flir11835$flir_matrix,photo_no = flir11835$photo_no)
 
 # Plot
-out_dir <- '~/Test'
 flir_df <- results$flir_df
 patches <- results$patches
-plot_patches(flir_df = flir_df, patches = patches, out_dir = out_dir)
+plot_patches(flir_df = flir_df, patches = patches, print_plot = TRUE, save_plot = FALSE)
 
 }

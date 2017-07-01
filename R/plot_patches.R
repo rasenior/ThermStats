@@ -3,6 +3,8 @@
 #' Plot hot and cold spots from a FLIR thermal image.
 #' @param flir_df A dataframe returned from \code{get_patches}.
 #' @param patches A SpatialPolygonsDataFrame returned from \code{get_patches}.
+#' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
+#' @param save_plot Should the resulting plots be saved? Defaults to TRUE.
 #' @param out_dir Path to directory where plots will be saved.
 #' @param lab_size Size of axes labels. Defaults to 8.
 #' @param text_size Size of axes text and legend text. Defaults to 6.
@@ -13,16 +15,18 @@
 #' results <- get_patches(flir_matrix = flir11835$flir_matrix,photo_no = flir11835$photo_no)
 #'
 #' # Plot
-#' out_dir <- '~/Test'
 #' flir_df <- results$flir_df
 #' patches <- results$patches
-#' plot_patches(flir_df = flir_df, patches = patches, out_dir = out_dir)
+#' plot_patches(flir_df = flir_df, patches = patches, print_plot = TRUE, save_plot = FALSE)
 #'
 #' @export
 #' @import ggplot2
 #' @importClassesFrom sp SpatialPolygonsDataFrame
 #'
-plot_patches <- function(flir_df, patches, out_dir,
+plot_patches <- function(flir_df, patches,
+                         print_plot = FALSE,
+                         save_plot = TRUE,
+                         out_dir,
                          lab_size = 8, text_size = 6,
                          temp_pal = c("black", "#050155", "#120172",
                                       "#3b008e", "#7200a9", "#8f00a0",
@@ -54,15 +58,6 @@ plot_patches <- function(flir_df, patches, out_dir,
           axis.text = element_text(size = text_size),
           panel.grid = element_blank(),
           plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
-
-  p1_filename <-
-    file.path(out_dir, paste("FLIR", photo_no,
-                             "_distribution.png", sep = ""))
-
-  suppressMessages(
-    ggsave(plot = p1, filename = p1_filename,
-           dpi = 800, width = 80, height = 90, units = "mm")
-    )
 
   # Thermal image ----------------------------------------------------------
 
@@ -125,10 +120,28 @@ plot_patches <- function(flir_df, patches, out_dir,
     scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0,0))
 
-  p2_filename <-
-    file.path(out_dir, paste("FLIR", photo_no, "_patches.png", sep = ""))
+  # Printing/saving plots -----------------------------------------------------
 
-  ggsave(plot = p2, filename = p2_filename,
-         dpi = 800, width = 80, height = 90, units = "mm")
+  if(isTRUE (print_plot)){
+    suppressMessages(print(p1))
+    print(p2)
+  }
 
+  if(isTRUE (save_plot)){
+    p1_filename <-
+      file.path(out_dir, paste("FLIR", photo_no,
+                               "_distribution.png", sep = ""))
+
+    suppressMessages(
+      ggsave(plot = p1, filename = p1_filename,
+             dpi = 800, width = 80, height = 90, units = "mm")
+    )
+
+    p2_filename <-
+      file.path(out_dir, paste("FLIR", photo_no, "_patches.png", sep = ""))
+
+    ggsave(plot = p2, filename = p2_filename,
+           dpi = 800, width = 80, height = 90, units = "mm")
+
+  }
 }
