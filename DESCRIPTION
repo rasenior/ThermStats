@@ -1,8 +1,9 @@
 Package: PatchStatsFLIR
-Title: What the Package Does (one line, title case)
+Title: Finds hot and cold spots in temperature matrices, and returns patch statistics.
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("Rebecca A.", "Senior", email = "rebecca.a.senior@gmail.com", role = c("aut", "cre"))
+Description: Takes a temperature matrix such as that returned using the package Thermimage, and find hot and cold spots. Pixels are matched to these patches, 
+	and simple patch statistics are calculated.
 Depends: R (>= 3.3.3)
 License: What license is it under?
 Encoding: UTF-8
@@ -13,4 +14,6 @@ Imports: dplyr,
     reshape2,
     raster,
     sp,
-    SDMTools
+    SDMTools,
+    rgeos,
+    ggplot2
