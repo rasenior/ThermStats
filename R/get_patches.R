@@ -27,7 +27,7 @@
 #' results$patch_stats
 #'
 #' # Plot the patches
-#' require(sp)
+#' library(sp)
 #' plot(results$patches)
 #' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
@@ -36,7 +36,7 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W", stats = c("n.
     "max.patch.temp", "min.patch.temp")) {
 
     # Setup ----------------------------------------------------------------------
-    cat("\nProcessing photo number:", photo_no, "\n")
+    message("Processing photo number:", photo_no)
 
     # Matrix needs to be long dataframe for calculating neighbour weights
     flir_df <- reshape2::melt(flir_matrix, varnames = c("y", "x"), value.name = "temp")
@@ -44,13 +44,13 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W", stats = c("n.
     # Neighbour weights -------------------------------------------------------
 
     # Calculate neighbour weights for K nearest neighbours
-    cat("Calculating neighbourhood weights\n")
+    message("Calculating neighbourhood weights")
     flir_nb <- spdep::knn2nb(spdep::knearneigh(cbind(flir_df$x, flir_df$y), k = k))
     flir_nb <- spdep::nb2listw(neighbours = flir_nb, style = style, zero.policy = FALSE)
 
     # Local Getis-Ord ---------------------------------------------------------
 
-    cat("Calculating local G statistic\n")
+    message("Calculating local G statistic")
     flir_g <- spdep::localG(x = spdep::spNamedVec("temp", flir_df), listw = flir_nb, zero.policy = FALSE, spChk = NULL)
 
     # Add Z-values to dataframe
@@ -62,7 +62,7 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W", stats = c("n.
     flir_df$G_bin <- ifelse(flir_df$Z_val >= 3.886, 1, ifelse(flir_df$Z_val <= -3.886, -1, 0))
 
     # Patch statistics --------------------------------------------------------
-    cat("Matching pixels to hot and cold spots\n")
+    message("Matching pixels to hot and cold spots")
 
     # 1. Create layer with one polygon for each hot/cold patch Dataframe to matrix
     patch_mat <- reshape2::acast(flir_df, y ~ x, value.var = "G_bin")
@@ -103,7 +103,7 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W", stats = c("n.
 
     ### 3. Calculate patch stats
 
-    cat("Calculating patch statistics\n")
+    message("Calculating patch statistics")
 
     # For each thermal image, want to know the difference between the hottest hot patch and the coldest cold patch, the total
     # area of hot and cold patches, and the AI of hot and cold patches

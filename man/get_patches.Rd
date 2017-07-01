@@ -45,6 +45,6 @@ head(results$flir_df)
 results$patch_stats
 
 # Plot the patches
-require(sp)
+library(sp)
 plot(results$patches)
 }

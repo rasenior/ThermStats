@@ -35,7 +35,7 @@ plot_patches <- function(flir_df, patches, out_dir,
 
   # Histogram --------------------------------------------------------------
 
-  cat("Plotting temperature distribution\n")
+  message("Plotting temperature distribution")
 
   flir_df$G_bin <- factor(flir_df$G_bin, levels = c(0, 1, -1),
                           labels = c("Background", "Hot spots", "Cold spots"))
@@ -66,7 +66,7 @@ plot_patches <- function(flir_df, patches, out_dir,
 
   # Thermal image ----------------------------------------------------------
 
-  cat("Plotting thermal image with hot and cold spots\n")
+  message("Plotting thermal image with hot and cold spots")
 
   # Add comment attribute to correctly plot holes
   for (x in 1:length(patches@polygons)) {
