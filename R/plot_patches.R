@@ -27,7 +27,12 @@ plot_patches <- function(flir_df, patches,
                          print_plot = FALSE,
                          save_plot = TRUE,
                          out_dir,
-                         lab_size = 8, text_size = 6,
+                         file_ext = "png",
+                         lab_size = 8,
+                         text_size = 6,
+                         fig_width = 8,
+                         fig_height = 9,
+                         fig_units = "cm",
                          temp_pal = c("black", "#050155", "#120172",
                                       "#3b008e", "#7200a9", "#8f00a0",
                                       "#ba187f", "#d9365b", "#ed5930",
@@ -137,18 +142,18 @@ plot_patches <- function(flir_df, patches,
   if(isTRUE (save_plot)){
     p1_filename <-
       file.path(out_dir, paste("FLIR", photo_no,
-                               "_distribution.png", sep = ""))
+                               "_distribution.",file_ext, sep = ""))
 
     suppressMessages(
       ggsave(plot = p1, filename = p1_filename,
-             dpi = 800, width = 80, height = 90, units = "mm")
+             dpi = 800, width = fig_width, height = fig_height, units = fig_units)
     )
 
     p2_filename <-
-      file.path(out_dir, paste("FLIR", photo_no, "_patches.png", sep = ""))
+      file.path(out_dir, paste("FLIR", photo_no, "_patches.",file_ext, sep = ""))
 
     ggsave(plot = p2, filename = p2_filename,
-           dpi = 800, width = 80, height = 90, units = "mm")
+           dpi = 800, width = fig_width, height = fig_height, units = fig_units)
 
   }
 }
