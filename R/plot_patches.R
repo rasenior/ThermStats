@@ -27,6 +27,7 @@ plot_patches <- function(flir_df, patches,
                          print_plot = FALSE,
                          save_plot = TRUE,
                          out_dir,
+                         file_name = NULL,
                          file_ext = "png",
                          lab_size = 8,
                          text_size = 6,
@@ -140,18 +141,31 @@ plot_patches <- function(flir_df, patches,
   }
 
   if(isTRUE (save_plot)){
-    p1_filename <-
-      file.path(out_dir, paste("FLIR", photo_no,
-                               "_distribution.",file_ext, sep = ""))
 
+    # Define file names
+    if(is.null(file_name)){
+      p1_filename <-
+        file.path(out_dir, paste("FLIR", photo_no,
+                                 "_distribution.",file_ext, sep = ""))
+      p2_filename <-
+        file.path(out_dir, paste("FLIR", photo_no, "_patches.",file_ext, sep = ""))
+    }else{
+
+      p1_filename <-
+        file.path(out_dir, paste(file_name,
+                                 "_distribution.",file_ext, sep = ""))
+      p2_filename <-
+        file.path(out_dir, paste(file_name, "_patches.",file_ext, sep = ""))
+
+    }
+
+    # Plot distribution
     suppressMessages(
       ggsave(plot = p1, filename = p1_filename,
              dpi = 800, width = fig_width, height = fig_height, units = fig_units)
     )
 
-    p2_filename <-
-      file.path(out_dir, paste("FLIR", photo_no, "_patches.",file_ext, sep = ""))
-
+    # Plot thermal image w patches
     ggsave(plot = p2, filename = p2_filename,
            dpi = 800, width = fig_width, height = fig_height, units = fig_units)
 
