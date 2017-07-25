@@ -23,7 +23,9 @@
 #' @import ggplot2
 #' @importClassesFrom sp SpatialPolygonsDataFrame
 #'
-plot_patches <- function(flir_df, patches,
+plot_patches <- function(flir_df,
+                         patches,
+                         plot_distribution = TRUE,
                          print_plot = FALSE,
                          save_plot = TRUE,
                          out_dir,
@@ -45,6 +47,8 @@ plot_patches <- function(flir_df, patches,
 
   # Histogram --------------------------------------------------------------
 
+  if(plot_distribution){
+
   message("Plotting temperature distribution")
 
   flir_df$G_bin <- factor(flir_df$G_bin, levels = c(0, 1, -1),
@@ -64,6 +68,10 @@ plot_patches <- function(flir_df, patches,
           axis.text = element_text(size = text_size),
           panel.grid = element_blank(),
           plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
+
+  }else{
+    p1 <- NULL
+  }
 
   # Thermal image ----------------------------------------------------------
 
@@ -131,9 +139,15 @@ plot_patches <- function(flir_df, patches,
   if(isTRUE (print_plot)){
 
     if (requireNamespace("gridExtra", quietly = TRUE)) {
-      suppressMessages(
+
+      if(plot_distribution){
+        suppressMessages(
         gridExtra::grid.arrange(p1, p2, ncol=2)
-      )
+        )
+      } else{
+        print(p2)
+      }
+
     } else {
       suppressMessages(print(p1))
       print(p2)
@@ -159,11 +173,13 @@ plot_patches <- function(flir_df, patches,
 
     }
 
-    # Plot distribution
-    suppressMessages(
-      ggsave(plot = p1, filename = p1_filename,
-             dpi = 800, width = fig_width, height = fig_height, units = fig_units)
-    )
+    if(plot_distribution){
+      # Plot distribution
+      suppressMessages(
+        ggsave(plot = p1, filename = p1_filename,
+               dpi = 800, width = fig_width, height = fig_height, units = fig_units)
+      )
+    }
 
     # Plot thermal image w patches
     ggsave(plot = p2, filename = p2_filename,
