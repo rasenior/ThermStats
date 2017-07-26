@@ -28,6 +28,7 @@ plot_patches <- function(flir_df,
                          plot_distribution = TRUE,
                          print_plot = FALSE,
                          save_plot = TRUE,
+                         return_plot = FALSE,
                          out_dir,
                          file_name = NULL,
                          file_ext = "png",
@@ -186,4 +187,16 @@ plot_patches <- function(flir_df,
            dpi = 800, width = fig_width, height = fig_height, units = fig_units)
 
   }
+
+  # Return plot objects if required
+  if(return_plot){
+    if(plot_distribution){
+      return(list(fig_distribution = p1, fig_thermal = p2))
+    } else{
+      return(fig_thermal = p2)
+    }
+
+  }
+
+
 }
