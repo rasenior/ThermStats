@@ -42,7 +42,8 @@ plot_patches <- function(flir_df,
                                       "#ba187f", "#d9365b", "#ed5930",
                                       "#f76323", "#fa8600", "#f6a704",
                                       "#fad61e", "#fad61e"),
-                         patch_cols = c("mistyrose", "cornflowerblue")) {
+                         patch_cols = c("mistyrose", "cornflowerblue"),
+                         patch_labs = c("Hot spots", "Cold spots")) {
 
   photo_no <- unique(flir_df$photo_no)
 
@@ -92,7 +93,7 @@ plot_patches <- function(flir_df,
 
   # Assign patch category to hot or cold spot
   patches$id <- factor(patches$id, levels = c(1, -1),
-                       labels = c("Hot spots", "Cold spots"))
+                       labels = patch_labs)
 
   # Match coordinates up to those in the temperature dataframe
   patches$long <- patches$long * 160 + 0.5
