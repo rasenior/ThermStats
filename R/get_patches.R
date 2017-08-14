@@ -32,8 +32,9 @@
 #' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #'
-get_patches <- function(flir_matrix, photo_no, k = 8, style = "W", stats = c("n.patches", "total.area", "obs.edges", "max.edges",
-    "max.patch.temp", "min.patch.temp")) {
+get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
+                        stats = c("n.patches", "total.area", "obs.edges", "max.edges",
+                                  "max.patch.temp", "min.patch.temp")) {
 
     # Setup ----------------------------------------------------------------------
     message("Processing photo number: ", photo_no)
@@ -111,7 +112,7 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W", stats = c("n.
     # Calculate spatial patch statistics
     patch_stats <- SDMTools::ClassStat(mat = patch_mat, cellsize = 1, bkgd = 0, latlon = FALSE)
 
-    # Calculate the actual observed number of shared edges for each class 
+    # Calculate the actual observed number of shared edges for each class
     # First calculate the max edges that could be shared for each class
     patch_stats$n <- floor(sqrt(patch_stats$total.area))
     patch_stats$m <- patch_stats$total.area - (patch_stats$n)^2
