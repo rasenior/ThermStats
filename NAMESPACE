@@ -2,8 +2,10 @@
 
 export(batch_convert)
 export(batch_extract)
+export(count_edges)
 export(get_patches)
 export(plot_patches)
+export(stats_by_group)
 import(ggplot2)
 importClassesFrom(sp,SpatialPointsDataFrame)
 importClassesFrom(sp,SpatialPolygonsDataFrame)

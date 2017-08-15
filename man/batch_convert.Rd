@@ -14,10 +14,17 @@ batch_convert(raw_dat, E = 1, OD = 1, RTemp = 20, ATemp = RTemp,
 
 \item{out_dir}{Path to directory where converted temperature data will be written.}
 }
+\value{
+A list with one element per input thermal image. Each element is a numeric matrix of the
+converted temperature data, in °C.
+}
 \description{
 Batch convert list of raw FLIR matrices.
 }
 \examples{
+
+# Setup --------------------------------------------------------------------
+
 # Load raw data
 raw_dat <- flir_raw$raw_dat
 camera_params <- flir_raw$camera_params
@@ -27,34 +34,38 @@ metadata <- flir_raw$metadata
 # within the metadata dataframe
 photo_index <- match(names(raw_dat), metadata$photo_no)
 
-# Define each of the environmental parameters
+# Define environmental parameters ------------------------------------------
 
-# Emissivity is mean of range given in Scheffers et al. 2016
-E=mean(c(0.982,0.99))
-# Object distance is calculated as the hypotenuse of a right
-# triangle where the vertical side is 1.3 m (breast height)
-# and the angle down is 45 degrees
-OD=(sqrt(2))*1.3
-# Apparent reflected temperature of the environment is set as
-# dry bulb temperature from the hygrometer.
-RTemp=metadata$atm_temp[photo_index]
-# Atmospheric temperature is the same as reflected temperature
-# (default).
-ATemp=metadata$atm_temp[photo_index]
-# Infrared Window Temperature is the same as reflected temperature
-# (default).
-IRWTemp=metadata$atm_temp[photo_index]
+# Emissivity is mean of range given in Scheffers et al. 2017
+# (onlinelibrary.wiley.com/doi/10.1111/btp.12355/full)
+E <- mean(c(0.982,0.99))
+
+# Object distance is calculated as the hypotenuse of a right triangle where
+# the vertical side is 1.3 m (breast height) and the angle down is 45 degrees
+OD <- (sqrt(2))*1.3
+
+# Apparent reflected temperature, atmospheric temperature and infrared
+# window temperature set as the atmospheric temperature measured in the field.
+RTemp <- metadata$atm_temp[photo_index]
+ATemp <- metadata$atm_temp[photo_index]
+IRWTemp <- metadata$atm_temp[photo_index]
+
 # Infrared Window transmission is kept at default.
-IRT=1
-# Relative humidity is set as humidity from the hygrometer.
-RH=metadata$rel_humidity[photo_index]
+IRT <- 1
 
-# Camera parameters are constant for a given camera
-PR1=camera_params[,"PlanckR1"]
-PB=camera_params[,"PlanckB"]
-PF=camera_params[,"PlanckF"]
-PO=camera_params[,"PlanckO"]
-PR2=camera_params[,"PlanckR2"]
+# Relative humidity is set as the relative humidity measured in the field.
+RH <- metadata$rel_humidity[photo_index]
 
+# Define camera parameters -------------------------------------------------
+
+# These parameters are calibration constants, and therefore constant for
+# each camera
+PR1 <- camera_params[,"PlanckR1"]
+PB <- camera_params[,"PlanckB"]
+PF <- camera_params[,"PlanckF"]
+PO <- camera_params[,"PlanckO"]
+PR2 <- camera_params[,"PlanckR2"]
+
+# Batch convert! -----------------------------------------------------------
 results <- batch_convert(raw_dat, E, OD, RTemp, ATemp, IRWTemp, IRT, RH, PR1, PB, PF, PO, PR2, write_results = FALSE)
 }

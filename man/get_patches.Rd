@@ -5,8 +5,7 @@
 \title{get_patches}
 \usage{
 get_patches(flir_matrix, photo_no, k = 8, style = "W",
-  stats = c("n.patches", "total.area", "obs.edges", "max.edges",
-  "max.patch.temp", "min.patch.temp"))
+  return_vals = c("flir_df", "patches", "patch_stats"))
 }
 \arguments{
 \item{flir_matrix}{A numeric temperature matrix, such as that returned from \code{Thermimage}.}
@@ -16,8 +15,6 @@ get_patches(flir_matrix, photo_no, k = 8, style = "W",
 \item{k}{Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.}
 
 \item{style}{Style to use when calculating neighbourhood weights using \code{spdep::nb2listw}.}
-
-\item{stats}{Patch statistics to return from \code{SDMTools::ClassStat}.}
 }
 \value{
 A list containing:

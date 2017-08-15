@@ -16,5 +16,6 @@ Imports: dplyr,
     sp,
     SDMTools,
     rgeos,
-    ggplot2
+    ggplot2,
+    Thermimage
 Suggests: gridExtra

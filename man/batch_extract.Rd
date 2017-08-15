@@ -9,15 +9,20 @@ batch_extract(in_dir, write_results = TRUE, out_dir = NULL)
 \arguments{
 \item{in_dir}{Path to directory where thermal images are stored.}
 
-\item{out_dir}{Path to directory where output Rdata file will be stored.}
+\item{write_results}{Should the results be written as an Rdata file? Defaults to true.}
+
+\item{out_dir}{Path to directory where output Rdata file will be stored. Defaults to working directory.}
 }
 \value{
-A list of length equal to the number of thermal images. Each element is a numeric matrix of the
-raw infrared data. Also returns a dataframe of parameters unique to each camera.
+A list containing:
+ \item{raw_dat}{A list with one element per input thermal image. Each element is a numeric matrix of the
+raw infrared data.}
+ \item{camera_params}{A dataframe of callibration constants unique to each camera.}
 }
 \description{
 Batch extraction of raw data from FLIR thermal images.
 }
 \examples{
+# Batch extract four FLIR thermal images included in this package.
 results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
 }
