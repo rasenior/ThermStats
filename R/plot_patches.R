@@ -132,7 +132,8 @@ plot_patches <- function(flir_df,
                                  keyheight = 0.7,
                                  direction = "vertical",
                                  override.aes = list(alpha = 1,
-                                                     fill = "grey80"))) +
+                                                     fill = "black",
+                                                     size = 0.8))) +
     scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0,0))
 
