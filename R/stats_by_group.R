@@ -116,7 +116,7 @@ multi.sapply <- function(...) {
 
   # Apply every function
   val<-sapply(X=arglist,
-              FUN=function(arglist) arglist(data))
+              FUN=function(arglist) arglist(data, na.rm = TRUE))
 
   # Re-format to dataframe
   val <- as.data.frame(t(val))
