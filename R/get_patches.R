@@ -38,27 +38,55 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
   message("Processing photo number: ", photo_no)
 
   # Matrix needs to be long dataframe for calculating neighbour weights
-  flir_df <- reshape2::melt(flir_matrix, varnames = c("y", "x"), value.name = "temp")
+  flir_df <- reshape2::melt(flir_matrix,
+                            varnames = c("y", "x"),
+                            value.name = "temp")
+  flir_df <- flir_df[!(is.na(flir_df$temp)),]
 
   # Neighbour weights -------------------------------------------------------
 
   # Calculate neighbour weights for K nearest neighbours
   message("Calculating neighbourhood weights")
-  flir_nb <- spdep::knn2nb(spdep::knearneigh(cbind(flir_df$x, flir_df$y), k = k))
-  flir_nb <- spdep::nb2listw(neighbours = flir_nb, style = style, zero.policy = FALSE)
+  flir_nb <-
+    spdep::knearneigh(cbind(flir_df$x, flir_df$y), k = k) %>%
+    spdep::knn2nb() %>%
+    spdep::nb2listw(style = style, zero.policy = FALSE)
 
   # Local Getis-Ord ---------------------------------------------------------
 
   message("Calculating local G statistic")
-  flir_g <- spdep::localG(x = spdep::spNamedVec("temp", flir_df), listw = flir_nb, zero.policy = FALSE, spChk = NULL)
+  flir_g <-
+    spdep::spNamedVec("temp", flir_df) %>%
+    spdep::localG(listw = flir_nb,
+                  zero.policy = FALSE,
+                  spChk = NULL)
 
   # Add Z-values to dataframe
   flir_df <- data.frame(flir_df, Z_val = matrix(flir_g))
 
   rm(flir_nb, flir_g)
 
-  # Define significance categories, using critical value of 3.886 as defined in documentation for sample sizes of > 1000.
-  flir_df$G_bin <- ifelse(flir_df$Z_val >= 3.886, 1, ifelse(flir_df$Z_val <= -3.886, -1, 0))
+  # Define significance categories, using critical value of 3.886 as defined
+  # in documentation for sample sizes of > 1000.
+  get_critical_Z <- function(n){
+    if(n >= 1 & n < 10){
+      critical_z <- 1.6450
+    }else if(n >= 10 & n < 30){
+      critical_z <- 2.5683
+    }else if(n >= 30 & n < 50){
+      critical_z <- 2.9291
+    }else if(n >= 50 & n < 100){
+      critical_z <- 3.0833
+    }else if(n >= 100 & n < 1000){
+      critical_z <- 3.2889
+    }else if(n > 1000){
+      critical_z <- 3.8855
+    }
+  }
+  critical_Z <- get_critical_Z(nrow(flir_df))
+
+  flir_df$G_bin <- ifelse(flir_df$Z_val >= critical_Z, 1,
+                          ifelse(flir_df$Z_val <= -critical_Z, -1, 0))
 
   # Patch statistics --------------------------------------------------------
   message("Matching pixels to hot and cold spots")
@@ -66,18 +94,20 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
   # 1. Create layer with one polygon for each hot/cold patch Dataframe to matrix
   patch_mat <- reshape2::acast(flir_df, y ~ x, value.var = "G_bin")
   # Matrix to raster to polygons
-  patches <- raster::raster(patch_mat)
-  patches <- raster::rasterToPolygons(patches, dissolve = TRUE)
-  patches <- raster::disaggregate(patches)
+  patches <-
+    raster::raster(patch_mat) %>%
+    raster::rasterToPolygons(dissolve = TRUE) %>%
+    raster::disaggregate()
 
   # 2. Assign to each temperature cell the ID of the patch that it falls into
 
   # Matrix to raster to points
-  raw <- raster::raster(flir_matrix)
-  raw <- raster::rasterToPoints(raw, spatial = TRUE)
+  raw <-
+    raster::raster(flir_matrix) %>%
+    raster::rasterToPoints(spatial = TRUE)
 
-  # Return overlay list where each element is the point, and within that the value is the hot/coldspot classification and the
-  # row name is the patch ID
+  # Return overlay list where each element is the point, and within that the
+  # value is the hot/coldspot classification and the row name is the patch ID
   patchID <- sp::over(raw, patches, returnList = TRUE)
 
   # Define function to reformat each dataframe within the list
