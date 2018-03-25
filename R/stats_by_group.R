@@ -51,7 +51,9 @@ stats_by_group <- function(metadata,flir_list,photo_ID = "photo_no",
     lapply(1:length(sub_list),
            function(x) get_patches(flir_matrix = sub_list[[x]],
                                    photo_no = sub_photos[x],
-                                   return_vals = "patch_stats"))
+                                   return_vals = "patch_stats",
+                                   k = 8,
+                                   style = "W"))
 
   # Bind as dataframe
   patch_stats <- do.call("rbind", patch_stats)
@@ -116,7 +118,7 @@ multi.sapply <- function(...) {
 
   # Apply every function
   val<-sapply(X=arglist,
-              FUN=function(arglist) arglist(data))
+              FUN=function(arglist) arglist(data, na.rm = TRUE))
 
   # Re-format to dataframe
   val <- as.data.frame(t(val))
