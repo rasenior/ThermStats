@@ -15,18 +15,19 @@
 #'
 batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL){
 
-  setwd(in_dir)
-
   # File names --------------------------------------------------------------
 
   # Get file names
-  file.names <- list.files()
+  file.names <- list.files(in_dir, full.names = TRUE)
 
-  # Remove file extension to get photo number
-  photo_no <- sub(".jpg","",sub("FLIR","",file.names))
+  # Remove path & file extension to get photo number
+  photo_no <-
+    gsub("FLIR","",file.names) %>%
+    gsub(".jpg","",.) %>%
+    gsub(paste("[", in_dir, "/]", sep = ""), "", .)
 
   # Create empty list to populate with temperature matrices
-  raw_dat <- vector("list", length(file.names))
+  raw_dat <- vector("list", length(photo_no))
   names(raw_dat) <- photo_no
 
   # Extract FLIR data -------------------------------------------------------
@@ -75,7 +76,8 @@ batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL){
 
     if(is.null(out_dir)) out_dir <- getwd()
     date <- Sys.Date()
-    save(results,file = file.path(out_dir,paste("flir_raw_",date,".Rdata",sep="")))
+    save(results,file = file.path(out_dir,paste("flir_raw_",
+                                                date,".Rdata",sep="")))
   }
 
   return(results)
