@@ -13,7 +13,7 @@
 #' results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
 #' @export
 #'
-batch_extract <- function(in_dir, write_results = TRUE, out_path = NULL, file_name = NULL){
+batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL, file_name = NULL){
 
   # File names --------------------------------------------------------------
 
