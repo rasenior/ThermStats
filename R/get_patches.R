@@ -139,72 +139,93 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
   colnames(patch_stats) <- c("class", "px_no")
   patch_stats <- patch_stats[patch_stats$class != 0,]
 
-  # Number hot/cold spots
-  patch_stats[,"patch_no"] <- NA
-  patch_stats[patch_stats[,"class"] == -1,"patch_no"] <-
-    length(unique(flir_df[flir_df[,"G_bin"]== -1,"patchID"]))
-  patch_stats[patch_stats[,"class"] == 1,"patch_no"] <-
-    length(unique(flir_df[flir_df[,"G_bin"]== 1,"patchID"]))
+  # If there are no patches, create output manually
+  if(nrow(patch_stats) == 0){
+    patch_stats <- data.frame(photo_no = photo_no,
+                              hot_px_no = 0,
+                              hot_patch_no = 0,
+                              hot_max_edges = 0,
+                              hot_obs_edges = 0,
+                              hot_non_edges = 0,
+                              hot_patch_max_temp = NA,
+                              hot_patch_median_temp = NA,
+                              hot_patch_min_temp = NA,
+                              cold_px_no = 0,
+                              cold_patch_no = 0,
+                              cold_max_edges = 0,
+                              cold_obs_edges = 0,
+                              cold_non_edges = 0,
+                              cold_patch_max_temp = NA,
+                              cold_patch_median_temp = NA,
+                              cold_patch_min_temp = NA)
+  }else{
+    # Number hot/cold spots
+    patch_stats[,"patch_no"] <- NA
+    patch_stats[patch_stats[,"class"] == -1,"patch_no"] <-
+      length(unique(flir_df[flir_df[,"G_bin"]== -1,"patchID"]))
+    patch_stats[patch_stats[,"class"] == 1,"patch_no"] <-
+      length(unique(flir_df[flir_df[,"G_bin"]== 1,"patchID"]))
 
-  # Max edges
-  patch_stats$n <- floor(sqrt(patch_stats$px_no))
-  patch_stats$m <- patch_stats$px_no - (patch_stats$n)^2
+    # Max edges
+    patch_stats$n <- floor(sqrt(patch_stats$px_no))
+    patch_stats$m <- patch_stats$px_no - (patch_stats$n)^2
 
-  max_edges <- function(n, m) {
-    if (m == 0) {
-      max_edges <- 2 * n * (n - 1)
-    } else if (m <= n) {
-      max_edges <- 2 * n * (n - 1) + (2 * m) - 1
-    } else if (m > n) {
-      max_edges <- 2 * n * (n - 1) + (2 * m) - 2
+    max_edges <- function(n, m) {
+      if (m == 0) {
+        max_edges <- 2 * n * (n - 1)
+      } else if (m <= n) {
+        max_edges <- 2 * n * (n - 1) + (2 * m) - 1
+      } else if (m > n) {
+        max_edges <- 2 * n * (n - 1) + (2 * m) - 2
+      }
+      return(max_edges)
     }
-    return(max_edges)
+
+    patch_stats$max_edges <- mapply(max_edges,
+                                    patch_stats$n,
+                                    patch_stats$m)
+
+    obs_edges <- count_edges(patch_mat, classes = c(-1,1))
+    patch_stats <- merge(patch_stats, obs_edges, by = "class")
+    patch_stats$non_edges <- patch_stats$max_edges - patch_stats$obs_edges
+
+    # Calculate median temperature for each patch
+    patch_temp <-
+      dplyr::summarise(dplyr::group_by(flir_df[flir_df$G_bin != 0, ],
+                                       patchID, G_bin),
+                       temp = median(temp))
+
+    # Add max and min patch temp for each patch class
+    patch_stats <- cbind(patch_stats,
+                         dplyr::summarise(dplyr::group_by(patch_temp, G_bin),
+                                          patch_max_temp = max(temp),
+                                          patch_median_temp = median(temp),
+                                          patch_min_temp = min(temp))[, 2:4])
+
+    # Reduce to key variables
+    patch_stats <- patch_stats[,-(which(names(patch_stats) %in% c("n", "m")))]
+
+    # Reformat, to ultimately give one row of stats per thermal image
+
+    # If there are no hot spots, need to fill with NAs
+    if (!(1 %in% patch_stats$class)) {
+      hot_stats <- as.data.frame(t(c(rep(0,2), rep(NA, 6))))
+    } else {
+      hot_stats <- patch_stats[patch_stats[,"class"] == 1, -1]
+    }
+
+    # If there are no cold spots, need to fill with NAs
+    if (!(-1 %in% patch_stats$class)) {
+      cold_stats <- as.data.frame(t(c(rep(0,2), rep(NA, 6))))
+    } else {
+      cold_stats <-patch_stats[patch_stats[,"class"] == -1, -1]
+    }
+
+    colnames(hot_stats) <- paste("hot_", names(patch_stats)[-1], sep = "")
+    colnames(cold_stats) <- paste("cold_", names(patch_stats)[-1], sep = "")
+
+    patch_stats <- cbind(photo_no, hot_stats, cold_stats)
   }
-
-  patch_stats$max_edges <- mapply(max_edges,
-                                  patch_stats$n,
-                                  patch_stats$m)
-
-  obs_edges <- count_edges(patch_mat, classes = c(-1,1))
-  patch_stats <- merge(patch_stats, obs_edges, by = "class")
-  patch_stats$non_edges <- patch_stats$max_edges - patch_stats$obs_edges
-
-  # Calculate median temperature for each patch
-  patch_temp <-
-    dplyr::summarise(dplyr::group_by(flir_df[flir_df$G_bin != 0, ],
-                                     patchID, G_bin),
-                     temp = median(temp))
-
-  # Add max and min patch temp for each patch class
-  patch_stats <- cbind(patch_stats,
-                       dplyr::summarise(dplyr::group_by(patch_temp, G_bin),
-                                        patch_max_temp = max(temp),
-                                        patch_median_temp = median(temp),
-                                        patch_min_temp = min(temp))[, 2:4])
-
-  # Reduce to key variables
-  patch_stats <- patch_stats[,-(which(names(patch_stats) %in% c("n", "m")))]
-
-  # Reformat, to ultimately give one row of stats per thermal image
-
-  # If there are no hot spots, need to fill with NAs
-  if (!(1 %in% patch_stats$class)) {
-    hot_stats <- as.data.frame(t(c(rep(0,2), rep(NA, 6))))
-  } else {
-    hot_stats <- patch_stats[patch_stats[,"class"] == 1, -1]
-  }
-
-  # If there are no cold spots, need to fill with NAs
-  if (!(-1 %in% patch_stats$class)) {
-    cold_stats <- as.data.frame(t(c(rep(0,2), rep(NA, 6))))
-  } else {
-    cold_stats <-patch_stats[patch_stats[,"class"] == -1, -1]
-  }
-
-  colnames(hot_stats) <- paste("hot_", names(patch_stats)[-1], sep = "")
-  colnames(cold_stats) <- paste("cold_", names(patch_stats)[-1], sep = "")
-
-  patch_stats <- cbind(photo_no, hot_stats, cold_stats)
 
   # Return results ------------------------------------------------------------
   if(length(return_vals) == 1){
