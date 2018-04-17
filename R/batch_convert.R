@@ -68,7 +68,8 @@ batch_convert <- function(raw_dat,
                           PO = -7340,
                           PR2 = 0.012545258,
                           write_results = TRUE,
-                          out_dir = NULL){
+                          out_dir = NULL,
+                          file_name = NULL){
 
   # Apply to every element of the raw data list, converting raw data into
   # temperature using parameters from the metadata
@@ -92,11 +93,13 @@ batch_convert <- function(raw_dat,
   names(temp_dat) <- names(raw_dat)
 
   # Write -------------------------------------------------------------------
-
   if(write_results){
+
     if(is.null(out_dir)) out_dir <- getwd()
-    saveRDS(temp_dat,
-            file = file.path(out_dir,paste("flir_converted_", Sys.Date(),".Rds",sep="")))
+    if(is.null(file_name)) file_name <- paste("flir_converted_", Sys.Date(),".Rds",sep="")
+
+    out_path <- file.path(out_dir, paste(file_name, ".Rds", sep = ""))
+    save(temp_dat,file = out_path)
   }
   return(temp_dat)
 

@@ -13,7 +13,7 @@
 #' results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
 #' @export
 #'
-batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL){
+batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL, file_name = NULL){
 
   # File names --------------------------------------------------------------
 
@@ -72,7 +72,10 @@ batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL){
   if(write_results){
 
     if(is.null(out_dir)) out_dir <- getwd()
-    save(results,file = file.path(out_dir,paste("flir_raw_", Sys.Date(),".Rdata",sep="")))
+    if(is.null(file_name)) file_name <- paste("flir_raw_", Sys.Date(),".Rdata",sep="")
+
+    out_path <- file.path(out_dir, paste(file_name, ".Rdata", sep = ""))
+    save(results,file = out_path)
   }
 
   return(results)
