@@ -21,10 +21,9 @@ batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL){
   file.names <- list.files(in_dir, full.names = TRUE)
 
   # Remove path & file extension to get photo number
-  photo_no <-
-    gsub("FLIR","",file.names) %>%
-    gsub(".jpg","",.) %>%
-    gsub(paste("[", in_dir, "/]", sep = ""), "", .)
+  photo_no <- gsub("FLIR","",file.names)
+  photo_no <- gsub(".jpg","", photo_no)
+  photo_no <- gsub(paste("[", in_dir, "/]", sep = ""), "", photo_no)
 
   # Create empty list to populate with temperature matrices
   raw_dat <- vector("list", length(photo_no))
@@ -62,11 +61,9 @@ batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL){
                              exiftoolpath = "installed")
 
   # Reduce to parameters of interest
-  camera_params <-
-    unlist(camera_params$Info[c("photo_no","PlanckR1","PlanckB",
-                                "PlanckF","PlanckO","PlanckR2")[2:6]])
-
-  camera_params <- as.data.frame(t(camera_params))
+  camera_params <- data.frame(camera_params)
+  camera_params <- camera_params[, grep("Info.Planck", names(camera_params))]
+  colnames(camera_params) <- gsub("Info.", "", names(camera_params))
 
   # Write -------------------------------------------------------------------
 
@@ -75,9 +72,7 @@ batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL){
   if(write_results){
 
     if(is.null(out_dir)) out_dir <- getwd()
-    date <- Sys.Date()
-    save(results,file = file.path(out_dir,paste("flir_raw_",
-                                                date,".Rdata",sep="")))
+    save(results,file = file.path(out_dir,paste("flir_raw_", Sys.Date(),".Rdata",sep="")))
   }
 
   return(results)
