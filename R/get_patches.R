@@ -44,22 +44,18 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
   flir_df <- flir_df[!(is.na(flir_df$temp)),]
 
   # Neighbour weights -------------------------------------------------------
-
-  # Calculate neighbour weights for K nearest neighbours
   message("Calculating neighbourhood weights")
-  flir_nb <-
-    spdep::knearneigh(cbind(flir_df$x, flir_df$y), k = k) %>%
-    spdep::knn2nb() %>%
-    spdep::nb2listw(style = style, zero.policy = FALSE)
+  flir_nb <- spdep::knearneigh(cbind(flir_df$x, flir_df$y), k = k)
+  flir_nb <- spdep::knn2nb(flir_nb)
+  flir_nb <- spdep::nb2listw(flir_nb, style = style, zero.policy = FALSE)
 
   # Local Getis-Ord ---------------------------------------------------------
 
   message("Calculating local G statistic")
-  flir_g <-
-    spdep::spNamedVec("temp", flir_df) %>%
-    spdep::localG(listw = flir_nb,
-                  zero.policy = FALSE,
-                  spChk = NULL)
+  flir_g <- spdep::localG(x = spdep::spNamedVec("temp", flir_df),
+                          listw = flir_nb,
+                          zero.policy = FALSE,
+                          spChk = NULL)
 
   # Add Z-values to dataframe
   flir_df <- data.frame(flir_df, Z_val = matrix(flir_g))
@@ -93,18 +89,17 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
 
   # 1. Create layer with one polygon for each hot/cold patch Dataframe to matrix
   patch_mat <- reshape2::acast(flir_df, y ~ x, value.var = "G_bin")
+
   # Matrix to raster to polygons
-  patches <-
-    raster::raster(patch_mat) %>%
-    raster::rasterToPolygons(dissolve = TRUE) %>%
-    raster::disaggregate()
+  patches <- raster::raster(patch_mat)
+  patches <- raster::rasterToPolygons(patches, dissolve = TRUE)
+  patches <- raster::disaggregate(patches)
 
   # 2. Assign to each temperature cell the ID of the patch that it falls into
 
   # Matrix to raster to points
-  raw <-
-    raster::raster(flir_matrix) %>%
-    raster::rasterToPoints(spatial = TRUE)
+  raw <- raster::raster(flir_matrix)
+  raw <- raster::rasterToPoints(raw, spatial = TRUE)
 
   # Return overlay list where each element is the point, and within that the
   # value is the hot/coldspot classification and the row name is the patch ID
