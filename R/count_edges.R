@@ -17,17 +17,16 @@ count_edges <- function(mat, classes = NULL){
 
   # Define number of unique classes if they are not passed as an argument
   if(is.null(classes)){
-    classes<-sort(unique(c(Matrix)))
+    classes <- sort(unique(c(mat)))
   }
 
-  # Define number of columns
-  cols<-ncol(mat)
-  rows<-nrow(mat)
+  # Define dimension
+  cols <- ncol(mat)
+  rows <- nrow(mat)
 
   # Empty dataframe to populate
-  results <-
-    data.frame(class = classes, obs_edges = rep(0,length(classes)))
-
+  results <- matrix(c(classes, rep(0, length(classes))), ncol=2)
+  colnames(results) <- c("class", "obs_edges")
 
   # Moving horizontally (to the right) across matrix
   for(i in 1:(cols-1)){
