@@ -41,7 +41,7 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
   flir_df <- reshape2::melt(flir_matrix,
                             varnames = c("y", "x"),
                             value.name = "temp")
-  flir_df <- flir_df[!(is.na(flir_df$temp)),]
+  flir_df <- flir_df[!(is.na(flir_df[, "temp"])),]
 
   # Neighbour weights -------------------------------------------------------
   message("Calculating neighbourhood weights")
@@ -52,10 +52,11 @@ get_patches <- function(flir_matrix, photo_no, k = 8, style = "W",
   # Local Getis-Ord ---------------------------------------------------------
 
   message("Calculating local G statistic")
-  flir_g <- spdep::localG(x = spdep::spNamedVec("temp", flir_df),
-                          listw = flir_nb,
-                          zero.policy = FALSE,
-                          spChk = NULL)
+  flir_g <-
+    spdep::localG(x = spdep::spNamedVec("temp", flir_df),
+                  listw = flir_nb,
+                  zero.policy = FALSE,
+                  spChk = NULL)
 
   # Add Z-values to dataframe
   flir_df <- data.frame(flir_df, Z_val = matrix(flir_g))
