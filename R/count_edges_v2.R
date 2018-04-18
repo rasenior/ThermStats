@@ -1,10 +1,10 @@
 
-mat <- patch_mat
+# mat <- patch_mat
 
 set.seed(317)
-cols = 100
-rows = 50
-mat = matrix(sample(1:3, 5000, replace = TRUE), nrow = rows, ncol = cols)
+cols = 1000
+rows = 500
+mat = matrix(sample(1:3, 500000, replace = TRUE), nrow = rows, ncol = cols)
 
 new_fn <- function(mat, bidirectional = FALSE){
 

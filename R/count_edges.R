@@ -1,73 +1,75 @@
 #' count_edges
 #'
 #' Count the number of edges shared by cells of the same class within a matrix
-#' @param in_dir Path to directory where thermal images are stored.
-#' @param write_results Should the results be written as an Rdata file? Defaults to true.
-#' @param out_dir Path to directory where output Rdata file will be stored. Defaults to working directory.
-#' @return A list containing:
-#'  \item{raw_dat}{A list with one element per input thermal image. Each element is a numeric matrix of the
-#' raw infrared data.}
-#'  \item{camera_params}{A dataframe of callibration constants unique to each camera.}
+#' @param mat The matrix.
+#' @param classes Manual specificiation of classes (optional). Use this to exclude classes not of interest, such as background values.  If not specified, all classes will be used. Classes must be numeric.
+#' @param bidirectional Should both sides of each shared edge be counted? Defaults to FALSE.
+#' @param diagonals Should diagonal neighbours be included? Defaults to FALSE.
+#' @return A dataframe containing:
+#'  \item{class}{The unique classes for which edges were counted.}
+#'  \item{obs_edges}{The number of observed shared edges.}
 #' @examples
-#' # Batch extract four FLIR thermal images included in this package.
-#' results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
+#' # Create matrix
+#' set.seed(317)
+#' cols = 100
+#' rows = 50
+#' mat = matrix(sample(1:3, cols * rows, replace = TRUE), nrow = rows, ncol = cols)
+#'
+#' # Count edges in each of the three classes (1, 2 or 3)
+#' count_edges(mat)
 #' @export
 #'
-count_edges <- function(mat, classes = NULL){
+count_edges <- function(mat, classes = NULL, bidirectional = FALSE, diagonals = FALSE){
+
+  # Define row and column length
+  n_cols <- ncol(mat)
+  n_rows <- nrow(mat)
+
+  # Pad matrix with NAs
+  mat.pad <- rbind(NA, cbind(NA, mat, NA), NA)
+
+  # Define row and column indices (not including NAs)
+  col_ind <- 2:(n_cols + 1)
+  row_ind <- 2:(n_rows + 1)
+
+  # Create neighbour matrix (TRUE if neighbour is same value)
+  if(diagonals){
+    # Including diagonal neighbours
+    neigh <-
+      cbind(N  = as.vector(mat.pad[row_ind - 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            NE = as.vector(mat.pad[row_ind - 1, col_ind + 1] == mat.pad[row_ind, col_ind]),
+            E  = as.vector(mat.pad[row_ind    , col_ind + 1] == mat.pad[row_ind, col_ind]),
+            SE = as.vector(mat.pad[row_ind + 1, col_ind + 1] == mat.pad[row_ind, col_ind]),
+            S  = as.vector(mat.pad[row_ind + 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            SW = as.vector(mat.pad[row_ind + 1, col_ind - 1] == mat.pad[row_ind, col_ind]),
+            W  = as.vector(mat.pad[row_ind    , col_ind - 1] == mat.pad[row_ind, col_ind]),
+            NW = as.vector(mat.pad[row_ind + 1, col_ind - 1] == mat.pad[row_ind, col_ind]))
+  }else{
+    # Including only vertical and horizontal neighbours
+    neigh <-
+      cbind(N  = as.vector(mat.pad[row_ind - 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            E  = as.vector(mat.pad[row_ind    , col_ind + 1] == mat.pad[row_ind, col_ind]),
+            S  = as.vector(mat.pad[row_ind + 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            W  = as.vector(mat.pad[row_ind    , col_ind - 1] == mat.pad[row_ind, col_ind]))
+  }
+
+  # Sum matches by row
+  edge_mat <- matrix(rowSums(neigh, na.rm = TRUE),
+                     ncol = n_cols, nrow = n_rows)
 
   # Define number of unique classes if they are not passed as an argument
   if(is.null(classes)){
     classes <- sort(unique(c(mat)))
   }
 
-  # Define dimension
-  cols <- ncol(mat)
-  rows <- nrow(mat)
-
-  # Empty dataframe to populate
-  results <- matrix(c(classes, rep(0, length(classes))), ncol=2)
+  # Sum shared edges by class
+  results <- sapply(classes, function(x) sum(edge_mat[which(mat == x)]))
+  results <- matrix(c(classes, results), ncol = 2)
   colnames(results) <- c("class", "obs_edges")
 
-  # Moving horizontally (to the right) across matrix
-  for(i in 1:(cols-1)){
-    for(j in 1:rows){
-      # Define focal value
-      val_ij <- mat[j,i]
-
-      # Define value of cell immediately to the right in the matrix
-      nb_val<-mat[j,i+1]
-
-      # If the neighbour has the same value, add 1 onto the counter of
-      # the corresponding value
-      # N.B. Can only test this if both of these positions are not NA
-      if(!(is.na(val_ij)) & !(is.na(nb_val))){
-        if(val_ij == nb_val){
-          results[results[,"class"] == val_ij, "obs_edges"] <-
-            results[results[,"class"] == val_ij,"obs_edges"] + 1
-        }
-      }
-    }
-  }
-
-  # Moving vertically down mat
-  for(i in 1:cols){
-    for(j in 1:(rows-1)){
-      # Define focal value
-      val_ij <- mat[j,i]
-      # Define value of cell immediately below in the mat
-      nb_val <- mat[j+1,i]
-
-      # If the neighbour has the same value, add 1 onto the counter of
-      # the corresponding value
-
-      # N.B. Can only test this if both of these positions are not NA
-      if(!(is.na(val_ij)) & !(is.na(nb_val))){
-        if(val_ij == nb_val){
-          results[results[,"class"] == val_ij,"obs_edges"]<-
-            results[results[,"class"] == val_ij,"obs_edges"]+1
-        }
-      }
-    }
+  # If only counting edges once, divide by two
+  if(!(bidirectional)){
+    results[,"obs_edges"] <- results[,"obs_edges"] / 2
   }
 
   return(results)
