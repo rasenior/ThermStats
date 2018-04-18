@@ -2,7 +2,7 @@
 #'
 #' Find hot and cold spots in a FLIR thermal image, and calculate their patch statistics.
 #' @param mat A numeric temperature matrix, such as that returned from \code{Thermimage}.
-#' @param photo_no The photo number of the FLIR jpeg from which the matrix was derived.
+#' @param mat_id The photo number of the FLIR jpeg from which the matrix was derived.
 #' @param k Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.
 #' @param style Style to use when calculating neighbourhood weights using \code{spdep::nb2listw}.
 #' @return A list containing:
@@ -17,7 +17,7 @@
 #'  respectively.}
 #' @examples
 #' # Find hot and cold spots
-#' results <- get_patches(mat = flir11835$flir_matrix,photo_no = flir11835$photo_no)
+#' results <- get_patches(mat = flir11835$flir_matrix,mat_id = flir11835$mat_id)
 #'
 #' # Look at the results for individual pixels
 #' head(results$df)
@@ -31,40 +31,42 @@
 #' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #'
-get_patches <- function(mat, photo_no, k = 8, style = "W",
+get_patches <- function(mat, mat_id, k = 8, style = "W",
                         return_vals = c("df","patches","patch_stats")) {
 
   # Setup ----------------------------------------------------------------------
-  message("Processing photo number: ", photo_no)
+  message("Processing matrix: ", mat_id)
 
   # Matrix needs to be long dataframe for calculating neighbour weights
   df <- reshape2::melt(mat,
                        varnames = c("y", "x"),
-                       value.name = "temp")
-  # Remove NA values of temperature
-  df <- df[!(is.na(df[, "temp"])),]
+                       value.name = "var")
+  # Remove NA values
+  df <- df[!(is.na(df[, "var"])),]
 
   # Neighbour weights -------------------------------------------------------
   message("Calculating neighbourhood weights")
-  flir_nb <- spdep::knearneigh(cbind(df$x, df$y), k = k)
-  flir_nb <- spdep::knn2nb(flir_nb)
-  flir_nb <- spdep::nb2listw(flir_nb, style = style, zero.policy = FALSE)
+  # Identify k nearest neighbours
+  nr_neigh <- spdep::knearneigh(cbind(df$x, df$y), k = k)
+  nr_neigh <- spdep::knn2nb(nr_neigh)
+  # Get neighbour weights
+  nb_weights <- spdep::nb2listw(nr_neigh, style = style, zero.policy = FALSE)
 
   # Local Getis-Ord ---------------------------------------------------------
   message("Calculating local G statistic")
-  flir_g <-
-    spdep::localG(x = spdep::spNamedVec("temp", df),
-                  listw = flir_nb,
+  local_g <-
+    spdep::localG(x = spdep::spNamedVec("var", df),
+                  listw = nb_weights,
                   zero.policy = FALSE,
                   spChk = NULL)
 
   # Add Z-values to dataframe
-  df <- data.frame(df, Z_val = matrix(flir_g))
+  df <- data.frame(df, Z_val = matrix(local_g))
 
-  rm(flir_nb, flir_g)
+  rm(nr_neigh, nb_weights, local_g)
 
-  # Define significance categories, using critical value of 3.886 as defined
-  # in documentation for sample sizes of > 1000.
+  # Define significance categories, using critical values defined in  Getis and
+  # Ord (1996 )
   get_critical_Z <- function(n){
     if(n >= 1 & n < 10){
       critical_z <- 1.6450
@@ -78,6 +80,8 @@ get_patches <- function(mat, photo_no, k = 8, style = "W",
       critical_z <- 3.2889
     }else if(n > 1000){
       critical_z <- 3.8855
+    }else{
+      critical_z <- NA
     }
   }
   critical_Z <- get_critical_Z(nrow(df))
@@ -88,7 +92,8 @@ get_patches <- function(mat, photo_no, k = 8, style = "W",
   # Patch statistics --------------------------------------------------------
   message("Matching pixels to hot and cold spots")
 
-  # 1. Create layer with one polygon for each hot/cold patch Dataframe to matrix
+  # 1. Create layer with one polygon for each hot/cold patch
+  # Dataframe to matrix
   patch_mat <- reshape2::acast(df, y ~ x, value.var = "G_bin")
 
   # Matrix to raster to polygons
@@ -99,7 +104,7 @@ get_patches <- function(mat, photo_no, k = 8, style = "W",
   # 2. Assign to each temperature cell the ID of the patch that it falls into
 
   # Matrix to raster to points
-  mat <- reshape2::acast(df, y ~ x, value.var = "temp")
+  mat <- reshape2::acast(df, y ~ x, value.var = "var")
   raw <- raster::raster(mat)
   raw <- raster::rasterToPoints(raw, spatial = TRUE)
 
@@ -125,7 +130,7 @@ get_patches <- function(mat, photo_no, k = 8, style = "W",
 
   rm(raw, patchID)
 
-  df$photo_no <- photo_no
+  df$mat_id <- mat_id
 
   ### 3. Calculate patch stats
 
@@ -138,7 +143,7 @@ get_patches <- function(mat, photo_no, k = 8, style = "W",
 
   # If there are no patches, create output manually
   if(nrow(patch_stats) == 0){
-    patch_stats <- data.frame(photo_no = photo_no,
+    patch_stats <- data.frame(mat_id = mat_id,
                               hot_px_no = 0,
                               hot_patch_no = 0,
                               hot_max_edges = 0,
@@ -221,7 +226,7 @@ get_patches <- function(mat, photo_no, k = 8, style = "W",
     colnames(hot_stats) <- paste("hot_", names(patch_stats)[-1], sep = "")
     colnames(cold_stats) <- paste("cold_", names(patch_stats)[-1], sep = "")
 
-    patch_stats <- cbind(photo_no, hot_stats, cold_stats)
+    patch_stats <- cbind(mat_id, hot_stats, cold_stats)
   }
 
   # Return results ------------------------------------------------------------
