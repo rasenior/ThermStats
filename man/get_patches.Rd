@@ -4,13 +4,13 @@
 \alias{get_patches}
 \title{get_patches}
 \usage{
-get_patches(flir_matrix, photo_no, k = 8, style = "W",
-  return_vals = c("flir_df", "patches", "patch_stats"))
+get_patches(mat, mat_id, k = 8, style = "W", return_vals = c("df",
+  "patches", "patch_stats"))
 }
 \arguments{
-\item{flir_matrix}{A numeric temperature matrix, such as that returned from \code{Thermimage}.}
+\item{mat}{A numeric temperature matrix, such as that returned from \code{Thermimage}.}
 
-\item{photo_no}{The photo number of the FLIR jpeg from which the matrix was derived.}
+\item{mat_id}{The photo number of the FLIR jpeg from which the matrix was derived.}
 
 \item{k}{Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.}
 
@@ -18,7 +18,7 @@ get_patches(flir_matrix, photo_no, k = 8, style = "W",
 }
 \value{
 A list containing:
- \item{flir_df}{A dataframe with one row for each pixel, and variables denoting:
+ \item{df}{A dataframe with one row for each pixel, and variables denoting:
  the original position of the pixel (y and x); its temperature (temp); its
  Z value from \code{spdep::localG}; its classification (G_bin) into hot (1) or cold
  spots (-1) according to the Z value (see \code{?localG}); the unique ID
@@ -33,10 +33,10 @@ Find hot and cold spots in a FLIR thermal image, and calculate their patch stati
 }
 \examples{
 # Find hot and cold spots
-results <- get_patches(flir_matrix = flir11835$flir_matrix,photo_no = flir11835$photo_no)
+results <- get_patches(mat = flir11835$flir_matrix,mat_id = flir11835$mat_id)
 
 # Look at the results for individual pixels
-head(results$flir_df)
+head(results$df)
 
 # Look at the patch statistics for hot and cold spots
 results$patch_stats

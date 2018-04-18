@@ -4,7 +4,8 @@
 \alias{batch_extract}
 \title{batch_extract}
 \usage{
-batch_extract(in_dir, write_results = TRUE, out_dir = NULL)
+batch_extract(in_dir, write_results = TRUE, out_dir = NULL,
+  file_name = NULL)
 }
 \arguments{
 \item{in_dir}{Path to directory where thermal images are stored.}

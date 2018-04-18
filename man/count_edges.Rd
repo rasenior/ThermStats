@@ -4,25 +4,32 @@
 \alias{count_edges}
 \title{count_edges}
 \usage{
-count_edges(mat, classes = NULL)
+count_edges(mat, classes = NULL, bidirectional = FALSE, diagonals = FALSE)
 }
 \arguments{
-\item{in_dir}{Path to directory where thermal images are stored.}
+\item{mat}{The matrix.}
 
-\item{write_results}{Should the results be written as an Rdata file? Defaults to true.}
+\item{classes}{Manual specificiation of classes (optional). Use this to exclude classes not of interest, such as background values.  If not specified, all classes will be used. Classes must be numeric.}
 
-\item{out_dir}{Path to directory where output Rdata file will be stored. Defaults to working directory.}
+\item{bidirectional}{Should both sides of each shared edge be counted? Defaults to FALSE.}
+
+\item{diagonals}{Should diagonal neighbours be included? Defaults to FALSE.}
 }
 \value{
-A list containing:
- \item{raw_dat}{A list with one element per input thermal image. Each element is a numeric matrix of the
-raw infrared data.}
- \item{camera_params}{A dataframe of callibration constants unique to each camera.}
+A dataframe containing:
+ \item{class}{The unique classes for which edges were counted.}
+ \item{obs_edges}{The number of observed shared edges.}
 }
 \description{
 Count the number of edges shared by cells of the same class within a matrix
 }
 \examples{
-# Batch extract four FLIR thermal images included in this package.
-results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
+# Create matrix
+set.seed(317)
+cols = 100
+rows = 50
+mat = matrix(sample(1:3, cols * rows, replace = TRUE), nrow = rows, ncol = cols)
+
+# Count edges in each of the three classes (1, 2 or 3)
+count_edges(mat)
 }

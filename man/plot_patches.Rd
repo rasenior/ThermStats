@@ -4,7 +4,7 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(flir_df, patches, plot_distribution = TRUE, print_plot = FALSE,
+plot_patches(df, patches, plot_distribution = TRUE, print_plot = FALSE,
   save_plot = TRUE, return_plot = FALSE, out_dir, file_name = NULL,
   file_ext = "png", lab_size = 8, text_size = 6, fig_width = 8,
   fig_height = 9, fig_units = "cm", temp_pal = c("black", "#050155",
@@ -14,7 +14,7 @@ plot_patches(flir_df, patches, plot_distribution = TRUE, print_plot = FALSE,
   "Cold spots"))
 }
 \arguments{
-\item{flir_df}{A dataframe returned from \code{get_patches}.}
+\item{df}{A dataframe returned from \code{get_patches}.}
 
 \item{patches}{A SpatialPolygonsDataFrame returned from \code{get_patches}.}
 
@@ -40,8 +40,8 @@ Plot hot and cold spots from a FLIR thermal image.
 results <- get_patches(flir_matrix = flir11835$flir_matrix,photo_no = flir11835$photo_no)
 
 # Plot
-flir_df <- results$flir_df
+df <- results$df
 patches <- results$patches
-plot_patches(flir_df = flir_df, patches = patches, print_plot = TRUE, save_plot = FALSE)
+plot_patches(df = df, patches = patches, print_plot = TRUE, save_plot = FALSE)
 
 }
