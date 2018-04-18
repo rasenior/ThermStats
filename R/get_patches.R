@@ -2,7 +2,7 @@
 #'
 #' Find hot and cold spots in a FLIR thermal image, and calculate their patch statistics.
 #' @param mat A numeric temperature matrix, such as that returned from \code{Thermimage}.
-#' @param mat_id The photo number of the FLIR jpeg from which the matrix was derived.
+#' @param matrix_id The photo number of the FLIR jpeg from which the matrix was derived.
 #' @param k Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.
 #' @param style Style to use when calculating neighbourhood weights using \code{spdep::nb2listw}.
 #' @return A list containing:
@@ -17,7 +17,7 @@
 #'  respectively.}
 #' @examples
 #' # Find hot and cold spots
-#' results <- get_patches(mat = flir11835$flir_matrix,mat_id = flir11835$mat_id)
+#' results <- get_patches(mat = flir11835$flir_matrix,matrix_id = flir11835$photo_no)
 #'
 #' # Look at the results for individual pixels
 #' head(results$df)
@@ -31,18 +31,18 @@
 #' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #'
-get_patches <- function(mat, mat_id, k = 8, style = "W",
+get_patches <- function(mat, matrix_id, k = 8, style = "W",
                         return_vals = c("df","patches","patch_stats")) {
 
   # Setup ----------------------------------------------------------------------
-  message("Processing matrix: ", mat_id)
+  message("Processing matrix: ", matrix_id)
 
   # Matrix needs to be long dataframe for calculating neighbour weights
   df <- reshape2::melt(mat,
                        varnames = c("y", "x"),
-                       value.name = "var")
+                       value.name = "val")
   # Remove NA values
-  df <- df[!(is.na(df[, "var"])),]
+  df <- df[!(is.na(df[, "val"])),]
 
   # Neighbour weights -------------------------------------------------------
   message("Calculating neighbourhood weights")
@@ -55,7 +55,7 @@ get_patches <- function(mat, mat_id, k = 8, style = "W",
   # Local Getis-Ord ---------------------------------------------------------
   message("Calculating local G statistic")
   local_g <-
-    spdep::localG(x = spdep::spNamedVec("var", df),
+    spdep::localG(x = spdep::spNamedVec("val", df),
                   listw = nb_weights,
                   zero.policy = FALSE,
                   spChk = NULL)
@@ -104,7 +104,7 @@ get_patches <- function(mat, mat_id, k = 8, style = "W",
   # 2. Assign to each temperature cell the ID of the patch that it falls into
 
   # Matrix to raster to points
-  mat <- reshape2::acast(df, y ~ x, value.var = "var")
+  mat <- reshape2::acast(df, y ~ x, value.var = "val")
   raw <- raster::raster(mat)
   raw <- raster::rasterToPoints(raw, spatial = TRUE)
 
@@ -130,7 +130,7 @@ get_patches <- function(mat, mat_id, k = 8, style = "W",
 
   rm(raw, patchID)
 
-  df$mat_id <- mat_id
+  df$matrix_id <- matrix_id
 
   ### 3. Calculate patch stats
 
@@ -143,23 +143,23 @@ get_patches <- function(mat, mat_id, k = 8, style = "W",
 
   # If there are no patches, create output manually
   if(nrow(patch_stats) == 0){
-    patch_stats <- data.frame(mat_id = mat_id,
+    patch_stats <- data.frame(matrix_id = matrix_id,
                               hot_px_no = 0,
                               hot_patch_no = 0,
                               hot_max_edges = 0,
                               hot_obs_edges = 0,
                               hot_non_edges = 0,
-                              hot_patch_max_temp = NA,
-                              hot_patch_median_temp = NA,
-                              hot_patch_min_temp = NA,
+                              hot_patch_max_val = NA,
+                              hot_patch_median_val = NA,
+                              hot_patch_min_val = NA,
                               cold_px_no = 0,
                               cold_patch_no = 0,
                               cold_max_edges = 0,
                               cold_obs_edges = 0,
                               cold_non_edges = 0,
-                              cold_patch_max_temp = NA,
-                              cold_patch_median_temp = NA,
-                              cold_patch_min_temp = NA)
+                              cold_patch_max_val = NA,
+                              cold_patch_median_val = NA,
+                              cold_patch_min_val = NA)
   }else{
     # Number hot/cold spots
     patch_stats[,"patch_no"] <- NA
@@ -191,21 +191,21 @@ get_patches <- function(mat, mat_id, k = 8, style = "W",
     patch_stats <- merge(patch_stats, obs_edges, by = "class")
     patch_stats$non_edges <- patch_stats$max_edges - patch_stats$obs_edges
 
-    # Calculate median temperature for each patch
-    patch_temp <-
+    # Calculate median value for each patch
+    patch_val <-
       dplyr::summarise(dplyr::group_by(df[df$G_bin != 0, ],
                                        patchID, G_bin),
-                       temp = median(temp))
+                       val = median(val))
 
-    # Add max and min patch temp for each patch class
+    # Add max and min patch value for each patch class
     patch_stats <- cbind(patch_stats,
-                         dplyr::summarise(dplyr::group_by(patch_temp, G_bin),
-                                          patch_max_temp = max(temp),
-                                          patch_median_temp = median(temp),
-                                          patch_min_temp = min(temp))[, 2:4])
+                         dplyr::summarise(dplyr::group_by(patch_val, G_bin),
+                                          patch_max_val = max(val),
+                                          patch_median_val = median(val),
+                                          patch_min_val = min(val))[, 2:4])
 
     # Reduce to key variables
-    patch_stats <- patch_stats[,-(which(names(patch_stats) %in% c("n", "m")))]
+    patch_stats <- patch_stats[,!(names(patch_stats) %in% c("n", "m"))]
 
     # Reformat, to ultimately give one row of stats per thermal image
 
@@ -226,7 +226,7 @@ get_patches <- function(mat, mat_id, k = 8, style = "W",
     colnames(hot_stats) <- paste("hot_", names(patch_stats)[-1], sep = "")
     colnames(cold_stats) <- paste("cold_", names(patch_stats)[-1], sep = "")
 
-    patch_stats <- cbind(mat_id, hot_stats, cold_stats)
+    patch_stats <- cbind(matrix_id, hot_stats, cold_stats)
   }
 
   # Return results ------------------------------------------------------------
