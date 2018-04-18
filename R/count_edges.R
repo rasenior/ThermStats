@@ -5,7 +5,7 @@
 #' @param classes Manual specificiation of classes (optional). Use this to exclude classes not of interest, such as background values.  If not specified, all classes will be used. Classes must be numeric.
 #' @param bidirectional Should both sides of each shared edge be counted? Defaults to FALSE.
 #' @param diagonals Should diagonal neighbours be included? Defaults to FALSE.
-#' @return A dataframe containing:
+#' @return A matrix containing:
 #'  \item{class}{The unique classes for which edges were counted.}
 #'  \item{obs_edges}{The number of observed shared edges.}
 #' @examples
