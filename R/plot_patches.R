@@ -1,7 +1,7 @@
 #' plot_patches
 #'
 #' Plot hot and cold spots from a FLIR thermal image.
-#' @param flir_df A dataframe returned from \code{get_patches}.
+#' @param df A dataframe returned from \code{get_patches}.
 #' @param patches A SpatialPolygonsDataFrame returned from \code{get_patches}.
 #' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
 #' @param save_plot Should the resulting plots be saved? Defaults to TRUE.
@@ -15,15 +15,15 @@
 #' results <- get_patches(flir_matrix = flir11835$flir_matrix,photo_no = flir11835$photo_no)
 #'
 #' # Plot
-#' flir_df <- results$flir_df
+#' df <- results$df
 #' patches <- results$patches
-#' plot_patches(flir_df = flir_df, patches = patches, print_plot = TRUE, save_plot = FALSE)
+#' plot_patches(df = df, patches = patches, print_plot = TRUE, save_plot = FALSE)
 #'
 #' @export
 #' @import ggplot2
 #' @importClassesFrom sp SpatialPolygonsDataFrame
 #'
-plot_patches <- function(flir_df,
+plot_patches <- function(df,
                          patches,
                          plot_distribution = TRUE,
                          print_plot = FALSE,
@@ -45,7 +45,7 @@ plot_patches <- function(flir_df,
                          patch_cols = c("mistyrose", "cornflowerblue"),
                          patch_labs = c("Hot spots", "Cold spots")) {
 
-  photo_no <- unique(flir_df$photo_no)
+  photo_no <- unique(df$photo_no)
 
   # Histogram --------------------------------------------------------------
 
@@ -53,15 +53,15 @@ plot_patches <- function(flir_df,
 
   message("Plotting temperature distribution")
 
-  flir_df$G_bin <- factor(flir_df$G_bin, levels = c(0, 1, -1),
+  df$G_bin <- factor(df$G_bin, levels = c(0, 1, -1),
                           labels = c("Background", "Hot spots", "Cold spots"))
 
   p1 <-
     ggplot() +
-    geom_histogram(data = flir_df,
+    geom_histogram(data = df,
                    aes(x = temp, y = ..density..),
                    colour = "black", fill = "white") +
-    geom_density(data = flir_df,
+    geom_density(data = df,
                  aes(x = temp), alpha = 0.2, fill = "grey") +
     xlab(expression(paste("Temperature (", degree * C, ")", sep = ""))) +
     ylab("Density") +
@@ -104,7 +104,7 @@ plot_patches <- function(flir_df,
 
   # Create the plot
   p2 <- ggplot() +
-    geom_raster(data = flir_df,
+    geom_raster(data = df,
                 aes(x = x, y = y, fill = temp)) +
     geom_polygon(data = patches,
                  aes(y = lat,x = long, group = group, colour = id),
