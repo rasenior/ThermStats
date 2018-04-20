@@ -16,7 +16,7 @@ count_edges(mat, classes = NULL, bidirectional = FALSE, diagonals = FALSE)
 \item{diagonals}{Should diagonal neighbours be included? Defaults to FALSE.}
 }
 \value{
-A dataframe containing:
+A matrix containing:
  \item{class}{The unique classes for which edges were counted.}
  \item{obs_edges}{The number of observed shared edges.}
 }

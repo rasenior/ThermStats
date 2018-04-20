@@ -1,10 +1,12 @@
 #' get_patches
 #'
-#' Find hot and cold spots in a FLIR thermal image, and calculate their patch statistics.
+#' Find hot and cold spots in a numeric matrix, and calculate their patch statistics.
 #' @param mat A numeric temperature matrix, such as that returned from \code{Thermimage}.
-#' @param matrix_id The photo number of the FLIR jpeg from which the matrix was derived.
+#' @param matrix_id The matrix ID (optional). Useful when iterating over numberous matrices.
 #' @param k Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.
 #' @param style Style to use when calculating neighbourhood weights using \code{spdep::nb2listw}.
+#' @param mat_proj Spatial projection (optional).
+#' @param return_vals Which values to return? Any combination of the dataframe ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch statistics dataframe ("patch_stats".
 #' @return A list containing:
 #'  \item{df}{A dataframe with one row for each pixel, and variables denoting:
 #'  the original position of the pixel (y and x); its temperature (temp); its
@@ -31,12 +33,14 @@
 #' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #'
-get_patches <- function(mat, matrix_id, k = 8, style = "W",
-                        proj = NULL,
+get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
+                        mat_proj = NULL,
                         return_vals = c("df","patches","patch_stats")) {
 
   # Setup ----------------------------------------------------------------------
-  message("Processing matrix: ", matrix_id)
+  if(!(is.null(matrix_id))){
+    message("Processing matrix: ", matrix_id)
+  }
 
   # Matrix needs to be long dataframe for calculating neighbour weights
   df <- reshape2::melt(mat,
@@ -107,10 +111,10 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
   # Matrix to raster
   patches <- raster::raster(patch_mat)
 
-  # Specify coordinates and projection (if applicable)
+  # Specify coordinates and mat_projection (if applicable)
   extent(patches) <- extent(coords)
-  if(!(is.null(proj))){
-    projection(patches) <- proj
+  if(!(is.null(mat_proj))){
+    mat_projection(patches) <- mat_proj
   }
 
   # Raster to dissolved polygons
@@ -127,10 +131,10 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
   # Matrix to raster
   raw <- raster::raster(mat)
 
-  # Specify coordinates and projection (if applicable)
+  # Specify coordinates and mat_projection (if applicable)
   extent(raw) <- extent(coords)
-  if(!(is.null(proj))){
-    projection(raw) <- proj
+  if(!(is.null(mat_proj))){
+    mat_projection(raw) <- mat_proj
   }
 
   # Raster to points
@@ -160,7 +164,9 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
 
   rm(raw, patchID)
 
-  df$matrix_id <- matrix_id
+  if(!(is.null(matrix_id))){
+    df$matrix_id <- matrix_id
+  }
 
   ### 3. Calculate patch stats
 
@@ -173,8 +179,7 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
 
   # If there are no patches, create output manually
   if(nrow(patch_stats) == 0){
-    patch_stats <- data.frame(matrix_id = matrix_id,
-                              hot_px_no = 0,
+    patch_stats <- data.frame(hot_px_no = 0,
                               hot_patch_no = 0,
                               hot_max_edges = 0,
                               hot_obs_edges = 0,
@@ -190,6 +195,9 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
                               cold_patch_max_val = NA,
                               cold_patch_median_val = NA,
                               cold_patch_min_val = NA)
+    if(!(is.null(matrix_id))){
+      patch_stats <- cbind(matrix_id, patch_stats)
+    }
   }else{
     # Number hot/cold spots
     patch_stats[,"patch_no"] <- NA
@@ -256,7 +264,11 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
     colnames(hot_stats) <- paste("hot_", names(patch_stats)[-1], sep = "")
     colnames(cold_stats) <- paste("cold_", names(patch_stats)[-1], sep = "")
 
-    patch_stats <- cbind(matrix_id, hot_stats, cold_stats)
+    if(!(is.null(matrix_id))){
+      patch_stats <- cbind(matrix_id, hot_stats, cold_stats)
+    }else{
+      patch_stats <- cbind(hot_stats, cold_stats)
+    }
   }
 
   # Return results ------------------------------------------------------------

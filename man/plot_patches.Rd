@@ -7,7 +7,7 @@
 plot_patches(df, patches, plot_distribution = TRUE, print_plot = FALSE,
   save_plot = TRUE, return_plot = FALSE, out_dir, file_name = NULL,
   file_ext = "png", lab_size = 8, text_size = 6, fig_width = 8,
-  fig_height = 9, fig_units = "cm", temp_pal = c("black", "#050155",
+  fig_height = 9, fig_units = "cm", val_pal = c("black", "#050155",
   "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
   "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
   patch_cols = c("mistyrose", "cornflowerblue"), patch_labs = c("Hot spots",
@@ -28,16 +28,16 @@ plot_patches(df, patches, plot_distribution = TRUE, print_plot = FALSE,
 
 \item{text_size}{Size of axes text and legend text. Defaults to 6.}
 
-\item{temp_pal}{Colour palette to use for temperature. Defaults to palette derived from a FLIR jpeg.}
+\item{val_pal}{Colour palette to use for raster. Defaults to palette derived from a FLIR jpeg.}
 
 \item{patch_cols}{Colours for the patch borders (hot spot colour followed by cold spot colour).}
 }
 \description{
-Plot hot and cold spots from a FLIR thermal image.
+Plot hot and cold spots.
 }
 \examples{
 # Find hot and cold spots
-results <- get_patches(flir_matrix = flir11835$flir_matrix,photo_no = flir11835$photo_no)
+results <- get_patches(flir_matrix = flir11835$flir_matrix,matrix_id = flir11835$matrix_id)
 
 # Plot
 df <- results$df

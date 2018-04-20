@@ -1,6 +1,6 @@
 #' plot_patches
 #'
-#' Plot hot and cold spots from a FLIR thermal image.
+#' Plot hot and cold spots.
 #' @param df A dataframe returned from \code{get_patches}.
 #' @param patches A SpatialPolygonsDataFrame returned from \code{get_patches}.
 #' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
@@ -8,7 +8,7 @@
 #' @param out_dir Path to directory where plots will be saved.
 #' @param lab_size Size of axes labels. Defaults to 8.
 #' @param text_size Size of axes text and legend text. Defaults to 6.
-#' @param val_pal Colour palette to use for valerature. Defaults to palette derived from a FLIR jpeg.
+#' @param val_pal Colour palette to use for raster. Defaults to palette derived from a FLIR jpeg.
 #' @param patch_cols Colours for the patch borders (hot spot colour followed by cold spot colour).
 #' @examples
 #' # Find hot and cold spots
@@ -63,7 +63,6 @@ plot_patches <- function(df,
                    colour = "black", fill = "white") +
     geom_density(data = df,
                  aes(x = val), alpha = 0.2, fill = "grey") +
-    xlab(expression(paste("valerature (", degree * C, ")", sep = ""))) +
     ylab("Density") +
     theme_bw() +
     theme(axis.title = element_text(size = lab_size),
@@ -75,9 +74,9 @@ plot_patches <- function(df,
     p1 <- NULL
   }
 
-  # Thermal image ----------------------------------------------------------
+  # Image ----------------------------------------------------------
 
-  message("Plotting thermal image with hot and cold spots")
+  message("Plotting image with hot and cold spots")
 
   # Add comment attribute to correctly plot holes
   for (x in 1:length(patches@polygons)) {
@@ -113,8 +112,7 @@ plot_patches <- function(df,
           legend.text = element_text(size = text_size),
           legend.key = element_rect(fill = "black"),
           plot.margin = margin(0.1, 0.1, 0, 0, unit = "cm")) +
-    scale_fill_gradientn(name = expression(paste("valerature (",degree * C, ")",
-                                                 sep = "")), colours = val_pal) +
+    scale_fill_gradientn(colours = val_pal) +
     scale_colour_manual(values = patch_cols, name = NULL) +
     guides(fill = guide_colorbar(order = 1,
                                  title.position = "top",
@@ -155,10 +153,9 @@ plot_patches <- function(df,
     # Define file names
     if(is.null(file_name)){
       p1_filename <-
-        file.path(out_dir, paste("FLIR", matrix_id,
-                                 "_distribution.",file_ext, sep = ""))
+        file.path(out_dir, paste("distribution.",file_ext, sep = ""))
       p2_filename <-
-        file.path(out_dir, paste("FLIR", matrix_id, "_patches.",file_ext, sep = ""))
+        file.path(out_dir, paste("patches.",file_ext, sep = ""))
     }else{
 
       p1_filename <-
@@ -177,7 +174,7 @@ plot_patches <- function(df,
       )
     }
 
-    # Plot thermal image w patches
+    # Plot image w patches
     ggsave(plot = p2, filename = p2_filename,
            dpi = 800, width = fig_width, height = fig_height, units = fig_units)
 
@@ -186,9 +183,9 @@ plot_patches <- function(df,
   # Return plot objects if required
   if(return_plot){
     if(plot_distribution){
-      return(list(fig_distribution = p1, fig_thermal = p2))
+      return(list(fig_distribution = p1, fig_patches = p2))
     } else{
-      return(fig_thermal = p2)
+      return(fig_patches = p2)
     }
 
   }

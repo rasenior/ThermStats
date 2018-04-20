@@ -4,17 +4,21 @@
 \alias{get_patches}
 \title{get_patches}
 \usage{
-get_patches(mat, mat_id, k = 8, style = "W", return_vals = c("df",
-  "patches", "patch_stats"))
+get_patches(mat, matrix_id = NULL, k = 8, style = "W", mat_proj = NULL,
+  return_vals = c("df", "patches", "patch_stats"))
 }
 \arguments{
 \item{mat}{A numeric temperature matrix, such as that returned from \code{Thermimage}.}
 
-\item{mat_id}{The photo number of the FLIR jpeg from which the matrix was derived.}
+\item{matrix_id}{The matrix ID (optional). Useful when iterating over numberous matrices.}
 
 \item{k}{Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.}
 
 \item{style}{Style to use when calculating neighbourhood weights using \code{spdep::nb2listw}.}
+
+\item{mat_proj}{Spatial projection (optional).}
+
+\item{return_vals}{Which values to return? Any combination of the dataframe ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch statistics dataframe ("patch_stats".}
 }
 \value{
 A list containing:
@@ -29,11 +33,11 @@ A list containing:
  respectively.}
 }
 \description{
-Find hot and cold spots in a FLIR thermal image, and calculate their patch statistics.
+Find hot and cold spots in a numeric matrix, and calculate their patch statistics.
 }
 \examples{
 # Find hot and cold spots
-results <- get_patches(mat = flir11835$flir_matrix,mat_id = flir11835$mat_id)
+results <- get_patches(mat = flir11835$flir_matrix,matrix_id = flir11835$photo_no)
 
 # Look at the results for individual pixels
 head(results$df)
