@@ -95,13 +95,6 @@ plot_patches <- function(df,
   patches$id <- factor(patches$id, levels = c(1, -1),
                        labels = patch_labs)
 
-  # Match coordinates up to those in the value dataframe
-  patches$long <- patches$long * 160 + 0.5
-  patches$lat <- patches$lat * 120 + 0.5
-
-  # Mirror latitude (flips wrong way when fortified)
-  patches$lat <- 121 - patches$lat
-
   # Create the plot
   p2 <- ggplot() +
     geom_raster(data = df,

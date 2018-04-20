@@ -32,6 +32,7 @@
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #'
 get_patches <- function(mat, matrix_id, k = 8, style = "W",
+                        proj = NULL,
                         return_vals = c("df","patches","patch_stats")) {
 
   # Setup ----------------------------------------------------------------------
@@ -43,6 +44,9 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
                        value.name = "val")
   # Remove NA values
   df <- df[!(is.na(df[, "val"])),]
+
+  # Define coordinates
+  coords <- df[,c("x", "y")]
 
   # Neighbour weights -------------------------------------------------------
   message("Calculating neighbourhood weights")
@@ -96,16 +100,40 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
   # Dataframe to matrix
   patch_mat <- reshape2::acast(df, y ~ x, value.var = "G_bin")
 
-  # Matrix to raster to polygons
+  # Flip
+  patch_mat <-
+    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(patch_mat))
+
+  # Matrix to raster
   patches <- raster::raster(patch_mat)
+
+  # Specify coordinates and projection (if applicable)
+  extent(patches) <- extent(coords)
+  if(!(is.null(proj))){
+    projection(patches) <- proj
+  }
+
+  # Raster to dissolved polygons
   patches <- raster::rasterToPolygons(patches, dissolve = TRUE)
   patches <- raster::disaggregate(patches)
 
   # 2. Assign to each temperature cell the ID of the patch that it falls into
-
   # Matrix to raster to points
   mat <- reshape2::acast(df, y ~ x, value.var = "val")
+  # Flip
+  mat <-
+    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(mat))
+
+  # Matrix to raster
   raw <- raster::raster(mat)
+
+  # Specify coordinates and projection (if applicable)
+  extent(raw) <- extent(coords)
+  if(!(is.null(proj))){
+    projection(raw) <- proj
+  }
+
+  # Raster to points
   raw <- raster::rasterToPoints(raw, spatial = TRUE)
 
   # Return overlay list where each element is the point, and within that the
@@ -125,7 +153,9 @@ get_patches <- function(mat, matrix_id, k = 8, style = "W",
   # Bind together
   patchID <- do.call("rbind", patchID)
 
-  # Add to original dataframe
+  # Recreate dataframe
+  df <- data.frame(raw)
+  colnames(df)[which(names(df) == "layer")] <- "val"
   df[, c("G_bin", "patchID")] <- patchID
 
   rm(raw, patchID)
