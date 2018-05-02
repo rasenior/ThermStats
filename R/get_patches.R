@@ -1,12 +1,14 @@
 #' get_patches
 #'
-#' Find hot and cold spots in a numeric matrix, and calculate their patch statistics.
-#' @param mat A numeric temperature matrix, such as that returned from \code{Thermimage}.
-#' @param matrix_id The matrix ID (optional). Useful when iterating over numberous matrices.
+#' Find hot and cold spots in a numeric matrix, and calculate their patch
+#' statistics.
+#' @param mat A numeric temperature matrix, such as that returned from
+#' \code{Thermimage}.
+#' @param matrix_id The matrix ID (optional). Useful when iterating over numerous matrices.
 #' @param k Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.
 #' @param style Style to use when calculating neighbourhood weights using \code{spdep::nb2listw}.
 #' @param mat_proj Spatial projection (optional).
-#' @param return_vals Which values to return? Any combination of the dataframe ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch statistics dataframe ("patch_stats".
+#' @param return_vals Which values to return? Any combination of the dataframe ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch statistics dataframe ("patch_stats").
 #' @return A list containing:
 #'  \item{df}{A dataframe with one row for each pixel, and variables denoting:
 #'  the original position of the pixel (y and x); its temperature (temp); its
