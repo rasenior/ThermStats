@@ -4,24 +4,31 @@
 #' statistics.
 #' @param mat A numeric temperature matrix, such as that returned from
 #' \code{Thermimage}.
-#' @param matrix_id The matrix ID (optional). Useful when iterating over numerous matrices.
-#' @param k Number of neighbours to use when calculating nearest neighbours using \code{spdep::knearneigh}.
-#' @param style Style to use when calculating neighbourhood weights using \code{spdep::nb2listw}.
+#' @param matrix_id The matrix ID (optional). Useful when iterating over
+#' numerous matrices.
+#' @param k Number of neighbours to use when calculating nearest neighbours
+#' using \code{spdep::knearneigh}.
+#' @param style Style to use when calculating neighbourhood weights using
+#' \code{spdep::nb2listw}.
 #' @param mat_proj Spatial projection (optional).
-#' @param return_vals Which values to return? Any combination of the dataframe ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch statistics dataframe ("patch_stats").
+#' @param return_vals Which values to return? Any combination of the dataframe
+#' ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch
+#' statistics dataframe ("patch_stats").
 #' @return A list containing:
 #'  \item{df}{A dataframe with one row for each pixel, and variables denoting:
 #'  the original position of the pixel (y and x); its temperature (temp); its
-#'  Z value from \code{spdep::localG}; its classification (G_bin) into hot (1) or cold
-#'  spots (-1) according to the Z value (see \code{?localG}); the unique ID
-#'  of the patch in which the pixel fell; and the photo number.}
+#'  Z value from \code{spdep::localG}; its classification (G_bin) into hot (1)
+#'  or cold spots (-1) according to the Z value (see \code{?localG}); the unique
+#'  ID of the patch in which the pixel fell; and the photo number.}
 #'  \item{patches}{A SpatialPolygonsDataFrame of hot and cold spots. Hot spots
 #'  have a value of 1, and cold spots a value of -1.}
-#'  \item{patch_stats}{A dataframe with patch statistics for hot spots and cold spots,
-#'  respectively.}
+#'  \item{patch_stats}{A dataframe with patch statistics for hot spots and cold
+#'  spots, respectively.}
 #' @examples
 #' # Find hot and cold spots
-#' results <- get_patches(mat = flir11835$flir_matrix,matrix_id = flir11835$photo_no)
+#' results <-
+#' get_patches(mat = flir11835$flir_matrix,
+#' matrix_id = flir11835$photo_no)
 #'
 #' # Look at the results for individual pixels
 #' head(results$df)
