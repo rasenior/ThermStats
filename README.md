@@ -1,5 +1,10 @@
-# PatchStatsFLIR
-Tools to analyse FLIR thermal images in R
+# ThermStats
+
+Calculate statistics for thermal images in R.
+
+Designed primarily for FLIR thermal images, but some functions can also be applied to any temperature raster, in matrix format.
+
+`batch_extract`is the first step for FLIR thermal images. Pass a directory of FLIR thermal images, and this function will batch implement the function `readFLIRjpeg
 
 `get_patches` finds hot and cold spots in temperature matrices and calculates their patch statistics.
 
