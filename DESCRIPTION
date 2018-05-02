@@ -1,20 +1,28 @@
-Package: PatchStatsFLIR
-Title: Finds hot and cold spots in temperature matrices, and returns patch statistics.
-Version: 0.0.0.9000
-Authors@R: person("Rebecca A.", "Senior", email = "rebecca.a.senior@gmail.com", role = c("aut", "cre"))
-Description: Takes a temperature matrix such as that returned using the package Thermimage, and find hot and cold spots. Pixels are matched to these patches, 
-	and simple patch statistics are calculated.
+Package: ThermStats
+Type: Package
+Title: Calculate statistics for thermal images
+Version: 0.0.1.0
+Date: 2018-05-02
+Authors@R: person("Rebecca A.", "Senior", 
+  email = "rebecca.a.senior@gmail.com",
+  role = c("aut", "cre"))
+Description: Takes a temperature matrix, such as that returned using the package 
+  Thermimage, and finds hot and cold spots. Pixels are matched to these patches, 
+	and statistics calculated for pixels and patches. Similarly to Thermimage, 
+	this package was written primarily for research purposes in biological 
+	applications of thermal images.
 Depends: R (>= 3.3.3)
-License: What license is it under?
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1.9000
+URL: https://github.com/rasenior/ThermStats
+BugReports: https://github.com/rasenior/ThermStats/issues
 Imports: dplyr,
     spdep,
     reshape2,
     raster,
     sp,
-    SDMTools,
     rgeos,
     ggplot2,
     Thermimage
