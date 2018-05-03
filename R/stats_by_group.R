@@ -1,29 +1,43 @@
 #' stats_by_group
 #'
 #' Calculate thermal statistics across photos within groups.
-#' @param in_dir Path to directory where thermal images are stored.
-#' @param write_results Should the results be written as an Rdata file? Defaults to true.
-#' @param out_dir Path to directory where output Rdata file will be stored. Defaults to working directory.
+#' @param metadata A dataframe denoting the grouping of different matrices.
+#' @param mat_list List of temperatures matrices.
+#' @param matrix_ID Name of the metadata variable that identifies unique temperature matrices. Should match element names in the list of matrices.
+#' @param subset_var The name of the metadata variable that denotes the grouping of temperature matrices.
+#' @param subset_val The value of the grouping variable denoted by `subset_var` -- designed for use in conjunction with `sapply`.
+#' @param round_val Value to round to. Defaults to 1 (i.e. no rounding).
+#'
+#' @param
 #' @return A list containing:
 #'  \item{raw_dat}{A list with one element per input thermal image. Each element is a numeric matrix of the
 #' raw infrared data.}
 #'  \item{camera_params}{A dataframe of callibration constants unique to each camera.}
 #' @examples
-#' # Batch extract four FLIR thermal images included in this package.
-#' results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
+#' # Load raw data
+#' raw_dat <- flir_raw$raw_dat
+#' camera_params <- flir_raw$camera_params
+#' metadata <- flir_raw$metadata
+#'
+#' # Batch convert
+#' mat_list <- batch_convert(raw_dat, write_results = FALSE)
+#'
+#' # Stats
+#'
+
 #' @export
 #'
 # Define function to return stats for each grouping
-stats_by_group <- function(metadata,flir_list,photo_ID = "photo_no",
-                         subset_var,subset_val, round_val,...){
+stats_by_group <- function(metadata,mat_list,matrix_ID = "photo_no",
+                         subset_var,subset_val, round_val = 1,...){
 
   # Setup ----------------------------------------------------------------------
-  sub_photos <- as.character(metadata[metadata[,subset_var]==subset_val,photo_ID])
+  sub_photos <- as.character(metadata[metadata[,subset_var]==subset_val,matrix_ID])
 
   n_photos <- length(sub_photos)
 
   # Subset matrices list by the desired photo numbers
-  sub_list <- flir_list[as.character(sub_photos)]
+  sub_list <- mat_list[as.character(sub_photos)]
 
   # Rounding
   sub_list<-
@@ -49,8 +63,8 @@ stats_by_group <- function(metadata,flir_list,photo_ID = "photo_no",
   # For each matrix in the list, calculate spatial statistics
   patch_stats <-
     lapply(1:length(sub_list),
-           function(x) get_patches(flir_matrix = sub_list[[x]],
-                                   photo_no = sub_photos[x],
+           function(x) get_patches(mat =  sub_list[[x]],
+                                   matrix_id = sub_photos[x],
                                    return_vals = "patch_stats",
                                    k = 8,
                                    style = "W"))
@@ -59,25 +73,26 @@ stats_by_group <- function(metadata,flir_list,photo_ID = "photo_no",
   patch_stats <- do.call("rbind", patch_stats)
 
   ### Aggregate results over all photos to give one statistic for the subset
-  # These variables should be summed across photos
+
+  # Define variables that should be summed across photos
   sum_vars <-
     c("hot_px_no","hot_patch_no","hot_obs_edges","hot_max_edges","hot_non_edges",
       "cold_px_no","cold_patch_no","cold_obs_edges","cold_max_edges","cold_non_edges")
 
-  patch_stats<-
+  patch_stats <-
     c(apply(patch_stats[,sum_vars],
             MARGIN = 2,
             FUN = sum,
             na.rm=TRUE),
       # Max patch temp is the max across all photos
-      apply(patch_stats[,c("hot_patch_max_temp",
-                           "cold_patch_max_temp")],
+      apply(patch_stats[,c("hot_patch_max_val",
+                           "cold_patch_max_val")],
             MARGIN = 2,
             FUN = max,
             na.rm=TRUE),
       # Min patch temp is the min across all photos
-      apply(patch_stats[,c("hot_patch_min_temp",
-                           "cold_patch_min_temp")],
+      apply(patch_stats[,c("hot_patch_min_val",
+                           "cold_patch_min_val")],
             MARGIN = 2,
             FUN = min,
             na.rm=TRUE))

@@ -4,15 +4,21 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, flir_list, photo_ID = "photo_no", subset_var,
-  subset_val, round_val, ...)
+stats_by_group(metadata, mat_list, matrix_ID = "photo_no", subset_var,
+  subset_val, round_val = 1, ...)
 }
 \arguments{
-\item{in_dir}{Path to directory where thermal images are stored.}
+\item{metadata}{A dataframe denoting the grouping of different matrices.}
 
-\item{write_results}{Should the results be written as an Rdata file? Defaults to true.}
+\item{mat_list}{List of temperatures matrices.}
 
-\item{out_dir}{Path to directory where output Rdata file will be stored. Defaults to working directory.}
+\item{matrix_ID}{Name of the metadata variable that identifies unique temperature matrices. Should match element names in the list of matrices.}
+
+\item{subset_var}{The name of the metadata variable that denotes the grouping of temperature matrices.}
+
+\item{subset_val}{The value of the grouping variable denoted by `subset_var` -- designed for use in conjunction with `sapply`.}
+
+\item{round_val}{Value to round to. Defaults to 1 (i.e. no rounding).}
 }
 \value{
 A list containing:
@@ -24,6 +30,14 @@ raw infrared data.}
 Calculate thermal statistics across photos within groups.
 }
 \examples{
-# Batch extract four FLIR thermal images included in this package.
-results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
+# Load raw data
+raw_dat <- flir_raw$raw_dat
+camera_params <- flir_raw$camera_params
+metadata <- flir_raw$metadata
+
+# Batch convert
+mat_list <- batch_convert(raw_dat, write_results = FALSE)
+
+# Stats
+
 }
