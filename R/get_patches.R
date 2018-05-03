@@ -121,8 +121,8 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   patches <- raster::raster(patch_mat)
 
   # Specify coordinates and mat_projection (if applicable)
-  extent(patches) <- extent(coords)
   if(!(is.null(mat_proj))){
+    extent(patches) <- extent(coords)
     mat_projection(patches) <- mat_proj
   }
 
@@ -141,8 +141,8 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   raw <- raster::raster(mat)
 
   # Specify coordinates and mat_projection (if applicable)
-  extent(raw) <- extent(coords)
   if(!(is.null(mat_proj))){
+    extent(raw) <- extent(coords)
     mat_projection(raw) <- mat_proj
   }
 
