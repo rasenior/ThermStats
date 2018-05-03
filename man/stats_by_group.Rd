@@ -24,10 +24,7 @@ pixels. Several helper functions are included for use here: perc_5, perc_95,
 SHDI, SIDI. See examples below.}
 }
 \value{
-A list containing:
- \item{raw_dat}{A list with one element per input thermal image. Each element is a numeric matrix of the
-raw infrared data.}
- \item{camera_params}{A dataframe of callibration constants unique to each camera.}
+A dataframe with pixel and patch statistics.
 }
 \description{
 Calculate thermal statistics across photos within groups.

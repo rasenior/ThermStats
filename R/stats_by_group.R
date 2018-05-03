@@ -11,10 +11,7 @@
 #' @param ... Use to specify statistics that should be calculated across all
 #' pixels. Several helper functions are included for use here: perc_5, perc_95,
 #' SHDI, SIDI. See examples below.
-#' @return A list containing:
-#'  \item{raw_dat}{A list with one element per input thermal image. Each element is a numeric matrix of the
-#' raw infrared data.}
-#'  \item{camera_params}{A dataframe of callibration constants unique to each camera.}
+#' @return A dataframe with pixel and patch statistics.
 #' @examples
 #' # Load raw data
 #' raw_dat <- flir_raw$raw_dat
@@ -50,18 +47,18 @@ stats_by_group <- function(metadata,mat_list,matrix_ID,
 
   if (requireNamespace("pbapply", quietly = TRUE)) {
     temp_stats<-
-      pblapply(unique(metadata[, grouping_var]),
-               function(x){
-                 tryCatch({get_stats(metadata = metadata,
-                                     mat_list = mat_list,
-                                     matrix_ID = matrix_ID,
-                                     grouping_var = grouping_var,
-                                     grouping_val = x,
-                                     round_val = round_val,
-                                     pixel_fns = pixel_fns,
-                                     ...)},
-                          error=function(cond)NA)
-               })
+      pbapply::pblapply(unique(metadata[, grouping_var]),
+                        function(x){
+                          tryCatch({get_stats(metadata = metadata,
+                                              mat_list = mat_list,
+                                              matrix_ID = matrix_ID,
+                                              grouping_var = grouping_var,
+                                              grouping_val = x,
+                                              round_val = round_val,
+                                              pixel_fns = pixel_fns,
+                                              ...)},
+                                   error=function(cond)NA)
+                        })
   }else{
     temp_stats<-
       lapply(unique(metadata[, grouping_var]),
