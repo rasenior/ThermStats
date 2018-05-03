@@ -1,5 +1,10 @@
-# PatchStatsFLIR
-Tools to analyse FLIR thermal images in R
+# ThermStats
+
+Calculate statistics for thermal images in R.
+
+Designed primarily for FLIR thermal images, but some functions can also be applied to any temperature raster, in matrix format.
+
+`batch_extract`is the first step for FLIR thermal images. Pass a directory of FLIR thermal images, and this function will batch implement the function `readFLIRjpeg
 
 2. `batch_convert` is a batch implementation of the `raw2temp` function in `Thermimage`. It uses environmental parameters defined by the user, and Planck constants specific to the camera (extracted in `batch_extract`).
 3. `stats_by_group` calculates pixel and patch statistics across photos within a specified grouping. Ideal for sampling designs where multiple images are obtained per sampling event, and where the user wishes to summarise statistics across all photos within a single sampling event. The function will, however, work just as well with individual photos.
