@@ -1,9 +1,12 @@
 #' batch_convert
 #'
 #' Batch convert list of raw FLIR matrices.
-#' @param raw_dat A list of raw FLIR matrices returned from \code{batch_extract}.
-#' @param out_dir Path to directory where converted temperature data will be written.
-#' @return A list with one element per input thermal image. Each element is a numeric matrix of the
+#' @param raw_dat A list of raw FLIR matrices returned from
+#' \code{batch_extract}.
+#' @param out_dir Path to directory where converted temperature data will be
+#' written.
+#' @return A list with one element per input thermal image. Each element is a
+#' numeric matrix of the
 #' converted temperature data, in °C.
 #' @examples
 #'
@@ -51,7 +54,8 @@
 #' PR2 <- camera_params[,"PlanckR2"]
 #'
 #' # Batch convert! -----------------------------------------------------------
-#' results <- batch_convert(raw_dat, E, OD, RTemp, ATemp, IRWTemp, IRT, RH, PR1, PB, PF, PO, PR2, write_results = FALSE)
+#' results <- batch_convert(raw_dat, E, OD, RTemp, ATemp, IRWTemp, IRT, RH, PR1,
+#' PB, PF, PO, PR2, write_results = FALSE)
 #' @export
 #'
 batch_convert <- function(raw_dat,

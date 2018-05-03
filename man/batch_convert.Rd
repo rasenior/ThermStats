@@ -10,12 +10,15 @@ batch_convert(raw_dat, E = 1, OD = 1, RTemp = 20, ATemp = RTemp,
   out_dir = NULL, file_name = NULL)
 }
 \arguments{
-\item{raw_dat}{A list of raw FLIR matrices returned from \code{batch_extract}.}
+\item{raw_dat}{A list of raw FLIR matrices returned from
+\code{batch_extract}.}
 
-\item{out_dir}{Path to directory where converted temperature data will be written.}
+\item{out_dir}{Path to directory where converted temperature data will be
+written.}
 }
 \value{
-A list with one element per input thermal image. Each element is a numeric matrix of the
+A list with one element per input thermal image. Each element is a
+numeric matrix of the
 converted temperature data, in °C.
 }
 \description{
@@ -67,5 +70,6 @@ PO <- camera_params[,"PlanckO"]
 PR2 <- camera_params[,"PlanckR2"]
 
 # Batch convert! -----------------------------------------------------------
-results <- batch_convert(raw_dat, E, OD, RTemp, ATemp, IRWTemp, IRT, RH, PR1, PB, PF, PO, PR2, write_results = FALSE)
+results <- batch_convert(raw_dat, E, OD, RTemp, ATemp, IRWTemp, IRT, RH, PR1,
+PB, PF, PO, PR2, write_results = FALSE)
 }
