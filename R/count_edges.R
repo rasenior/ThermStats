@@ -2,8 +2,11 @@
 #'
 #' Count the number of edges shared by cells of the same class within a matrix
 #' @param mat The matrix.
-#' @param classes Manual specificiation of classes (optional). Use this to exclude classes not of interest, such as background values.  If not specified, all classes will be used. Classes must be numeric.
-#' @param bidirectional Should both sides of each shared edge be counted? Defaults to FALSE.
+#' @param classes Manual specificiation of classes (optional). Use this to
+#' exclude classes not of interest, such as background values.  If not
+#' specified, all classes will be used. Classes must be numeric.
+#' @param bidirectional Should both sides of each shared edge be counted?
+#' Defaults to FALSE.
 #' @param diagonals Should diagonal neighbours be included? Defaults to FALSE.
 #' @return A matrix containing:
 #'  \item{class}{The unique classes for which edges were counted.}
@@ -11,15 +14,17 @@
 #' @examples
 #' # Create matrix
 #' set.seed(317)
-#' cols = 100
-#' rows = 50
-#' mat = matrix(sample(1:3, cols * rows, replace = TRUE), nrow = rows, ncol = cols)
+#' cols <- 100
+#' rows <- 50
+#' mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
+#'               nrow = rows, ncol = cols)
 #'
 #' # Count edges in each of the three classes (1, 2 or 3)
 #' count_edges(mat)
 #' @export
 #'
-count_edges <- function(mat, classes = NULL, bidirectional = FALSE, diagonals = FALSE){
+count_edges <- function(mat, classes = NULL,
+                        bidirectional = FALSE, diagonals = FALSE){
 
   # Define row and column length
   n_cols <- ncol(mat)

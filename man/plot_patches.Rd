@@ -65,6 +65,9 @@ matrix_id = flir11835$matrix_id)
 # Plot
 df <- results$df
 patches <- results$patches
-plot_patches(df = df, patches = patches, print_plot = TRUE, save_plot = FALSE)
+plot_patches(df = df,
+             patches = patches,
+             print_plot = TRUE,
+             save_plot = FALSE)
 
 }

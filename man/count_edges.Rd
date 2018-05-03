@@ -9,9 +9,12 @@ count_edges(mat, classes = NULL, bidirectional = FALSE, diagonals = FALSE)
 \arguments{
 \item{mat}{The matrix.}
 
-\item{classes}{Manual specificiation of classes (optional). Use this to exclude classes not of interest, such as background values.  If not specified, all classes will be used. Classes must be numeric.}
+\item{classes}{Manual specificiation of classes (optional). Use this to
+exclude classes not of interest, such as background values.  If not
+specified, all classes will be used. Classes must be numeric.}
 
-\item{bidirectional}{Should both sides of each shared edge be counted? Defaults to FALSE.}
+\item{bidirectional}{Should both sides of each shared edge be counted?
+Defaults to FALSE.}
 
 \item{diagonals}{Should diagonal neighbours be included? Defaults to FALSE.}
 }
@@ -26,9 +29,10 @@ Count the number of edges shared by cells of the same class within a matrix
 \examples{
 # Create matrix
 set.seed(317)
-cols = 100
-rows = 50
-mat = matrix(sample(1:3, cols * rows, replace = TRUE), nrow = rows, ncol = cols)
+cols <- 100
+rows <- 50
+mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
+              nrow = rows, ncol = cols)
 
 # Count edges in each of the three classes (1, 2 or 3)
 count_edges(mat)

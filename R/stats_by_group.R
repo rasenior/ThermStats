@@ -5,8 +5,8 @@
 #' @param mat_list List of temperatures matrices.
 #' @param matrix_ID Name of the metadata variable that identifies unique
 #' temperature matrices. Should match element names in the list of matrices.
-#' @param grouping_var The name of the metadata variable that denotes the grouping
-#' of temperature matrices.
+#' @param grouping_var The name of the metadata variable that denotes the
+#' grouping of temperature matrices.
 #' @param round_val Value to round to. Use 1 for no rounding.
 #' @param ... Use to specify statistics that should be calculated across all
 #' pixels. Several helper functions are included for use here: perc_5, perc_95,
@@ -23,18 +23,42 @@
 #'
 #' # Calculate patch and pixel stats! ------------------------------------------
 #'
-#' # Specifying mean, max and min for pixel stats
-#' patch_stats_1 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, mean, max, min)
+#' # Pixel stats = mean, max and min
+#' patch_stats_1 <-
+#'     stats_by_group(metadata = metadata,
+#'                    mat_list = mat_list,
+#'                    matrix_ID = "photo_no",
+#'                    grouping_var = "rep_id",
+#'                    round_val = 0.5,
+#'                    mean, max, min)
 #'
-#' # Specifying kurtosis and sknewness for pixel stats
+#' # Pixel stats = kurtosis and sknewness
 #' library(moments)
-#' patch_stats_2 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, kurtosis, skewness)
+#' patch_stats_2 <-
+#'     stats_by_group(metadata = metadata,
+#'                    mat_list = mat_list,
+#'                    matrix_ID = "photo_no",
+#'                    grouping_var = "rep_id",
+#'                    round_val = 0.5,
+#'                    kurtosis, skewness)
 #'
-#' # Specifying 5th and 95th percentiles for pixel stats
-#' patch_stats_3 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, perc_5, perc_95)
+#' # Pixel stats = 5th and 95th percentiles
+#' patch_stats_3 <-
+#'     stats_by_group(metadata = metadata,
+#'                    mat_list = mat_list,
+#'                    matrix_ID = "photo_no",
+#'                    grouping_var = "rep_id",
+#'                    round_val = 0.5,
+#'                    perc_5, perc_95)
 #'
-#' # Specifying Shannon and Simpson Diversity Indices for pixel stats
-#' patch_stats_4 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, SHDI, SIDI)
+#' # Pixel stats = Shannon and Simpson Diversity Indices
+#' patch_stats_4 <-
+#'     stats_by_group(metadata = metadata,
+#'                    mat_list = mat_list,
+#'                    matrix_ID = "photo_no",
+#'                    grouping_var = "rep_id",
+#'                    round_val = 0.5,
+#'                    SHDI, SIDI)
 #' @export
 #'
 # Define function to return stats for each grouping

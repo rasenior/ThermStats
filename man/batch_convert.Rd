@@ -70,6 +70,9 @@ PO <- camera_params[,"PlanckO"]
 PR2 <- camera_params[,"PlanckR2"]
 
 # Batch convert! -----------------------------------------------------------
-results <- batch_convert(raw_dat, E, OD, RTemp, ATemp, IRWTemp, IRT, RH, PR1,
-PB, PF, PO, PR2, write_results = FALSE)
+results <-
+    batch_convert(raw_dat,
+                  E, OD, RTemp, ATemp, IRWTemp, IRT, RH,
+                  PR1, PB, PF, PO, PR2,
+                  write_results = FALSE)
 }
