@@ -48,7 +48,7 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
 
   # Setup ----------------------------------------------------------------------
   if(!(is.null(matrix_id))){
-    message("Processing matrix: ", matrix_id)
+    message("\nProcessing matrix: ", matrix_id)
   }
 
   # Matrix needs to be long dataframe for calculating neighbour weights
