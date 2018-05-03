@@ -10,7 +10,7 @@
 #'  \item{camera_params}{A dataframe of callibration constants unique to each camera.}
 #' @examples
 #' # Batch extract four FLIR thermal images included in this package.
-#' results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
+#' results <- batch_extract(system.file("extdata", package = "ThermStats"), write_results = FALSE)
 #' @export
 #'
 batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL, file_name = NULL){

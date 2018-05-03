@@ -25,5 +25,5 @@ Batch extraction of raw data from FLIR thermal images.
 }
 \examples{
 # Batch extract four FLIR thermal images included in this package.
-results <- batch_extract(system.file("extdata", package = "PatchStatsFLIR"), write_results = FALSE)
+results <- batch_extract(system.file("extdata", package = "ThermStats"), write_results = FALSE)
 }
