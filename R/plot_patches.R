@@ -3,16 +3,31 @@
 #' Plot hot and cold spots.
 #' @param df A dataframe returned from \code{get_patches}.
 #' @param patches A SpatialPolygonsDataFrame returned from \code{get_patches}.
+#' @param plot_distribution Should a histogram be plotted? Defaults to TRUE.
 #' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
 #' @param save_plot Should the resulting plots be saved? Defaults to TRUE.
-#' @param out_dir Path to directory where plots will be saved.
+#' @param return_plot Should the resulting plots be returned? Defaults to FALSE.
+#' @param out_dir Path to directory where plots should be saved (if applicable).
+#' @param file_name Prefix for plot filenames (if applicable). If none
+#' specified, uses generic names 'distribution' and 'patches'.
+#' @param file_ext File extension. Defaults to '.png'.
 #' @param lab_size Size of axes labels. Defaults to 8.
 #' @param text_size Size of axes text and legend text. Defaults to 6.
-#' @param val_pal Colour palette to use for raster. Defaults to palette derived from a FLIR jpeg.
-#' @param patch_cols Colours for the patch borders (hot spot colour followed by cold spot colour).
+#' @param fig_width Figure width (if saved). Defaults to 8.
+#' @param fig_height Figure height (if saved). Defaults to 9.
+#' @param fig_units Figure dimension units (if saved). Defaults to "cm".
+#' @param val_pal = Colour palette to use for raster. Defaults to palette
+#' derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
+#' "#7200a9", "#8f00a0","#ba187f", "#d9365b", "#ed5930","#f76323", "#fa8600",
+#' "#f6a704","#fad61e", "#fad61e")}.
+#' @param patch_cols Colours for the patch borders (hot spot colour followed by
+#' cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.
+#' @param patch_labs Labels to use in patch outline legend. Defaults to 'Hot
+#' spots' and 'Cold spots'.
 #' @examples
 #' # Find hot and cold spots
-#' results <- get_patches(flir_matrix = flir11835$flir_matrix,matrix_id = flir11835$matrix_id)
+#' results <- get_patches(flir_matrix = flir11835$flir_matrix,
+#' matrix_id = flir11835$matrix_id)
 #'
 #' # Plot
 #' df <- results$df
@@ -29,7 +44,7 @@ plot_patches <- function(df,
                          print_plot = FALSE,
                          save_plot = TRUE,
                          return_plot = FALSE,
-                         out_dir,
+                         out_dir = NULL,
                          file_name = NULL,
                          file_ext = "png",
                          lab_size = 8,

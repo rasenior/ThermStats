@@ -3,12 +3,14 @@
 #' Calculate thermal statistics across photos within groups.
 #' @param metadata A dataframe denoting the grouping of different matrices.
 #' @param mat_list List of temperatures matrices.
-#' @param matrix_ID Name of the metadata variable that identifies unique temperature matrices. Should match element names in the list of matrices.
-#' @param subset_var The name of the metadata variable that denotes the grouping of temperature matrices.
-#' @param subset_val The value of the grouping variable denoted by `subset_var` -- designed for use in conjunction with `sapply`.
-#' @param round_val Value to round to. Defaults to 1 (i.e. no rounding).
-#'
-#' @param
+#' @param matrix_ID Name of the metadata variable that identifies unique
+#' temperature matrices. Should match element names in the list of matrices.
+#' @param grouping_var The name of the metadata variable that denotes the grouping
+#' of temperature matrices.
+#' @param round_val Value to round to. Use 1 for no rounding.
+#' @param ... Use to specify statistics that should be calculated across all
+#' pixels. Several helper functions are included for use here: perc_5, perc_95,
+#' SHDI, SIDI. See examples below.
 #' @return A list containing:
 #'  \item{raw_dat}{A list with one element per input thermal image. Each element is a numeric matrix of the
 #' raw infrared data.}
@@ -22,17 +24,73 @@
 #' # Batch convert
 #' mat_list <- batch_convert(raw_dat, write_results = FALSE)
 #'
-#' # Stats
+#' # Calculate patch and pixel stats! ------------------------------------------
 #'
-
+#' # Specifying mean, max and min for pixel stats
+#' patch_stats_1 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, mean, max, min)
+#'
+#' # Specifying kurtosis and sknewness for pixel stats
+#' library(moments)
+#' patch_stats_2 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, kurtosis, skewness)
+#'
+#' # Specifying 5th and 95th percentiles for pixel stats
+#' patch_stats_3 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, perc_5, perc_95)
+#'
+#' # Specifying Shannon and Simpson Diversity Indices for pixel stats
+#' patch_stats_4 <- stats_by_group(metadata = metadata, mat_list = mat_list, matrix_ID = "photo_no", grouping_var = "rep_id", round_val = 0.5, SHDI, SIDI)
 #' @export
 #'
 # Define function to return stats for each grouping
-stats_by_group <- function(metadata,mat_list,matrix_ID = "photo_no",
-                         subset_var,subset_val, round_val = 1,...){
+stats_by_group <- function(metadata,mat_list,matrix_ID,
+                           grouping_var, round_val,...){
+
+  # Define function names for pixel stats
+  pixel_fns <-
+    paste(match.call(expand.dots = FALSE)$...)
+
+  if (requireNamespace("pbapply", quietly = TRUE)) {
+    temp_stats<-
+      pblapply(unique(metadata[, grouping_var]),
+               function(x){
+                 tryCatch({get_stats(metadata = metadata,
+                                     mat_list = mat_list,
+                                     matrix_ID = matrix_ID,
+                                     grouping_var = grouping_var,
+                                     grouping_val = x,
+                                     round_val = round_val,
+                                     pixel_fns = pixel_fns,
+                                     ...)},
+                          error=function(cond)NA)
+               })
+  }else{
+    temp_stats<-
+      lapply(unique(metadata[, grouping_var]),
+             function(x){
+               tryCatch({get_stats(metadata = metadata,
+                                   mat_list = mat_list,
+                                   matrix_ID = matrix_ID,
+                                   grouping_var = grouping_var,
+                                   grouping_val = x,
+                                   round_val = round_val,
+                                   pixel_fns = pixel_fns,
+                                   ...)},
+                        error=function(cond)NA)
+             })
+  }
+
+  temp_stats <- do.call("rbind",temp_stats)
+  return(temp_stats)
+}
+
+
+# Define function to return stats for each grouping
+get_stats <- function(metadata,mat_list,matrix_ID,
+                      grouping_var,grouping_val, round_val = 1,
+                      pixel_fns,...){
 
   # Setup ----------------------------------------------------------------------
-  sub_photos <- as.character(metadata[metadata[,subset_var]==subset_val,matrix_ID])
+  sub_photos <-
+    as.character(metadata[metadata[,grouping_var]==grouping_val,matrix_ID])
 
   n_photos <- length(sub_photos)
 
@@ -53,9 +111,7 @@ stats_by_group <- function(metadata,mat_list,matrix_ID = "photo_no",
 
   pixel_stats <- multi.sapply(all_pixels,...)
 
-  # colnames(pixel_stats) <- eval
-  colnames(pixel_stats) <-
-    paste(match.call(expand.dots = FALSE)$...)
+  colnames(pixel_stats) <- pixel_fns
 
   # Patch statistics -----------------------------------------------------------
   # -> these statistics are calculated for hot and cold patches
@@ -104,7 +160,7 @@ stats_by_group <- function(metadata,mat_list,matrix_ID = "photo_no",
   # Bind all results
   results <- cbind(n_photos, pixel_stats, patch_stats)
   # Add ID
-  results[,subset_var] <- subset_val
+  results[,grouping_var] <- grouping_val
 
   return(results)
 }
