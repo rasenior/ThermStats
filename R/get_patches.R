@@ -123,7 +123,7 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   # Specify coordinates and mat_projection (if applicable)
   if(!(is.null(mat_proj))){
     extent(patches) <- extent(coords)
-    mat_projection(patches) <- mat_proj
+    projection(patches) <- mat_proj
   }
 
   # Raster to dissolved polygons
@@ -143,7 +143,7 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   # Specify coordinates and mat_projection (if applicable)
   if(!(is.null(mat_proj))){
     extent(raw) <- extent(coords)
-    mat_projection(raw) <- mat_proj
+    projection(raw) <- mat_proj
   }
 
   # Raster to points
