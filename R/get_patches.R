@@ -113,9 +113,9 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   # Dataframe to matrix
   patch_mat <- reshape2::acast(df, y ~ x, value.var = "G_bin")
 
-  # Flip
-  patch_mat <-
-    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(patch_mat))
+  # # Flip
+  # patch_mat <-
+  #   Thermimage::mirror.matrix(Thermimage::rotate180.matrix(patch_mat))
 
   # Matrix to raster
   patches <- raster::raster(patch_mat)
@@ -133,9 +133,9 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   # 2. Assign to each temperature cell the ID of the patch that it falls into
   # Matrix to raster to points
   mat <- reshape2::acast(df, y ~ x, value.var = "val")
-  # Flip
-  mat <-
-    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(mat))
+  # # Flip
+  # mat <-
+  #   Thermimage::mirror.matrix(Thermimage::rotate180.matrix(mat))
 
   # Matrix to raster
   raw <- raster::raster(mat)
