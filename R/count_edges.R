@@ -2,15 +2,12 @@
 #'
 #' Count the number of edges shared by cells of the same class within a matrix
 #' @param mat The matrix.
-#' @param classes Manual specificiation of classes (optional). Use this to
-#' exclude classes not of interest, such as background values.  If not
-#' specified, all classes will be used. Classes must be numeric.
+#' @param classes The patch class of interest. Must be numeric.
 #' @param bidirectional Should both sides of each shared edge be counted?
 #' Defaults to FALSE.
 #' @param diagonals Should diagonal neighbours be included? Defaults to FALSE.
-#' @return A matrix containing:
-#'  \item{class}{The unique classes for which edges were counted.}
-#'  \item{obs_edges}{The number of observed shared edges.}
+#' @return A numeric value for the number of edges shared by cells of the given
+#' class.
 #' @examples
 #' # Create matrix
 #' set.seed(317)
@@ -20,10 +17,10 @@
 #'               nrow = rows, ncol = cols)
 #'
 #' # Count edges in each of the three classes (1, 2 or 3)
-#' count_edges(mat)
-#' @export
-#'
-count_edges <- function(mat, classes = NULL,
+#' results <- lapply(1:3, count_edges, mat = mat)
+#' results <- do.call("rbind", results)
+
+count_edges <- function(mat, class,
                         bidirectional = FALSE, diagonals = FALSE){
 
   # Define row and column length
@@ -62,21 +59,14 @@ count_edges <- function(mat, classes = NULL,
   edge_mat <- matrix(rowSums(neigh, na.rm = TRUE),
                      ncol = n_cols, nrow = n_rows)
 
-  # Define number of unique classes if they are not passed as an argument
-  if(is.null(classes)){
-    classes <- sort(unique(c(mat)))
-  }
-
   # Sum shared edges by class
-  results <- sapply(classes, function(x) sum(edge_mat[which(mat == x)]))
-  results <- matrix(c(classes, results), ncol = 2)
-  colnames(results) <- c("class", "obs_edges")
+  shared_edge <-  sum(edge_mat[which(mat == class)])
 
   # If only counting edges once, divide by two
   if(!(bidirectional)){
-    results[,"obs_edges"] <- results[,"obs_edges"] / 2
+    shared_edge <- shared_edge / 2
   }
 
-  return(results)
+  return(shared_edge)
 
 }

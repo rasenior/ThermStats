@@ -4,24 +4,21 @@
 \alias{count_edges}
 \title{count_edges}
 \usage{
-count_edges(mat, classes = NULL, bidirectional = FALSE, diagonals = FALSE)
+count_edges(mat, class, bidirectional = FALSE, diagonals = FALSE)
 }
 \arguments{
 \item{mat}{The matrix.}
-
-\item{classes}{Manual specificiation of classes (optional). Use this to
-exclude classes not of interest, such as background values.  If not
-specified, all classes will be used. Classes must be numeric.}
 
 \item{bidirectional}{Should both sides of each shared edge be counted?
 Defaults to FALSE.}
 
 \item{diagonals}{Should diagonal neighbours be included? Defaults to FALSE.}
+
+\item{classes}{The patch class of interest. Must be numeric.}
 }
 \value{
-A matrix containing:
- \item{class}{The unique classes for which edges were counted.}
- \item{obs_edges}{The number of observed shared edges.}
+A numeric value for the number of edges shared by cells of the given
+class.
 }
 \description{
 Count the number of edges shared by cells of the same class within a matrix
@@ -35,5 +32,6 @@ mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
               nrow = rows, ncol = cols)
 
 # Count edges in each of the three classes (1, 2 or 3)
-count_edges(mat)
+results <- lapply(1:3, count_edges, mat = mat)
+results <- do.call("rbind", results)
 }
