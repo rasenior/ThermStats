@@ -7,12 +7,33 @@
 patch_stats(mat, class)
 }
 \arguments{
-\item{mat}{The matrix.}
+\item{mat}{A numeric matrix.}
 
 \item{class}{The patch class for which statistics should be calculated.}
 }
+\value{
+A dataframe containing:
+ \item{class}{The patch class for which statistics were calculated.}
+ \item{area}{Total area (number of cells).}
+ \item{prop}{Proportion of landscape area represented by cells in the given class.}
+ \item{perim}{Total perimeter (number of outside edges).}
+ \item{perim_min}{Minimum perimeter, given the number of cells.}
+ \item{inside_edges}{Total number of shared, inside edges.}
+ \item{inside_edges_max}{Maximum number of inside edges that could be shared,
+ given the number of cells.}
+ \item{shape_index}{Patch shape index. Calculated as the observed perimeter
+ divided by the minimum perimeter.}
+ \item{AI}{Aggregation index. Calculated as the observed number of shared,
+ inside edges divided by the maximum number that could be shared. See He et al.}
+ \item{cohesion}{Cohesion index. Calculated from the area and perimeter of
+ cells in the given class relative to the area of the entire landscape.
+ See Scuhmaker 1996.}
+}
 \description{
-Calculate patch statistics for patch classes of interest in a numeric matrix.
+Calculate patch statistics for a given class (i.e. cell value) in a numeric matrix.
+}
+\details{
+Inspiration taken from [\code{SDMTools}][1], FRAGSTATS and Faye et al. 2016
 }
 \examples{
 # Create matrix

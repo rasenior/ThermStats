@@ -1,7 +1,7 @@
 #' patch_stats
 #'
-#' Calculate patch statistics for patch classes of interest in a numeric matrix.
-#' @param mat The matrix.
+#' Calculate patch statistics for a given class (i.e. cell value) in a numeric matrix.
+#' @param mat A numeric matrix.
 #' @param class The patch class for which statistics should be calculated.
 #' @return A dataframe containing:
 #'  \item{class}{The patch class for which statistics were calculated.}
@@ -19,8 +19,8 @@
 #'  \item{cohesion}{Cohesion index. Calculated from the area and perimeter of
 #'  cells in the given class relative to the area of the entire landscape.
 #'  See Scuhmaker 1996.}
-#'  \details{Inspiration taken from [\code{SDMTools}][1], FRAGSTATS and Faye et al. 2016
-#'  \references{[1]: \url{https://cran.r-project.org/web/packages/SDMTools/index.html} "SDMTools"}
+#' @details Inspiration taken from [SDMTools::ClassStat()], [FRAGSTATS][1] and Faye et al. 2016
+#' @references [1]: https://cran.r-project.org/web/packages/SDMTools/index.html "FRAGSTATS software"}
 #' @examples
 #' # Create matrix
 #' matrix(c(1,1,2,1,
