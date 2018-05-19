@@ -33,7 +33,9 @@ A dataframe containing:
 Calculate patch statistics for a given class (i.e. cell value) in a numeric matrix.
 }
 \details{
-Inspiration taken from [\code{SDMTools}][1], FRAGSTATS and Faye et al. 2016
+Statistics are based on and inspired by [SDMTools::ClassStat()],
+[FRAGSTATS](http://www.umass.edu/landeco/research/fragstats/fragstats.html)
+and [Faye et al. 2016](https://doi.org/10.1111/2041-210X.12488 ).
 }
 \examples{
 # Create matrix
@@ -45,4 +47,11 @@ matrix(c(1,1,2,1,
 
 # Count edges in each of the three classes (1, 2 or 3)
 count_edges(mat)
+}
+\references{
+McGarigal, K., S. A. Cushman, M. C. Neel, and E. Ene. 2002.
+FRAGSTATS: Spatial Pattern Analysis Program for Categorical Maps. Computer
+software program produced by the authors at the University of Massachusetts,
+Amherst. Available at the following web site:
+www.umass.edu/landeco/research/fragstats/fragstats.html
 }

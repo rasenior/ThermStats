@@ -19,8 +19,14 @@
 #'  \item{cohesion}{Cohesion index. Calculated from the area and perimeter of
 #'  cells in the given class relative to the area of the entire landscape.
 #'  See Scuhmaker 1996.}
-#' @details Inspiration taken from [SDMTools::ClassStat()], [FRAGSTATS][1] and Faye et al. 2016
-#' @references [1]: https://cran.r-project.org/web/packages/SDMTools/index.html "FRAGSTATS software"}
+#' @details Statistics are based on and inspired by [SDMTools::ClassStat()],
+#' [FRAGSTATS](http://www.umass.edu/landeco/research/fragstats/fragstats.html)
+#' and [Faye et al. 2016](https://doi.org/10.1111/2041-210X.12488 ).
+#' @references McGarigal, K., S. A. Cushman, M. C. Neel, and E. Ene. 2002.
+#' FRAGSTATS: Spatial Pattern Analysis Program for Categorical Maps. Computer
+#' software program produced by the authors at the University of Massachusetts,
+#' Amherst. Available at the following web site:
+#' www.umass.edu/landeco/research/fragstats/fragstats.html
 #' @examples
 #' # Create matrix
 #' matrix(c(1,1,2,1,
