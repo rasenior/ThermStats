@@ -5,7 +5,7 @@
 \title{get_patches}
 \usage{
 get_patches(mat, matrix_id = NULL, k = 8, style = "W", mat_proj = NULL,
-  return_vals = c("df", "patches", "patch_stats"))
+  coords = NULL, return_vals = c("df", "patches", "pstats"))
 }
 \arguments{
 \item{mat}{A numeric temperature matrix, such as that returned from
@@ -24,7 +24,7 @@ using \code{spdep::knearneigh}.}
 
 \item{return_vals}{Which values to return? Any combination of the dataframe
 ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch
-statistics dataframe ("patch_stats").}
+statistics dataframe ("pstats").}
 }
 \value{
 A list containing:
@@ -35,7 +35,7 @@ A list containing:
  ID of the patch in which the pixel fell; and the photo number.}
  \item{patches}{A SpatialPolygonsDataFrame of hot and cold spots. Hot spots
  have a value of 1, and cold spots a value of -1.}
- \item{patch_stats}{A dataframe with patch statistics for hot spots and cold
+ \item{pstats}{A dataframe with patch statistics for hot spots and cold
  spots, respectively.}
 }
 \description{
@@ -52,7 +52,7 @@ matrix_id = flir11835$photo_no)
 head(results$df)
 
 # Look at the patch statistics for hot and cold spots
-results$patch_stats
+results$pstats
 
 # Plot the patches
 library(sp)
