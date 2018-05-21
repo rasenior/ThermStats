@@ -11,7 +11,7 @@ plot_patches(df, patches, plot_distribution = TRUE, print_plot = FALSE,
   "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b",
   "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
   patch_cols = c("mistyrose", "cornflowerblue"), patch_labs = c("Hot spots",
-  "Cold spots"))
+  "Cold spots"), val_lab = NULL)
 }
 \arguments{
 \item{df}{A dataframe returned from \code{get_patches}.}
@@ -53,6 +53,9 @@ cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.}
 
 \item{patch_labs}{Labels to use in patch outline legend. Defaults to 'Hot
 spots' and 'Cold spots'.}
+
+\item{val_lab}{Label to describe the variable of interest - corresponds to
+the x axis of the histogram, and the fill legend of the raster plot.}
 }
 \description{
 Plot hot and cold spots.

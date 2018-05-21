@@ -24,6 +24,8 @@
 #' cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.
 #' @param patch_labs Labels to use in patch outline legend. Defaults to 'Hot
 #' spots' and 'Cold spots'.
+#' @param val_lab Label to describe the variable of interest - corresponds to
+#' the x axis of the histogram, and the fill legend of the raster plot.
 #' @examples
 #' # Find hot and cold spots
 #' results <- get_patches(flir_matrix = flir11835$flir_matrix,
@@ -61,9 +63,16 @@ plot_patches <- function(df,
                                       "#f76323", "#fa8600", "#f6a704",
                                       "#fad61e", "#fad61e"),
                          patch_cols = c("mistyrose", "cornflowerblue"),
-                         patch_labs = c("Hot spots", "Cold spots")) {
+                         patch_labs = c("Hot spots", "Cold spots"),
+                         val_lab = NULL) {
 
   matrix_id <- unique(df$matrix_id)
+  names(patch_cols) <- patch_labs
+
+  if(is.null(val_lab)){
+    val_lab <- paste("Temperature (", "\U00B0", "C)",
+                     sep = "")
+  }
 
   # Histogram --------------------------------------------------------------
 
@@ -81,6 +90,7 @@ plot_patches <- function(df,
                    colour = "black", fill = "white") +
     geom_density(data = df,
                  aes(x = val), alpha = 0.2, fill = "grey") +
+    xlab(val_lab) +
     ylab("Density") +
     theme_bw() +
     theme(axis.title = element_text(size = lab_size),
@@ -133,6 +143,7 @@ plot_patches <- function(df,
     scale_fill_gradientn(colours = val_pal) +
     scale_colour_manual(values = patch_cols, name = NULL) +
     guides(fill = guide_colorbar(order = 1,
+                                 title = val_lab,
                                  title.position = "top",
                                  title.hjust = 0.5,
                                  barheight = 0.8),
