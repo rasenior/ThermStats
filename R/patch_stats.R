@@ -78,10 +78,12 @@ patch_stats <- function(mat, class){
   results <-
     data.frame(class = class,
                area = area,
+               total_area = total_area,
                prop = area / total_area,
                perim = perim,
                perim_min = min_perim,
                inside_edges = shared_edge,
+               inside_non_edge = max_edge - shared_edge,
                inside_edges_max = max_edge,
                shape_index = shape_index,
                aggregation = aggregation_index,
