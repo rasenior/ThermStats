@@ -4,11 +4,12 @@
 \alias{get_patches}
 \title{get_patches}
 \usage{
-get_patches(mat, matrix_id = NULL, k = 8, style = "W", mat_proj = NULL,
-  coords = NULL, return_vals = c("df", "patches", "pstats"))
+get_patches(val_mat, matrix_id = NULL, k = 8, style = "W",
+  mat_proj = NULL, coords = NULL, return_vals = c("df", "patches",
+  "pstats"))
 }
 \arguments{
-\item{mat}{A numeric temperature matrix, such as that returned from
+\item{val_mat}{A numeric temperature matrix, such as that returned from
 \code{Thermimage}.}
 
 \item{matrix_id}{The matrix ID (optional). Useful when iterating over
@@ -45,7 +46,7 @@ statistics.
 \examples{
 # Find hot and cold spots
 results <-
-get_patches(mat = flir11835$flir_matrix,
+get_patches(val_mat = flir11835$flir_matrix,
 matrix_id = flir11835$photo_no)
 
 # Look at the results for individual pixels

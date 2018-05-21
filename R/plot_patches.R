@@ -16,7 +16,7 @@
 #' @param fig_width Figure width (if saved). Defaults to 8.
 #' @param fig_height Figure height (if saved). Defaults to 9.
 #' @param fig_units Figure dimension units (if saved). Defaults to "cm".
-#' @param val_pal = Colour palette to use for raster. Defaults to palette
+#' @param val_pal Colour palette to use for raster. Defaults to palette
 #' derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
 #' "#7200a9", "#8f00a0","#ba187f", "#d9365b", "#ed5930","#f76323", "#fa8600",
 #' "#f6a704","#fad61e", "#fad61e")}.
@@ -28,8 +28,8 @@
 #' the x axis of the histogram, and the fill legend of the raster plot.
 #' @examples
 #' # Find hot and cold spots
-#' results <- get_patches(flir_matrix = flir11835$flir_matrix,
-#' matrix_id = flir11835$matrix_id)
+#' results <- get_patches(mat = flir11835$flir_matrix,
+#'                        matrix_id = flir11835$matrix_id)
 #'
 #' # Plot
 #' df <- results$df

@@ -2,7 +2,7 @@
 #'
 #' Find hot and cold spots in a numeric matrix, and calculate their patch
 #' statistics.
-#' @param mat A numeric temperature matrix, such as that returned from
+#' @param val_mat A numeric temperature matrix, such as that returned from
 #' \code{Thermimage}.
 #' @param matrix_id The matrix ID (optional). Useful when iterating over
 #' numerous matrices.
@@ -27,7 +27,7 @@
 #' @examples
 #' # Find hot and cold spots
 #' results <-
-#' get_patches(mat = flir11835$flir_matrix,
+#' get_patches(val_mat = flir11835$flir_matrix,
 #' matrix_id = flir11835$photo_no)
 #'
 #' # Look at the results for individual pixels
@@ -42,7 +42,7 @@
 #' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #'
-get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
+get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
                         mat_proj = NULL,
                         coords = NULL,
                         return_vals = c("df","patches","pstats")) {
@@ -53,18 +53,18 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   }
 
   # Determine whether the matrix is a true matrix or a raster
-  if(is.matrix(mat)){
-    df_full <- reshape2::melt(mat,
+  if(is.matrix(val_mat)){
+    df <- reshape2::melt(val_mat,
                               varnames = c("y", "x"),
                               value.name = "val")
-  }else if(class(mat)[1] == "RasterLayer"){
-    df_full <- as.data.frame(mat, xy = TRUE)
-    colnames(df_full)[3] <- "val"
+  }else if(class(val_mat)[1] == "RasterLayer"){
+    df <- as.data.frame(val_mat, xy = TRUE)
+    colnames(df)[3] <- "val"
   }
 
   # Matrix needs to be long dataframe for calculating neighbour weights
   # Remove NA values
-  df <- df_full[!(is.na(df_full[, "val"])),]
+  df <- df[!(is.na(df[, "val"])),]
 
   # Neighbour weights -------------------------------------------------------
   message("Calculating neighbourhood weights")
@@ -137,13 +137,13 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
 
   # 2. Assign to each temperature cell the ID of the patch that it falls into
   # Matrix to raster to points
-  mat <- reshape2::acast(df, y ~ x, value.var = "val")
+  val_mat <- reshape2::acast(df, y ~ x, value.var = "val")
   # Flip
-  mat <-
-    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(mat))
+  val_mat <-
+    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(val_mat))
 
   # Matrix to raster
-  raw <- raster::raster(mat)
+  raw <- raster::raster(val_mat)
 
   # Specify coordinates and mat_projection (if applicable)
   if(!(is.null(mat_proj))){
@@ -211,7 +211,7 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
   pstats <-
     lapply(c(1,-1), function(class){
       # Spatial stats
-      results <- patch_stats(mat = patch_mat, class = class)
+      results <- patch_stats(val_mat = patch_mat, class = class)
       # Patch number
       results[, "abundance"] <-
         length(unique(df[df[,"G_bin"] == class, "patchID"]))
@@ -239,7 +239,7 @@ get_patches <- function(mat, matrix_id = NULL, k = 8, style = "W",
 
   # Bind class results together
   pstats <- do.call("cbind", pstats)
-  pstats[, "grand_median"] <- median(mat, na.rm = TRUE)
+  pstats[, "grand_median"] <- median(val_mat, na.rm = TRUE)
 
   # Add matrix ID if available
   if(!(is.null(matrix_id))) pstats[,"matrix_id"] <- matrix_id
