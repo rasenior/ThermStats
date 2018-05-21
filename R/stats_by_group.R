@@ -140,9 +140,9 @@ get_stats <- function(metadata,mat_list,matrix_ID,
   # For each matrix in the list, calculate spatial statistics
   patch_stats <-
     lapply(1:length(sub_list),
-           function(x) get_patches(mat =  sub_list[[x]],
+           function(x) get_patches(val_mat = sub_list[[x]],
                                    matrix_id = sub_photos[x],
-                                   return_vals = "patch_stats",
+                                   return_vals = "pstats",
                                    k = 8,
                                    style = "W"))
 
