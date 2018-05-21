@@ -1,7 +1,7 @@
 #' SIDI
 #'
 #' Helper function to calculate Simpson Diversity Index.
-#' @param x Numeric vector.
+#' @param x Numeric vector or matrix.
 #' @param na.rm Whether to remove NAs. Defaults to TRUE.
 #' @return A named vector.
 #' @examples
@@ -9,6 +9,8 @@
 #' @export
 
 SIDI <- function(x, na.rm = TRUE) {
+  # Convert to numeric vector if matrix
+  if(is.matrix(x)) x <- as.numeric(x)
   if(na.rm){x <- na.omit(x)}
 
   # Identify unique pixels
