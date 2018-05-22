@@ -5,54 +5,59 @@
 \title{get_patches}
 \usage{
 get_patches(val_mat, matrix_id = NULL, k = 8, style = "W",
-  mat_proj = NULL, coords = NULL, return_vals = c("df", "patches",
+  mat_proj = NULL, mat_extent = NULL, return_vals = c("df", "patches",
   "pstats"))
 }
 \arguments{
-\item{val_mat}{A numeric temperature matrix, such as that returned from
-\code{Thermimage}.}
+\item{val_mat}{A numeric matrix, such as that returned from
+\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
 
 \item{matrix_id}{The matrix ID (optional). Useful when iterating over
 numerous matrices.}
 
 \item{k}{Number of neighbours to use when calculating nearest neighbours
-using \code{spdep::knearneigh}.}
+using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
 
 \item{style}{Style to use when calculating neighbourhood weights using
-\code{spdep::nb2listw}.}
+\code{spdep::}\code{\link[spdep]{nb2listw}}.}
 
-\item{mat_proj}{Spatial projection (optional).}
+\item{mat_proj}{Spatial projection. Optional, but necessary for geographic
+data to plot correctly.}
+
+\item{mat_extent}{Spatial extent. Optional, but necessary for geographic
+data to plot correctly.}
 
 \item{return_vals}{Which values to return? Any combination of the dataframe
-("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch
-statistics dataframe ("pstats").}
+(\code{df}), SpatialPolygonsDataFrame of hot and cold patches
+(\code{patches}) and patch statistics dataframe (\code{pstats}).}
 }
 \value{
 A list containing:
  \item{df}{A dataframe with one row for each pixel, and variables denoting:
- the original position of the pixel (y and x); its temperature (temp); its
- Z value from \code{spdep::localG}; its classification (G_bin) into hot (1)
- or cold spots (-1) according to the Z value (see \code{?localG}); the unique
- ID of the patch in which the pixel fell; and the photo number.}
- \item{patches}{A SpatialPolygonsDataFrame of hot and cold spots. Hot spots
- have a value of 1, and cold spots a value of -1.}
- \item{pstats}{A dataframe with patch statistics for hot spots and cold
- spots, respectively.}
+ the pixel value (val); the original spatial location of the pixel (x and y);
+ its patch classification (G_bin) into a hot (1), cold (-1) or no patch (0)
+ according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
+ the unique ID of the patch in which the pixel fell;
+ and the matrix ID (if applicable).}
+ \item{patches}{A SpatialPolygonsDataFrame of hot and cold patches. Hot
+ patches have a value of 1, and cold patches a value of -1.}
+ \item{pstats}{A dataframe with patch statistics for hot patches and cold
+ patches, respectively. See \code{\link{patch_stats}} for details of all the
+ statistics returned.}
 }
 \description{
-Find hot and cold spots in a numeric matrix, and calculate their patch
-statistics.
+Find hot and cold patches in a numeric matrix and calculate patch statistics.
 }
 \examples{
-# Find hot and cold spots
+# Find hot and cold patches
 results <-
 get_patches(val_mat = flir11835$flir_matrix,
-matrix_id = flir11835$photo_no)
+            matrix_id = flir11835$photo_no)
 
 # Look at the results for individual pixels
 head(results$df)
 
-# Look at the patch statistics for hot and cold spots
+# Look at the patch statistics for hot and cold patches
 results$pstats
 
 # Plot the patches

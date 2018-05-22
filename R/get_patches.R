@@ -1,39 +1,43 @@
 #' get_patches
 #'
-#' Find hot and cold spots in a numeric matrix, and calculate their patch
-#' statistics.
-#' @param val_mat A numeric temperature matrix, such as that returned from
-#' \code{Thermimage}.
+#' Find hot and cold patches in a numeric matrix and calculate patch statistics.
+#' @param val_mat A numeric matrix, such as that returned from
+#' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
 #' @param matrix_id The matrix ID (optional). Useful when iterating over
 #' numerous matrices.
 #' @param k Number of neighbours to use when calculating nearest neighbours
-#' using \code{spdep::knearneigh}.
+#' using \code{spdep::}\code{\link[spdep]{knearneigh}}.
 #' @param style Style to use when calculating neighbourhood weights using
-#' \code{spdep::nb2listw}.
-#' @param mat_proj Spatial projection (optional).
+#'  \code{spdep::}\code{\link[spdep]{nb2listw}}.
+#' @param mat_proj Spatial projection. Optional, but necessary for geographic
+#' data to plot correctly.
+#' @param mat_extent Spatial extent. Optional, but necessary for geographic
+#' data to plot correctly.
 #' @param return_vals Which values to return? Any combination of the dataframe
-#' ("df"), SpatialPolygonsDataFrame of hot and cold spots ("patches") and patch
-#' statistics dataframe ("pstats").
+#' (\code{df}), SpatialPolygonsDataFrame of hot and cold patches
+#' (\code{patches}) and patch statistics dataframe (\code{pstats}).
 #' @return A list containing:
 #'  \item{df}{A dataframe with one row for each pixel, and variables denoting:
-#'  the original position of the pixel (y and x); its temperature (temp); its
-#'  Z value from \code{spdep::localG}; its classification (G_bin) into hot (1)
-#'  or cold spots (-1) according to the Z value (see \code{?localG}); the unique
-#'  ID of the patch in which the pixel fell; and the photo number.}
-#'  \item{patches}{A SpatialPolygonsDataFrame of hot and cold spots. Hot spots
-#'  have a value of 1, and cold spots a value of -1.}
-#'  \item{pstats}{A dataframe with patch statistics for hot spots and cold
-#'  spots, respectively.}
+#'  the pixel value (val); the original spatial location of the pixel (x and y);
+#'  its patch classification (G_bin) into a hot (1), cold (-1) or no patch (0)
+#'  according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
+#'  the unique ID of the patch in which the pixel fell;
+#'  and the matrix ID (if applicable).}
+#'  \item{patches}{A SpatialPolygonsDataFrame of hot and cold patches. Hot
+#'  patches have a value of 1, and cold patches a value of -1.}
+#'  \item{pstats}{A dataframe with patch statistics for hot patches and cold
+#'  patches, respectively. See \code{\link{patch_stats}} for details of all the
+#'  statistics returned.}
 #' @examples
-#' # Find hot and cold spots
+#' # Find hot and cold patches
 #' results <-
 #' get_patches(val_mat = flir11835$flir_matrix,
-#' matrix_id = flir11835$photo_no)
+#'             matrix_id = flir11835$photo_no)
 #'
 #' # Look at the results for individual pixels
 #' head(results$df)
 #'
-#' # Look at the patch statistics for hot and cold spots
+#' # Look at the patch statistics for hot and cold patches
 #' results$pstats
 #'
 #' # Plot the patches
@@ -44,7 +48,7 @@
 #'
 get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
                         mat_proj = NULL,
-                        coords = NULL,
+                        mat_extent = NULL,
                         return_vals = c("df","patches","pstats")) {
 
   # Setup ----------------------------------------------------------------------
@@ -67,7 +71,7 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
   df <- df[!(is.na(df[, "val"])),]
 
   # Neighbour weights -------------------------------------------------------
-  message("Calculating neighbourhood weights")
+  message("\nCalculating neighbourhood weights")
   # Identify k nearest neighbours
   nr_neigh <- spdep::knearneigh(cbind(df$x, df$y), k = k)
   nr_neigh <- spdep::knn2nb(nr_neigh)
@@ -112,7 +116,7 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
                      ifelse(df$Z_val <= -critical_Z, -1, 0))
 
   # Patch statistics --------------------------------------------------------
-  message("Matching pixels to hot and cold spots")
+  message("Matching pixels to hot and cold patches")
 
   # 1. Create layer with one polygon for each hot/cold patch
   # Dataframe to matrix
@@ -127,7 +131,7 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
 
   # Specify coordinates and mat_projection (if applicable)
   if(!(is.null(mat_proj))){
-    extent(patches) <- extent(coords)
+    extent(patches) <- mat_extent
     projection(patches) <- mat_proj
   }
 
@@ -147,7 +151,7 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
 
   # Specify coordinates and mat_projection (if applicable)
   if(!(is.null(mat_proj))){
-    extent(raw) <- extent(coords)
+    extent(raw) <- mat_extent
     projection(raw) <- mat_proj
   }
 
@@ -172,7 +176,7 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
   patchID <- do.call("rbind", patchID)
 
   # Recreate dataframe
-  df <- data.frame(raw)
+  df <- data.frame(raw)[-4]
   colnames(df)[which(names(df) == "layer")] <- "val"
   df[, c("G_bin", "patchID")] <- patchID
 
@@ -239,7 +243,6 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
 
   # Bind class results together
   pstats <- do.call("cbind", pstats)
-  pstats[, "grand_median"] <- median(val_mat, na.rm = TRUE)
 
   # Add matrix ID if available
   if(!(is.null(matrix_id))) pstats[,"matrix_id"] <- matrix_id
