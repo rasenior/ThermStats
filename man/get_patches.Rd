@@ -49,18 +49,58 @@ A list containing:
 Find hot and cold patches in a numeric matrix and calculate patch statistics.
 }
 \examples{
+
+# FLIR temperature matrix ---------------------------------------------------
 # Find hot and cold patches
-results <-
-get_patches(val_mat = flir11835$flir_matrix,
-            matrix_id = flir11835$photo_no)
+flir_results <-
+    get_patches(val_mat = flir11835$flir_matrix,
+    matrix_id = flir11835$photo_no)
 
 # Look at the results for individual pixels
-head(results$df)
+head(flir_results$df)
 
 # Look at the patch statistics for hot and cold patches
-results$pstats
+flir_results$pstats
 
 # Plot the patches
-library(sp)
-plot(results$patches)
+sp::plot(flir_results$patches)
+
+# Plot using ThermStats::plot_patches
+plot_patches(df = flir_results$df,
+             patches = flir_results$patches,
+             print_plot = TRUE,
+             save_plot = FALSE)
+
+# Worldclim2 temperature raster ---------------------------------------
+# Dataset 'worldclim_sulawesi' represents mean January temperature for the
+# island of Sulawesi
+
+# Define projection and extent
+mat_proj <- projection(worldclim_sulawesi)
+mat_extent <- extent(worldclim_sulawesi)
+
+# Find hot and cold patches
+worldclim_results <-
+ get_patches(val_mat = worldclim_sulawesi,
+             matrix_id = "sulawesi",
+             k = 8,
+             style = "W",
+             mat_proj = mat_proj,
+             mat_extent = mat_extent)
+
+# Look at the results for individual pixels
+head(worldclim_results$df)
+
+# Look at the patch statistics for hot and cold patches
+worldclim_results$pstats
+
+# Plot the patches
+sp::plot(worldclim_results$patches)
+
+# Plot using ThermStats::plot_patches
+plot_patches(df = worldclim_results$df,
+             patches = worldclim_results$patches,
+             print_plot = TRUE,
+             save_plot = FALSE)
+
 }
