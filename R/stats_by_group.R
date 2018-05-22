@@ -3,8 +3,12 @@
 #' Calculate summary and spatial statistics across multiple matrices within groups.
 #' @param metadata A dataframe denoting the grouping of different matrices.
 #' @param mat_list List of matrices.
-#' @param matrix_ID Name of the metadata variable that identifies unique
+#' @param element_id Name of the metadata variable that identifies unique
 #' matrices. Should match element names in the list of matrices.
+#' @param k Number of neighbours to use when calculating nearest neighbours
+#' using \code{spdep::}\code{\link[spdep]{knearneigh}}.
+#' @param style Style to use when calculating neighbourhood weights using
+#'  \code{spdep::}\code{\link[spdep]{nb2listw}}.
 #' @param grouping_var The name of the metadata variable that denotes the
 #' grouping of matrices.
 #' @param round_val Value to round to. Use 1 for no rounding.
@@ -30,7 +34,7 @@
 #' patch_stats_1 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    matrix_ID = "photo_no",
+#'                    element_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
 #'                    mean, max, min)
@@ -39,7 +43,7 @@
 #' patch_stats_2 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    matrix_ID = "photo_no",
+#'                    element_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
 #'                    kurtosis, skewness)
@@ -48,7 +52,7 @@
 #' patch_stats_3 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    matrix_ID = "photo_no",
+#'                    element_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
 #'                    perc_5, perc_95)
@@ -57,14 +61,18 @@
 #' patch_stats_4 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    matrix_ID = "photo_no",
+#'                    element_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
 #'                    SHDI, SIDI)
 #' @export
 #'
 # Define function to return stats for each grouping
-stats_by_group <- function(metadata,mat_list,matrix_ID,
+stats_by_group <- function(metadata,
+                           mat_list,
+                           element_id,
+                           k = 8,
+                           style = "W",
                            grouping_var, round_val,...){
 
   # Define function names for pixel stats
@@ -77,7 +85,9 @@ stats_by_group <- function(metadata,mat_list,matrix_ID,
                         function(x){
                           tryCatch({get_stats(metadata = metadata,
                                               mat_list = mat_list,
-                                              matrix_ID = matrix_ID,
+                                              element_id = element_id,
+                                              k = k,
+                                              style = style,
                                               grouping_var = grouping_var,
                                               grouping_val = x,
                                               round_val = round_val,
@@ -91,7 +101,9 @@ stats_by_group <- function(metadata,mat_list,matrix_ID,
              function(x){
                tryCatch({get_stats(metadata = metadata,
                                    mat_list = mat_list,
-                                   matrix_ID = matrix_ID,
+                                   element_id = element_id,
+                                   k = k,
+                                   style = style,
                                    grouping_var = grouping_var,
                                    grouping_val = x,
                                    round_val = round_val,
@@ -107,13 +119,19 @@ stats_by_group <- function(metadata,mat_list,matrix_ID,
 
 
 # Define function to return stats for each grouping
-get_stats <- function(metadata,mat_list,matrix_ID,
-                      grouping_var,grouping_val, round_val = 1,
+get_stats <- function(metadata,
+                      mat_list,
+                      element_id,
+                      k = 8,
+                      style = "W",
+                      grouping_var,
+                      grouping_val,
+                      round_val = 1,
                       pixel_fns = NULL,...){
 
   # Setup ----------------------------------------------------------------------
   sub_photos <-
-    as.character(metadata[metadata[,grouping_var]==grouping_val,matrix_ID])
+    as.character(metadata[metadata[,grouping_var]==grouping_val,element_id])
 
   n_photos <- length(sub_photos)
 
@@ -145,11 +163,13 @@ get_stats <- function(metadata,mat_list,matrix_ID,
   # Patch statistics -----------------------------------------------------------
   # -> these statistics are calculated for hot and cold patches
 
-  # For each matrix in the list, calculate spatial statistics
   patch_stats <- get_patches(val_mat = sub_mat,
-                             return_vals = "pstats",
-                             k = 8,
-                             style = "W")
+                             matrix_id = grouping_val,
+                             k = k,
+                             style = style,
+                             mat_proj = NULL,
+                             mat_extent = NULL,
+                             return_vals = "pstats")
 
   # Return results -------------------------------------------------------------
 
