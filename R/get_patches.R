@@ -43,8 +43,8 @@
 #' # Plot the patches
 #' library(sp)
 #' plot(results$patches)
-#' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
+#' @export
 #'
 get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
                         mat_proj = NULL,
@@ -61,7 +61,7 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
     df <- reshape2::melt(val_mat,
                               varnames = c("y", "x"),
                               value.name = "val")
-  }else if(class(val_mat)[1] == "RasterLayer"){
+  }else{
     df <- as.data.frame(val_mat, xy = TRUE)
     colnames(df)[3] <- "val"
   }
