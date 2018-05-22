@@ -93,7 +93,7 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
 
   # Setup ----------------------------------------------------------------------
   if(!(is.null(matrix_id))){
-    message("\nProcessing matrix: ", matrix_id)
+    message("\nProcessing: ", matrix_id)
   }
 
   # Determine whether the matrix is a true matrix or a raster
