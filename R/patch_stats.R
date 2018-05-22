@@ -13,20 +13,42 @@
 #'  \item{inside_edges_max}{Maximum number of inside edges that could be shared,
 #'  given the number of cells.}
 #'  \item{shape_index}{Patch shape index. Calculated as the observed perimeter
-#'  divided by the minimum perimeter.}
+#'  divided by the minimum perimeter.
+#'  See \href{http://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf}{FRAGSTATS} p. 101.}
 #'  \item{AI}{Aggregation index. Calculated as the observed number of shared,
-#'  inside edges divided by the maximum number that could be shared. See He et al.}
+#'  inside edges divided by the maximum number that could be shared.
+#'  See \href{https://doi.org/10.1023/A:1008102521322}{He et al. 2000}.}
 #'  \item{cohesion}{Cohesion index. Calculated from the area and perimeter of
 #'  cells in the given class relative to the area of the entire landscape.
-#'  See Scuhmaker 1996.}
-#' @details Statistics are based on and inspired by [SDMTools::ClassStat()],
-#' [FRAGSTATS](http://www.umass.edu/landeco/research/fragstats/fragstats.html)
-#' and [Faye et al. 2016](https://doi.org/10.1111/2041-210X.12488 ).
-#' @references McGarigal, K., S. A. Cushman, M. C. Neel, and E. Ene. 2002.
+#'  See \href{https://doi.org/10.2307/2265590}{Scuhmaker 1996}.}
+#' @details Statistics are based on and inspired by
+#' \code{SDMTools::}\code{\link[SDMTools]{ClassStat}},
+#' \href{http://www.umass.edu/landeco/research/fragstats/fragstats.html}{FRAGSTATS}
+#' and \href{https://doi.org/10.1111/2041-210X.12488}{Faye et al. 2016}
+#' @references
+#' \itemize{
+#' \item \pkg{SDMTools}: Species Distribution Modelling Tools: Tools for
+#' processing data associated with species distribution modelling exercises.
+#' Available on \href{https://CRAN.R-project.org/package=SDMTools}{CRAN}.
+#' \item McGarigal, K., S. A. Cushman, M. C. Neel, and E. Ene. 2002.
 #' FRAGSTATS: Spatial Pattern Analysis Program for Categorical Maps. Computer
 #' software program produced by the authors at the University of Massachusetts,
 #' Amherst. Available at the following web site:
-#' www.umass.edu/landeco/research/fragstats/fragstats.html
+#' \url{www.umass.edu/landeco/research/fragstats/fragstats.html}
+#' \item Faye, E. , Rebaudo, F. , Yánez‐Cajo, D. , Cauvy‐Fraunié, S. ,
+#' Dangles, O. and Tatem, A. (2016), A toolbox for studying thermal
+#' heterogeneity across spatial scales: from unmanned aerial vehicle
+#' imagery to landscape metrics. Methods Ecol Evol, 7: 437-446.
+#' \url{https://doi.org/10.1111/2041-210X.12488}
+#' \item He, H.S., DeZonia, B.E. & Mladenoff, D.J. (2000),
+#' An aggregation index (AI) to quantify spatial patterns of landscapes.
+#' Landscape Ecology, 15: 591.
+#' \url{https://doi.org/10.1023/A:1008102521322}
+#' \item Schumaker, N. H. (1996),
+#' Using landscape indices to predict habitat connectivity.
+#' Ecology, 77: 1210-1225.
+#' \url{https://doi.org/10.2307/2265590}
+#' }
 #' @examples
 #' # Create matrix
 #' matrix(c(1,1,2,1,
