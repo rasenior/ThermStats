@@ -61,8 +61,8 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
     df <- reshape2::melt(val_mat,
                               varnames = c("y", "x"),
                               value.name = "val")
-  }else{
-    df <- as.data.frame(val_mat, xy = TRUE)
+  }else if(class(val_mat)[1] == "RasterLayer"){
+    df <- raster::as.data.frame(val_mat, xy = TRUE)
     colnames(df)[3] <- "val"
   }
 
