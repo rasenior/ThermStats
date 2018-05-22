@@ -9,25 +9,28 @@ stats_by_group(metadata, mat_list, matrix_ID, grouping_var, round_val, ...)
 \arguments{
 \item{metadata}{A dataframe denoting the grouping of different matrices.}
 
-\item{mat_list}{List of temperatures matrices.}
+\item{mat_list}{List of matrices.}
 
 \item{matrix_ID}{Name of the metadata variable that identifies unique
-temperature matrices. Should match element names in the list of matrices.}
+matrices. Should match element names in the list of matrices.}
 
 \item{grouping_var}{The name of the metadata variable that denotes the
-grouping of temperature matrices.}
+grouping of matrices.}
 
 \item{round_val}{Value to round to. Use 1 for no rounding.}
 
-\item{...}{Use to specify statistics that should be calculated across all
-pixels. Several helper functions are included for use here: perc_5, perc_95,
-SHDI, SIDI. See examples below.}
+\item{...}{Use to specify summary statistics that should be calculated across
+all pixels. Several helper functions are included for use here:
+\code{\link{perc_5}}, \code{\link{perc_95}},
+\code{\link{SHDI}}, \code{\link{SIDI}},
+\code{\link{kurtosis}} and \code{\link{skewness}}. Also see examples below.}
 }
 \value{
-A dataframe with pixel and patch statistics.
+A dataframe with pixel and patch statistics. See
+\code{\link{patch_stats}} for details of all the patch statistics returned.
 }
 \description{
-Calculate thermal statistics across photos within groups.
+Calculate summary and spatial statistics across multiple matrices within groups.
 }
 \examples{
 # Load raw data
@@ -50,7 +53,6 @@ patch_stats_1 <-
                    mean, max, min)
 
 # Pixel stats = kurtosis and sknewness
-library(moments)
 patch_stats_2 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,

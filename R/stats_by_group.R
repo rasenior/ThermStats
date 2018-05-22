@@ -1,17 +1,20 @@
 #' stats_by_group
 #'
-#' Calculate thermal statistics across photos within groups.
+#' Calculate summary and spatial statistics across multiple matrices within groups.
 #' @param metadata A dataframe denoting the grouping of different matrices.
-#' @param mat_list List of temperatures matrices.
+#' @param mat_list List of matrices.
 #' @param matrix_ID Name of the metadata variable that identifies unique
-#' temperature matrices. Should match element names in the list of matrices.
+#' matrices. Should match element names in the list of matrices.
 #' @param grouping_var The name of the metadata variable that denotes the
-#' grouping of temperature matrices.
+#' grouping of matrices.
 #' @param round_val Value to round to. Use 1 for no rounding.
-#' @param ... Use to specify statistics that should be calculated across all
-#' pixels. Several helper functions are included for use here: perc_5, perc_95,
-#' SHDI, SIDI. See examples below.
-#' @return A dataframe with pixel and patch statistics.
+#' @param ... Use to specify summary statistics that should be calculated across
+#' all pixels. Several helper functions are included for use here:
+#' \code{\link{perc_5}}, \code{\link{perc_95}},
+#' \code{\link{SHDI}}, \code{\link{SIDI}},
+#' \code{\link{kurtosis}} and \code{\link{skewness}}. Also see examples below.
+#' @return A dataframe with pixel and patch statistics. See
+#' \code{\link{patch_stats}} for details of all the patch statistics returned.
 #' @examples
 #' # Load raw data
 #' raw_dat <- flir_raw$raw_dat
@@ -33,7 +36,6 @@
 #'                    mean, max, min)
 #'
 #' # Pixel stats = kurtosis and sknewness
-#' library(moments)
 #' patch_stats_2 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
@@ -107,7 +109,7 @@ stats_by_group <- function(metadata,mat_list,matrix_ID,
 # Define function to return stats for each grouping
 get_stats <- function(metadata,mat_list,matrix_ID,
                       grouping_var,grouping_val, round_val = 1,
-                      pixel_fns,...){
+                      pixel_fns = NULL,...){
 
   # Setup ----------------------------------------------------------------------
   sub_photos <-
@@ -124,13 +126,19 @@ get_stats <- function(metadata,mat_list,matrix_ID,
       round_val * round(x / round_val)
     })
 
+  # Pad matrices with NAs (not adjacent in space)
+  sub_list<-
+    lapply(sub_list, function(x){
+      cbind(x, NA)
+    })
+
+  # Bind together
+  sub_mat <- do.call("cbind", sub_list)
+
   # Pixel statistics -----------------------------------------------------------
   # -> these statistics are calculated across all pixels of all subset photos
 
-  # Bind all data together
-  all_pixels <- as.vector(do.call("rbind",sub_list))
-
-  pixel_stats <- multi.sapply(all_pixels,...)
+  pixel_stats <- multi.sapply(sub_mat,...)
 
   colnames(pixel_stats) <- pixel_fns
 
@@ -138,43 +146,10 @@ get_stats <- function(metadata,mat_list,matrix_ID,
   # -> these statistics are calculated for hot and cold patches
 
   # For each matrix in the list, calculate spatial statistics
-  patch_stats <-
-    lapply(1:length(sub_list),
-           function(x) get_patches(val_mat = sub_list[[x]],
-                                   matrix_id = sub_photos[x],
-                                   return_vals = "pstats",
-                                   k = 8,
-                                   style = "W"))
-
-  # Bind as dataframe
-  patch_stats <- do.call("rbind", patch_stats)
-
-  ### Aggregate results over all photos to give one statistic for the subset
-
-  # Define variables that should be summed across photos
-  sum_vars <-
-    c("hot_px_no","hot_patch_no","hot_obs_edges","hot_max_edges","hot_non_edges",
-      "cold_px_no","cold_patch_no","cold_obs_edges","cold_max_edges","cold_non_edges")
-
-  patch_stats <-
-    c(apply(patch_stats[,sum_vars],
-            MARGIN = 2,
-            FUN = sum,
-            na.rm=TRUE),
-      # Max patch temp is the max across all photos
-      apply(patch_stats[,c("hot_patch_max_val",
-                           "cold_patch_max_val")],
-            MARGIN = 2,
-            FUN = max,
-            na.rm=TRUE),
-      # Min patch temp is the min across all photos
-      apply(patch_stats[,c("hot_patch_min_val",
-                           "cold_patch_min_val")],
-            MARGIN = 2,
-            FUN = min,
-            na.rm=TRUE))
-  # Reformat
-  patch_stats <- data.frame(t(patch_stats))
+  patch_stats <- get_patches(val_mat = sub_mat,
+                             return_vals = "pstats",
+                             k = 8,
+                             style = "W")
 
   # Return results -------------------------------------------------------------
 
@@ -218,4 +193,3 @@ multi.sapply <- function(...) {
 
   return(val = val)
 }
-
