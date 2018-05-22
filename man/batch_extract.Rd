@@ -26,6 +26,9 @@ A list containing:
 \description{
 Batch extraction of raw data from FLIR thermal images.
 }
+\details{
+Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}.
+}
 \examples{
 # Batch extract four FLIR thermal images included in this package.
 results <-

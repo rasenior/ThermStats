@@ -19,6 +19,7 @@
 #' # Count edges in each of the three classes (1, 2 or 3)
 #' results <- lapply(1:3, count_edges, val_mat = val_mat)
 #' results <- do.call("rbind", results)
+#' @export
 
 count_edges <- function(val_mat, class,
                         bidirectional = FALSE, diagonals = FALSE){

@@ -11,7 +11,7 @@ batch_convert(raw_dat, E = 1, OD = 1, RTemp = 20, ATemp = RTemp,
 }
 \arguments{
 \item{raw_dat}{A list of raw FLIR matrices returned from
-\code{batch_extract}.}
+\code{\link{batch_extract}}.}
 
 \item{out_dir}{Path to directory where converted temperature data will be
 written.}
@@ -22,7 +22,11 @@ numeric matrix of the
 converted temperature data, in °C.
 }
 \description{
-Batch convert list of raw FLIR matrices.
+Batch convert list of raw FLIR matrices to a list of temperature matrices
+(°C).
+}
+\details{
+Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
 }
 \examples{
 

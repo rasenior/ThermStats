@@ -9,10 +9,7 @@ perc_5(x, na.rm = TRUE)
 \arguments{
 \item{x}{Numeric vector over which to calculate 5th percentile.}
 
-\item{na.rm}{Whether to remove NAs. Defaults to TRUE.}
-}
-\value{
-A named vector.
+\item{na.rm}{Logical. Should missing values be removed? Defaults to TRUE.}
 }
 \description{
 Helper function to calculate 5th percentile.

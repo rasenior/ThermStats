@@ -1,13 +1,15 @@
 #' batch_convert
 #'
-#' Batch convert list of raw FLIR matrices.
+#' Batch convert list of raw FLIR matrices to a list of temperature matrices
+#' (°C).
 #' @param raw_dat A list of raw FLIR matrices returned from
-#' \code{batch_extract}.
+#' \code{\link{batch_extract}}.
 #' @param out_dir Path to directory where converted temperature data will be
 #' written.
 #' @return A list with one element per input thermal image. Each element is a
 #' numeric matrix of the
 #' converted temperature data, in °C.
+#' @details Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
 #' @examples
 #'
 #' # Setup --------------------------------------------------------------------

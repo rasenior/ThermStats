@@ -1,8 +1,8 @@
 #' plot_patches
 #'
-#' Plot hot and cold spots.
-#' @param df A dataframe returned from \code{get_patches}.
-#' @param patches A SpatialPolygonsDataFrame returned from \code{get_patches}.
+#' Plot hot and cold patches returned from \code{\link{get_patches}}.
+#' @param df A dataframe returned from \code{\link{get_patches}}.
+#' @param patches A SpatialPolygonsDataFrame returned from \code{\link{get_patches}}.
 #' @param plot_distribution Should a histogram be plotted? Defaults to TRUE.
 #' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
 #' @param save_plot Should the resulting plots be saved? Defaults to TRUE.
@@ -27,8 +27,8 @@
 #' @param val_lab Label to describe the variable of interest - corresponds to
 #' the x axis of the histogram, and the fill legend of the raster plot.
 #' @examples
-#' # Find hot and cold spots
-#' results <- get_patches(mat = flir11835$flir_matrix,
+#' # Find hot and cold patches
+#' results <- get_patches(val_mat = flir11835$flir_matrix,
 #'                        matrix_id = flir11835$matrix_id)
 #'
 #' # Plot

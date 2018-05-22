@@ -11,6 +11,7 @@
 #'  is a numeric matrix of the raw infrared data.}
 #'  \item{camera_params}{A dataframe of callibration constants unique to each
 #'  camera.}
+#' @details Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}.
 #' @examples
 #' # Batch extract four FLIR thermal images included in this package.
 #' results <-

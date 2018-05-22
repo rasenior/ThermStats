@@ -14,9 +14,9 @@ plot_patches(df, patches, plot_distribution = TRUE, print_plot = FALSE,
   "Cold spots"), val_lab = NULL)
 }
 \arguments{
-\item{df}{A dataframe returned from \code{get_patches}.}
+\item{df}{A dataframe returned from \code{\link{get_patches}}.}
 
-\item{patches}{A SpatialPolygonsDataFrame returned from \code{get_patches}.}
+\item{patches}{A SpatialPolygonsDataFrame returned from \code{\link{get_patches}}.}
 
 \item{plot_distribution}{Should a histogram be plotted? Defaults to TRUE.}
 
@@ -58,11 +58,11 @@ spots' and 'Cold spots'.}
 the x axis of the histogram, and the fill legend of the raster plot.}
 }
 \description{
-Plot hot and cold spots.
+Plot hot and cold patches returned from \code{\link{get_patches}}.
 }
 \examples{
-# Find hot and cold spots
-results <- get_patches(mat = flir11835$flir_matrix,
+# Find hot and cold patches
+results <- get_patches(val_mat = flir11835$flir_matrix,
                        matrix_id = flir11835$matrix_id)
 
 # Plot

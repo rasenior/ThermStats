@@ -2,8 +2,7 @@
 #'
 #' Helper function to calculate Shannon Diversity Index.
 #' @param x Numeric vector or matrix.
-#' @param na.rm Whether to remove NAs. Defaults to TRUE.
-#' @return A named vector.
+#' @param na.rm Logical. Should missing values be removed? Defaults to TRUE.
 #' @examples
 #' SHDI(c(1:100, NA))
 #' @export

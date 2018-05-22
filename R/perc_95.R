@@ -1,13 +1,13 @@
 #' perc_95
 #'
-#' Helper function to calculate 95th percentile.
+#' Helper function to calculate 5th percentile.
 #' @param x Numeric vector over which to calculate 95th percentile.
-#' @param na.rm Whether to remove NAs. Defaults to TRUE.
-#' @return A named vector.
+#' @param na.rm Logical. Should missing values be removed? Defaults to TRUE.
 #' @examples
 #' perc_95(c(1:100, NA))
 #' @export
 
 perc_95 <- function(x, na.rm = TRUE) {
-  quantile(x = x, probs = 0.95, na.rm = na.rm)
-}
+  return(quantile(x = x, probs = 0.95, names = FALSE, na.rm = na.rm))
+  }
+
