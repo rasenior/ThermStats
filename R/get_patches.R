@@ -99,8 +99,8 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
   # Determine whether the matrix is a true matrix or a raster
   if(is.matrix(val_mat)){
     df <- reshape2::melt(val_mat,
-                              varnames = c("y", "x"),
-                              value.name = "val")
+                         varnames = c("y", "x"),
+                         value.name = "val")
   }else if(class(val_mat)[1] == "RasterLayer"){
     df <- raster::as.data.frame(val_mat, xy = TRUE)
     colnames(df)[3] <- "val"
@@ -200,7 +200,14 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
 
   # Return overlay list where each element is the point, and within that the
   # value is the hot/coldspot classification and the row name is the patch ID
-  patchID <- sp::over(raw, patches, returnList = TRUE)
+  n_features <- length(raw)
+
+  # Define function to overlay in subsets if too many features
+  over_sub <- function(min_i, max_i){
+    subdat <- raw[(min_i + 1):max_i,]
+    patchID <- sp::over(subdat, patches, returnList = TRUE)
+    return(patchID)
+  }
 
   # Define function to reformat each dataframe within the list
   reform <- function(x) {
@@ -209,11 +216,39 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
     return(x)
   }
 
-  # Apply function to each list element
-  patchID <- lapply(patchID, reform)
+  if(n_features > 10^5){
+    lims <- seq(0, n_features, 10^5)
+    lims[lims == tail(lims, n = 1)] <- n_features
 
-  # Bind together
-  patchID <- do.call("rbind", patchID)
+    # Overlay by subset
+    patchID <-
+      lapply(1:(length(lims) - 1), function(i){
+        over_sub(lims[i], lims[i + 1])
+      })
+
+    patchID <-
+      lapply(patchID, function(x){
+        # Reform each element (pixel) into a dataframe
+        df <-
+          lapply(x, function(y){
+            reform(y)
+          })
+        # Bind pixel dataframes within subsets
+        df <- do.call("rbind", df)
+        return(df)
+      })
+
+    # Bind all subsets
+    patchID <- do.call("rbind", patchID)
+
+  }else{
+    patchID <- sp::over(raw, patches, returnList = TRUE)
+    # Reform each element (pixel) into a dataframe
+    patchID <- lapply(patchID, reform)
+
+    # Bind pixel dataframes
+    patchID <- do.call("rbind", patchID)
+  }
 
   # Recreate dataframe
   df <- data.frame(raw)[-4]
