@@ -14,7 +14,7 @@
 #'  given the number of cells.}
 #'  \item{shape_index}{Patch shape index. Calculated as the observed perimeter
 #'  divided by the minimum perimeter.
-#'  See \href{http://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf}{FRAGSTATS} p. 101.}
+#'  See \href{http://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf}{FRAGSTATS} p.101.}
 #'  \item{AI}{Aggregation index. Calculated as the observed number of shared,
 #'  inside edges divided by the maximum number that could be shared.
 #'  See \href{https://doi.org/10.1023/A:1008102521322}{He et al. 2000}.}
