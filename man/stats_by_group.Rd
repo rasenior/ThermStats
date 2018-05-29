@@ -4,15 +4,22 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, mat_list, matrix_ID, grouping_var, round_val, ...)
+stats_by_group(metadata, mat_list, element_id, k = 8, style = "W",
+  grouping_var, round_val, ...)
 }
 \arguments{
 \item{metadata}{A dataframe denoting the grouping of different matrices.}
 
 \item{mat_list}{List of matrices.}
 
-\item{matrix_ID}{Name of the metadata variable that identifies unique
+\item{element_id}{Name of the metadata variable that identifies unique
 matrices. Should match element names in the list of matrices.}
+
+\item{k}{Number of neighbours to use when calculating nearest neighbours
+using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
+
+\item{style}{Style to use when calculating neighbourhood weights using
+\code{spdep::}\code{\link[spdep]{nb2listw}}.}
 
 \item{grouping_var}{The name of the metadata variable that denotes the
 grouping of matrices.}
@@ -47,7 +54,7 @@ mat_list <- batch_convert(raw_dat, write_results = FALSE)
 patch_stats_1 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   matrix_ID = "photo_no",
+                   element_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
                    mean, max, min)
@@ -56,7 +63,7 @@ patch_stats_1 <-
 patch_stats_2 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   matrix_ID = "photo_no",
+                   element_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
                    kurtosis, skewness)
@@ -65,7 +72,7 @@ patch_stats_2 <-
 patch_stats_3 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   matrix_ID = "photo_no",
+                   element_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
                    perc_5, perc_95)
@@ -74,7 +81,7 @@ patch_stats_3 <-
 patch_stats_4 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   matrix_ID = "photo_no",
+                   element_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
                    SHDI, SIDI)

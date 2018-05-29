@@ -156,7 +156,7 @@ get_stats <- function(metadata,
   # Pixel statistics -----------------------------------------------------------
   # -> these statistics are calculated across all pixels of all subset photos
 
-  pixel_stats <- multi.sapply(sub_mat,...)
+  pixel_stats <- multi_sapply(sub_mat,...)
 
   colnames(pixel_stats) <- pixel_fns
 
@@ -179,37 +179,4 @@ get_stats <- function(metadata,
   results[,grouping_var] <- grouping_val
 
   return(results)
-}
-
-# Function to apply multiple functions to a vector
-multi.sapply <- function(...) {
-  # Reads in all arguments passed to function, including data
-  arglist <- match.call(expand.dots = FALSE)$...
-
-  # Deparse argument names
-  var.names <- sapply(arglist, deparse)
-
-  # For all arguments that had function names specified,
-  # substitue name from deparsed expression by the given name
-  has.name <- (names(arglist) != "")
-  var.names[has.name] <- names(arglist)[has.name]
-
-  # Evaluate the expressions given in arguments;
-  # go two generations back as we apply eval.parent
-  # within lapply function
-  arglist <- lapply(arglist, eval.parent, n = 2)
-
-  # First argument contains data set, so remove it from the list
-  data <- arglist[[1]]
-  arglist[[1]] <- NULL
-
-  # Apply every function
-  val<-sapply(X=arglist,
-              FUN=function(arglist) arglist(data, na.rm = TRUE))
-
-  # Re-format to dataframe
-  val <- as.data.frame(t(val))
-  rownames(val) <- NULL
-
-  return(val = val)
 }
