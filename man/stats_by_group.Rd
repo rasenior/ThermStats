@@ -4,7 +4,7 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, mat_list, element_id, k = 8, style = "W",
+stats_by_group(metadata, mat_list, matrix_id, k = 8, style = "W",
   grouping_var, round_val, ...)
 }
 \arguments{
@@ -12,7 +12,7 @@ stats_by_group(metadata, mat_list, element_id, k = 8, style = "W",
 
 \item{mat_list}{List of matrices.}
 
-\item{element_id}{Name of the metadata variable that identifies unique
+\item{matrix_id}{Name of the metadata variable that identifies unique
 matrices. Should match element names in the list of matrices.}
 
 \item{k}{Number of neighbours to use when calculating nearest neighbours
@@ -54,35 +54,43 @@ mat_list <- batch_convert(raw_dat, write_results = FALSE)
 patch_stats_1 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   element_id = "photo_no",
+                   matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
+                   k = 8,
+                   style = "W",
                    mean, max, min)
 
 # Pixel stats = kurtosis and sknewness
 patch_stats_2 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   element_id = "photo_no",
+                   matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
+                   k = 8,
+                   style = "W",
                    kurtosis, skewness)
 
 # Pixel stats = 5th and 95th percentiles
 patch_stats_3 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   element_id = "photo_no",
+                   matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
+                   k = 8,
+                   style = "W",
                    perc_5, perc_95)
 
 # Pixel stats = Shannon and Simpson Diversity Indices
 patch_stats_4 <-
     stats_by_group(metadata = metadata,
                    mat_list = mat_list,
-                   element_id = "photo_no",
+                   matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
+                   k = 8,
+                   style = "W",
                    SHDI, SIDI)
 }

@@ -3,7 +3,7 @@
 #' Calculate summary and spatial statistics across multiple matrices within groups.
 #' @param metadata A dataframe denoting the grouping of different matrices.
 #' @param mat_list List of matrices.
-#' @param element_id Name of the metadata variable that identifies unique
+#' @param matrix_id Name of the metadata variable that identifies unique
 #' matrices. Should match element names in the list of matrices.
 #' @param k Number of neighbours to use when calculating nearest neighbours
 #' using \code{spdep::}\code{\link[spdep]{knearneigh}}.
@@ -34,118 +34,182 @@
 #' patch_stats_1 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    element_id = "photo_no",
+#'                    matrix_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
+#'                    k = 8,
+#'                    style = "W",
 #'                    mean, max, min)
 #'
 #' # Pixel stats = kurtosis and sknewness
 #' patch_stats_2 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    element_id = "photo_no",
+#'                    matrix_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
+#'                    k = 8,
+#'                    style = "W",
 #'                    kurtosis, skewness)
 #'
 #' # Pixel stats = 5th and 95th percentiles
 #' patch_stats_3 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    element_id = "photo_no",
+#'                    matrix_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
+#'                    k = 8,
+#'                    style = "W",
 #'                    perc_5, perc_95)
 #'
 #' # Pixel stats = Shannon and Simpson Diversity Indices
 #' patch_stats_4 <-
 #'     stats_by_group(metadata = metadata,
 #'                    mat_list = mat_list,
-#'                    element_id = "photo_no",
+#'                    matrix_id = "photo_no",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
+#'                    k = 8,
+#'                    style = "W",
 #'                    SHDI, SIDI)
 #' @export
 #'
 # Define function to return stats for each grouping
 stats_by_group <- function(metadata,
                            mat_list,
-                           element_id,
+                           matrix_id,
                            k = 8,
                            style = "W",
-                           grouping_var, round_val,...){
-
-  # Define function names for pixel stats
-  pixel_fns <-
-    paste(match.call(expand.dots = FALSE)$...)
+                           grouping_var,
+                           round_val,...){
 
   if (requireNamespace("pbapply", quietly = TRUE)) {
     temp_stats<-
       pbapply::pblapply(unique(metadata[, grouping_var]),
                         function(x){
-                          tryCatch({get_stats(metadata = metadata,
-                                              mat_list = mat_list,
-                                              element_id = element_id,
-                                              k = k,
-                                              style = style,
-                                              grouping_var = grouping_var,
-                                              grouping_val = x,
-                                              round_val = round_val,
-                                              pixel_fns = pixel_fns,
-                                              ...)},
-                                   error=function(cond)NA)
+                          tryCatch({
+                            sub_mat <- create_subset(metadata = metadata,
+                                                     mat_list = mat_list,
+                                                     matrix_id = matrix_id,
+                                                     grouping_var = grouping_var,
+                                                     grouping_val = x,
+                                                     round_val = round_val)
+                            n_mat <- sub_mat[["n_mat"]]
+                            sub_mat <- sub_mat[["sub_mat"]]
+
+                            # Get stats
+                            result <-
+                              get_stats(val_mat = sub_mat,
+                                        matrix_id = x,
+                                        k = k,
+                                        style = style,
+                                        mat_proj = NULL,
+                                        mat_extent = NULL,
+                                        return_vals = "pstats",
+                                        ...
+                              )
+                            # Add number matrices
+                            result <- cbind(result, n_mat)
+                            # Return
+                            return(result)
+
+                          },
+                          error = function(err) {
+
+                            # error handler picks up where error was generated
+                            message(paste("\nMY_ERROR:  ",err))
+                            return(NA)
+
+                          })
                         })
   }else{
     temp_stats<-
       lapply(unique(metadata[, grouping_var]),
              function(x){
-               tryCatch({get_stats(metadata = metadata,
-                                   mat_list = mat_list,
-                                   element_id = element_id,
-                                   k = k,
-                                   style = style,
-                                   grouping_var = grouping_var,
-                                   grouping_val = x,
-                                   round_val = round_val,
-                                   pixel_fns = pixel_fns,
-                                   ...)},
-                        error=function(cond)NA)
+               tryCatch({
+                 sub_mat <- create_subset(metadata = metadata,
+                                          mat_list = mat_list,
+                                          matrix_id = matrix_id,
+                                          grouping_var = grouping_var,
+                                          grouping_val = x,
+                                          round_val = round_val)
+                 n_mat <- sub_mat[["n_mat"]]
+                 sub_mat <- sub_mat[["sub_mat"]]
+
+                 # Get stats
+                 result <-
+                   get_stats(val_mat = sub_mat,
+                             matrix_id = x,
+                             k = k,
+                             style = style,
+                             mat_proj = NULL,
+                             mat_extent = NULL,
+                             return_vals = "pstats",
+                             ...
+                   )
+                 # Add number matrices
+                 result <- cbind(result, n_mat)
+                 # Return
+                 return(result)
+
+               },
+               error = function(err) {
+
+                 # error handler picks up where error was generated
+                 message(paste("\nMY_ERROR:  ",err))
+                 return(NA)
+
+               })
              })
   }
-
   temp_stats <- do.call("rbind",temp_stats)
   return(temp_stats)
 }
 
 
-# Define function to return stats for each grouping
-get_stats <- function(metadata,
-                      mat_list,
-                      element_id,
-                      k = 8,
-                      style = "W",
-                      grouping_var,
-                      grouping_val,
-                      round_val = 1,
-                      pixel_fns = NULL,...){
+create_subset <- function(metadata,
+                          mat_list,
+                          matrix_id,
+                          grouping_var,
+                          grouping_val,
+                          round_val = round_val){
+  # Define the identifiers for the matrices that fall within each group
+  ids <-
+    as.character(metadata[metadata[,grouping_var]==grouping_val,matrix_id])
+  # Define the number of matrices  in this group
+  n_mat <- length(ids)
 
-  # Setup ----------------------------------------------------------------------
-  sub_photos <-
-    as.character(metadata[metadata[,grouping_var]==grouping_val,element_id])
+  # Subset matrices list by the desired matrix IDs
+  sub_list <- mat_list[as.character(ids)]
 
-  n_photos <- length(sub_photos)
+  # Coerce any raster layers to matrices
+  raster_list <-
+    sub_list[which(sapply(sub_list, function(x) class(x) == "RasterLayer"))]
 
-  # Subset matrices list by the desired photo numbers
-  sub_list <- mat_list[as.character(sub_photos)]
+  if(length(raster_list) > 0){
+    raster_list <-
+      lapply(raster_list, function(rast){
+        # To dataframe first (seems to preserve coordinates more reliably)
+        temp_df <- raster::as.data.frame(rast, xy = TRUE)
+        # To matrix
+        temp_mat <- reshape2::acast(temp_df, y ~ x, value.var = "layer")
+        return(temp_mat)
+      })
 
-  # Rounding
+    # Replace
+    sub_list[which(sapply(sub_list, function(x) class(x) == "RasterLayer"))] <-
+      raster_list
+  }
+
+  # Round values to desired precision
   sub_list<-
     lapply(sub_list, function(x){
       round_val * round(x / round_val)
     })
 
-  # Pad matrices with NAs (not adjacent in space)
-  sub_list<-
+  # Pad matrices with NAs (because they are not actually adjacent in space)
+  sub_list <-
     lapply(sub_list, function(x){
       cbind(x, NA)
     })
@@ -153,30 +217,6 @@ get_stats <- function(metadata,
   # Bind together
   sub_mat <- do.call("cbind", sub_list)
 
-  # Pixel statistics -----------------------------------------------------------
-  # -> these statistics are calculated across all pixels of all subset photos
-
-  pixel_stats <- multi_sapply(sub_mat,...)
-
-  colnames(pixel_stats) <- pixel_fns
-
-  # Patch statistics -----------------------------------------------------------
-  # -> these statistics are calculated for hot and cold patches
-
-  patch_stats <- get_patches(val_mat = sub_mat,
-                             matrix_id = grouping_val,
-                             k = k,
-                             style = style,
-                             mat_proj = NULL,
-                             mat_extent = NULL,
-                             return_vals = "pstats")
-
-  # Return results -------------------------------------------------------------
-
-  # Bind all results
-  results <- cbind(n_photos, pixel_stats, patch_stats)
-  # Add ID
-  results[,grouping_var] <- grouping_val
-
-  return(results)
+  return(list(sub_mat = sub_mat, n_mat = n_mat))
 }
+
