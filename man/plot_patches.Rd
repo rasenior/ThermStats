@@ -4,14 +4,14 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(df, patches, plot_distribution = TRUE, print_plot = FALSE,
-  save_plot = TRUE, return_plot = FALSE, out_dir = NULL,
-  file_name = NULL, file_ext = "png", lab_size = 8, text_size = 6,
-  fig_width = 8, fig_height = 9, fig_units = "cm", val_pal = c("black",
-  "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b",
-  "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
-  patch_cols = c("mistyrose", "cornflowerblue"), patch_labs = c("Hot spots",
-  "Cold spots"), val_lab = NULL)
+plot_patches(df, patches, plot_distribution = TRUE, flip = FALSE,
+  print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
+  out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
+  text_size = 6, fig_width = 8, fig_height = 9, fig_units = "cm",
+  val_pal = c("black", "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0",
+  "#ba187f", "#d9365b", "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e",
+  "#fad61e"), patch_cols = c("mistyrose", "cornflowerblue"),
+  patch_labs = c("Hot spots", "Cold spots"), val_lab = NULL)
 }
 \arguments{
 \item{df}{A dataframe returned from \code{\link{get_patches}}.}
@@ -61,15 +61,56 @@ the x axis of the histogram, and the fill legend of the raster plot.}
 Plot hot and cold patches returned from \code{\link{get_patches}}.
 }
 \examples{
+# FLIR temperature matrix ---------------------------------------------------
 # Find hot and cold patches
-results <- get_patches(val_mat = flir11835$flir_matrix,
-                       matrix_id = flir11835$matrix_id)
+flir_results <-
+    get_patches(val_mat = flir11835$flir_matrix,
+    matrix_id = flir11835$photo_no)
 
-# Plot
-df <- results$df
-patches <- results$patches
-plot_patches(df = df,
-             patches = patches,
+# Look at the results for individual pixels
+head(flir_results$df)
+
+# Look at the patch statistics for hot and cold patches
+flir_results$pstats
+
+# Plot the patches
+sp::plot(flir_results$patches)
+
+# Plot using ThermStats::plot_patches
+plot_patches(df = flir_results$df,
+             patches = flir_results$patches,
+             print_plot = TRUE,
+             save_plot = FALSE)
+
+# Worldclim2 temperature raster ---------------------------------------
+# Dataset 'worldclim_sulawesi' represents mean January temperature for the
+# island of Sulawesi
+
+# Define projection and extent
+mat_proj <- raster::projection(worldclim_sulawesi)
+mat_extent <- raster::extent(worldclim_sulawesi)
+
+# Find hot and cold patches
+worldclim_results <-
+ get_patches(val_mat = worldclim_sulawesi,
+             matrix_id = "sulawesi",
+             k = 8,
+             style = "W",
+             mat_proj = mat_proj,
+             mat_extent = mat_extent)
+
+# Look at the results for individual pixels
+head(worldclim_results$df)
+
+# Look at the patch statistics for hot and cold patches
+worldclim_results$pstats
+
+# Plot the patches
+sp::plot(worldclim_results$patches)
+
+# Plot using ThermStats::plot_patches
+plot_patches(df = worldclim_results$df,
+             patches = worldclim_results$patches,
              print_plot = TRUE,
              save_plot = FALSE)
 

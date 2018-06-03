@@ -27,15 +27,56 @@
 #' @param val_lab Label to describe the variable of interest - corresponds to
 #' the x axis of the histogram, and the fill legend of the raster plot.
 #' @examples
+#' # FLIR temperature matrix ---------------------------------------------------
 #' # Find hot and cold patches
-#' results <- get_patches(val_mat = flir11835$flir_matrix,
-#'                        matrix_id = flir11835$matrix_id)
+#' flir_results <-
+#'     get_patches(val_mat = flir11835$flir_matrix,
+#'     matrix_id = flir11835$photo_no)
 #'
-#' # Plot
-#' df <- results$df
-#' patches <- results$patches
-#' plot_patches(df = df,
-#'              patches = patches,
+#' # Look at the results for individual pixels
+#' head(flir_results$df)
+#'
+#' # Look at the patch statistics for hot and cold patches
+#' flir_results$pstats
+#'
+#' # Plot the patches
+#' sp::plot(flir_results$patches)
+#'
+#' # Plot using ThermStats::plot_patches
+#' plot_patches(df = flir_results$df,
+#'              patches = flir_results$patches,
+#'              print_plot = TRUE,
+#'              save_plot = FALSE)
+#'
+#' # Worldclim2 temperature raster ---------------------------------------
+#' # Dataset 'worldclim_sulawesi' represents mean January temperature for the
+#' # island of Sulawesi
+#'
+#' # Define projection and extent
+#' mat_proj <- raster::projection(worldclim_sulawesi)
+#' mat_extent <- raster::extent(worldclim_sulawesi)
+#'
+#' # Find hot and cold patches
+#' worldclim_results <-
+#'  get_patches(val_mat = worldclim_sulawesi,
+#'              matrix_id = "sulawesi",
+#'              k = 8,
+#'              style = "W",
+#'              mat_proj = mat_proj,
+#'              mat_extent = mat_extent)
+#'
+#' # Look at the results for individual pixels
+#' head(worldclim_results$df)
+#'
+#' # Look at the patch statistics for hot and cold patches
+#' worldclim_results$pstats
+#'
+#' # Plot the patches
+#' sp::plot(worldclim_results$patches)
+#'
+#' # Plot using ThermStats::plot_patches
+#' plot_patches(df = worldclim_results$df,
+#'              patches = worldclim_results$patches,
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
 #'
@@ -46,8 +87,9 @@
 plot_patches <- function(df,
                          patches,
                          plot_distribution = TRUE,
-                         print_plot = FALSE,
-                         save_plot = TRUE,
+                         flip = FALSE,
+                         print_plot = TRUE,
+                         save_plot = FALSE,
                          return_plot = FALSE,
                          out_dir = NULL,
                          file_name = NULL,
@@ -58,10 +100,10 @@ plot_patches <- function(df,
                          fig_height = 9,
                          fig_units = "cm",
                          val_pal = c("black", "#050155", "#120172",
-                                      "#3b008e", "#7200a9", "#8f00a0",
-                                      "#ba187f", "#d9365b", "#ed5930",
-                                      "#f76323", "#fa8600", "#f6a704",
-                                      "#fad61e", "#fad61e"),
+                                     "#3b008e", "#7200a9", "#8f00a0",
+                                     "#ba187f", "#d9365b", "#ed5930",
+                                     "#f76323", "#fa8600", "#f6a704",
+                                     "#fad61e", "#fad61e"),
                          patch_cols = c("mistyrose", "cornflowerblue"),
                          patch_labs = c("Hot spots", "Cold spots"),
                          val_lab = NULL) {
@@ -78,25 +120,25 @@ plot_patches <- function(df,
 
   if(plot_distribution){
 
-  message("Plotting distribution")
+    message("Plotting distribution")
 
-  df$G_bin <- factor(df$G_bin, levels = c(0, 1, -1),
-                          labels = c("Background", "Hot spots", "Cold spots"))
+    df$G_bin <- factor(df$G_bin, levels = c(0, 1, -1),
+                       labels = c("Background", "Hot spots", "Cold spots"))
 
-  p1 <-
-    ggplot() +
-    geom_histogram(data = df,
-                   aes(x = val, y = ..density..),
-                   colour = "black", fill = "white") +
-    geom_density(data = df,
-                 aes(x = val), alpha = 0.2, fill = "grey") +
-    xlab(val_lab) +
-    ylab("Density") +
-    theme_bw() +
-    theme(axis.title = element_text(size = lab_size),
-          axis.text = element_text(size = text_size),
-          panel.grid = element_blank(),
-          plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
+    p1 <-
+      ggplot() +
+      geom_histogram(data = df,
+                     aes(x = val, y = ..density..),
+                     colour = "black", fill = "white") +
+      geom_density(data = df,
+                   aes(x = val), alpha = 0.2, fill = "grey") +
+      xlab(val_lab) +
+      ylab("Density") +
+      theme_bw() +
+      theme(axis.title = element_text(size = lab_size),
+            axis.text = element_text(size = text_size),
+            panel.grid = element_blank(),
+            plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
 
   }else{
     p1 <- NULL
@@ -110,6 +152,30 @@ plot_patches <- function(df,
   for (x in 1:length(patches@polygons)) {
     comment(patches@polygons[[x]]) =
       rgeos::createPolygonsComment(patches@polygons[[x]])
+  }
+
+  if(flip){
+
+    old_coords <- coordinates(patches)
+    patches <- maptools::elide(patches, flip = TRUE, rotate = -90)
+    new_coords <- coordinates(patches)
+    # Dataframe to matrix
+    mat <- reshape2::acast(df, y ~ x, value.var = "val")
+    long <- colnames(mat)
+    lat <- rownames(mat)
+    # Flip
+    mat <-
+      Thermimage::mirror.matrix(Thermimage::rotate180.matrix(mat))
+    colnames(mat) <- long
+    rownames(mat) <- lat
+    # Back to dataframe
+    df <- reshape2::melt(mat,
+                         varnames = c("y", "x"),
+                         value.name = "val")
+    # Remove NAs
+    df <- df[!(is.na(df$val))]
+
+    # TO-DO FIX MIXED UP LAT LON IN PATCHES
   }
 
   # Fortify patch polygons to dataframe
@@ -132,8 +198,8 @@ plot_patches <- function(df,
     theme_classic() +
     theme(axis.line = element_blank(),
           axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.ticks = element_blank(),
+          # axis.text = element_blank(),
+          # axis.ticks = element_blank(),
           legend.box.spacing = unit(0,"cm"),
           legend.position = "bottom",
           legend.title = element_text(size = text_size),
@@ -165,7 +231,7 @@ plot_patches <- function(df,
 
       if(plot_distribution){
         suppressMessages(
-        gridExtra::grid.arrange(p1, p2, ncol=2)
+          gridExtra::grid.arrange(p1, p2, ncol=2)
         )
       } else{
         print(p2)
