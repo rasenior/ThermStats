@@ -87,7 +87,6 @@
 plot_patches <- function(df,
                          patches,
                          plot_distribution = TRUE,
-                         flip = FALSE,
                          print_plot = TRUE,
                          save_plot = FALSE,
                          return_plot = FALSE,
@@ -154,30 +153,6 @@ plot_patches <- function(df,
       rgeos::createPolygonsComment(patches@polygons[[x]])
   }
 
-  if(flip){
-
-    old_coords <- coordinates(patches)
-    patches <- maptools::elide(patches, flip = TRUE, rotate = -90)
-    new_coords <- coordinates(patches)
-    # Dataframe to matrix
-    mat <- reshape2::acast(df, y ~ x, value.var = "val")
-    long <- colnames(mat)
-    lat <- rownames(mat)
-    # Flip
-    mat <-
-      Thermimage::mirror.matrix(Thermimage::rotate180.matrix(mat))
-    colnames(mat) <- long
-    rownames(mat) <- lat
-    # Back to dataframe
-    df <- reshape2::melt(mat,
-                         varnames = c("y", "x"),
-                         value.name = "val")
-    # Remove NAs
-    df <- df[!(is.na(df$val))]
-
-    # TO-DO FIX MIXED UP LAT LON IN PATCHES
-  }
-
   # Fortify patch polygons to dataframe
   patches <- fortify(patches, region = "layer")
 
@@ -198,8 +173,8 @@ plot_patches <- function(df,
     theme_classic() +
     theme(axis.line = element_blank(),
           axis.title = element_blank(),
-          # axis.text = element_blank(),
-          # axis.ticks = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
           legend.box.spacing = unit(0,"cm"),
           legend.position = "bottom",
           legend.title = element_text(size = text_size),
