@@ -94,10 +94,11 @@
 
 get_stats <- function(val_mat,
                       matrix_id = NULL,
+                      get_patches = TRUE,
                       k = 8,
                       style = "W",
-                      mat_proj,
-                      mat_extent,
+                      mat_proj = NULL,
+                      mat_extent = NULL,
                       return_vals = c("df","patches","pstats"),
                       ...){
 
@@ -123,22 +124,26 @@ get_stats <- function(val_mat,
   # return_vals must include pstats (otherwise just use get_patches)
   if(!("pstats" %in% return_vals)) return_vals <- c(return_vals, "pstats")
 
-  all_stats <- get_patches(val_mat = val_mat,
-                        matrix_id = matrix_id,
-                        k = k,
-                        style = style,
-                        mat_proj = mat_proj,
-                        mat_extent = mat_extent,
-                        return_vals = return_vals)
+  if(get_patches){
+    all_stats <- get_patches(val_mat = val_mat,
+                             matrix_id = matrix_id,
+                             k = k,
+                             style = style,
+                             mat_proj = mat_proj,
+                             mat_extent = mat_extent,
+                             return_vals = return_vals)
+    # Return results -------------------------------------------------------------
 
-  # Return results -------------------------------------------------------------
+    # If length one then only includes pstats
+    if(length(return_vals) == 1){
+      all_stats <- cbind(pixel_stats, all_stats)
+    }else{
+      all_stats[["pstats"]] <- cbind(pixel_stats, all_stats[["pstats"]])
+    }
 
-  # If length one then only includes pstats
-  if(length(return_vals) == 1){
-    all_stats <- cbind(pixel_stats, all_stats)
+    return(all_stats)
   }else{
-    all_stats[["pstats"]] <- cbind(pixel_stats, all_stats[["pstats"]])
+    return(pixel_stats)
   }
 
-  return(all_stats)
 }
