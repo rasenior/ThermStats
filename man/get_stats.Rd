@@ -4,13 +4,16 @@
 \alias{get_stats}
 \title{get_stats}
 \usage{
-get_stats(val_mat, matrix_id = NULL, k = 8, style = "W", mat_proj,
-  mat_extent, return_vals = c("df", "patches", "pstats"), ...)
+get_stats(val_mat, matrix_id = NULL, get_patches = TRUE, k = 8,
+  style = "W", mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
+  "patches", "pstats"), ...)
 }
 \arguments{
 \item{val_mat}{A numeric matrix or raster.}
 
 \item{matrix_id}{The matrix ID (optional). Useful when iterating over numerous matrices.}
+
+\item{get_patches}{Whether to identify hot and cold spots. Defaults to TRUE.}
 
 \item{k}{Number of neighbours to use when calculating nearest neighbours
 using \code{spdep::}\code{\link[spdep]{knearneigh}}.}

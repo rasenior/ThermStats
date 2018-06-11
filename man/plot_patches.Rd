@@ -4,14 +4,14 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(df, patches, plot_distribution = TRUE, flip = FALSE,
-  print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
-  out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
-  text_size = 6, fig_width = 8, fig_height = 9, fig_units = "cm",
-  val_pal = c("black", "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0",
-  "#ba187f", "#d9365b", "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e",
-  "#fad61e"), patch_cols = c("mistyrose", "cornflowerblue"),
-  patch_labs = c("Hot spots", "Cold spots"), val_lab = NULL)
+plot_patches(df, patches, plot_distribution = TRUE, print_plot = TRUE,
+  save_plot = FALSE, return_plot = FALSE, out_dir = NULL,
+  file_name = NULL, file_ext = "png", lab_size = 8, text_size = 6,
+  fig_width = 8, fig_height = 9, fig_units = "cm", val_pal = c("black",
+  "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b",
+  "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
+  patch_cols = c("mistyrose", "cornflowerblue"), patch_labs = c("Hot spots",
+  "Cold spots"), val_lab = NULL)
 }
 \arguments{
 \item{df}{A dataframe returned from \code{\link{get_patches}}.}
