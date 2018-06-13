@@ -4,6 +4,7 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
+
 plot_patches(df, patches, facet = FALSE, plot_distribution = TRUE,
   print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
   out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
