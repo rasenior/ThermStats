@@ -4,7 +4,7 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(df, patches, plot_distribution = TRUE, flip = FALSE,
+plot_patches(df, patches, facet = FALSE, plot_distribution = TRUE,
   print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
   out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
   text_size = 6, fig_width = 8, fig_height = 9, fig_units = "cm",
@@ -17,6 +17,8 @@ plot_patches(df, patches, plot_distribution = TRUE, flip = FALSE,
 \item{df}{A dataframe returned from \code{\link{get_patches}}.}
 
 \item{patches}{A SpatialPolygonsDataFrame returned from \code{\link{get_patches}}.}
+
+\item{facet}{Whether to plot facets by matrix_id. Defaults to FALSE.}
 
 \item{plot_distribution}{Should a histogram be plotted? Defaults to TRUE.}
 

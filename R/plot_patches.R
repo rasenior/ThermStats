@@ -3,6 +3,7 @@
 #' Plot hot and cold patches returned from \code{\link{get_patches}}.
 #' @param df A dataframe returned from \code{\link{get_patches}}.
 #' @param patches A SpatialPolygonsDataFrame returned from \code{\link{get_patches}}.
+#' @param facet Whether to plot facets by matrix_id. Defaults to FALSE.
 #' @param plot_distribution Should a histogram be plotted? Defaults to TRUE.
 #' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
 #' @param save_plot Should the resulting plots be saved? Defaults to TRUE.
@@ -86,6 +87,7 @@
 #'
 plot_patches <- function(df,
                          patches,
+                         facet = FALSE,
                          plot_distribution = TRUE,
                          print_plot = TRUE,
                          save_plot = FALSE,
@@ -107,7 +109,24 @@ plot_patches <- function(df,
                          patch_labs = c("Hot spots", "Cold spots"),
                          val_lab = NULL) {
 
-  matrix_id <- unique(df$matrix_id)
+  # Define function to capitalise first letter
+  simpleCap <- function(x) {
+    s <- strsplit(x, " ")[[1]]
+    paste(toupper(substring(s, 1,1)), substring(s, 2),
+          sep="", collapse=" ")
+  }
+
+  matrix_id_orig <- levels(df$matrix_id)
+  matrix_id <- vapply(matrix_id_orig, simpleCap, FUN.VALUE = character(1))
+
+  df$matrix_id <-
+    factor(df$matrix_id,
+           # Don't change levels
+           levels = matrix_id_orig,
+           # Do change labels
+           labels = matrix_id)
+
+  # Fix patch outline colours
   names(patch_cols) <- patch_labs
 
   if(is.null(val_lab)){
@@ -138,6 +157,9 @@ plot_patches <- function(df,
             axis.text = element_text(size = text_size),
             panel.grid = element_blank(),
             plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
+    if(facet){
+      p1 <- p1 + facet_wrap(~ matrix_id)
+    }
 
   }else{
     p1 <- NULL
@@ -147,14 +169,40 @@ plot_patches <- function(df,
 
   message("Plotting image with hot and cold spots")
 
-  # Add comment attribute to correctly plot holes
-  for (x in 1:length(patches@polygons)) {
-    comment(patches@polygons[[x]]) =
-      rgeos::createPolygonsComment(patches@polygons[[x]])
-  }
+  if(facet){
+    # If facetting, need to apply this over multiple patch dfs
+    patches <-
+      lapply(patches, function(patches_i){
+        # Add comment attribute to correctly plot holes
+        for (x in 1:length(patches_i@polygons)) {
+          comment(patches_i@polygons[[x]]) =
+            rgeos::createPolygonsComment(patches_i@polygons[[x]])
+        }
 
-  # Fortify patch polygons to dataframe
-  patches <- fortify(patches, region = "layer")
+        # Fortify patch polygons to dataframe
+        patches_i <- fortify(patches_i, region = "layer")
+        return(patches_i)
+      })
+    patches <- do.call("rbind", patches)
+    # Add matrix ID
+    patches$matrix_id <- gsub("\\..*", "",row.names(patches))
+    row.names(patches) <- NULL
+    # Relevel
+    patches$matrix_id <-
+      factor(patches$matrix_id,
+             levels = matrix_id_orig,
+             labels = matrix_id)
+  }else{
+
+    # Add comment attribute to correctly plot holes
+    for (x in 1:length(patches@polygons)) {
+      comment(patches@polygons[[x]]) =
+        rgeos::createPolygonsComment(patches@polygons[[x]])
+    }
+
+    # Fortify patch polygons to dataframe
+    patches <- fortify(patches, region = "layer")
+  }
 
   # Get rid of the background patch
   patches <- patches[patches$id != 0, ]
@@ -197,6 +245,13 @@ plot_patches <- function(df,
                                                      size = 0.8))) +
     scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0,0))
+
+  # If facetting is required
+  if(facet){
+    p2 <- p2 +
+      facet_wrap(~ matrix_id) +
+      theme(strip.background = element_blank())
+  }
 
   # Printing/saving plots -----------------------------------------------------
 
