@@ -14,6 +14,7 @@
 #' @param file_ext File extension. Defaults to '.png'.
 #' @param lab_size Size of axes labels. Defaults to 8.
 #' @param text_size Size of axes text and legend text. Defaults to 6.
+#' @param outline_size Size of the outline. Defaults to 0.7.
 #' @param fig_width Figure width (if saved). Defaults to 8.
 #' @param fig_height Figure height (if saved). Defaults to 9.
 #' @param fig_units Figure dimension units (if saved). Defaults to "cm".
@@ -97,6 +98,7 @@ plot_patches <- function(df,
                          file_ext = "png",
                          lab_size = 8,
                          text_size = 6,
+                         outline_size = 0.7,
                          fig_width = 8,
                          fig_height = 9,
                          fig_units = "cm",
@@ -217,7 +219,7 @@ plot_patches <- function(df,
                 aes(x = x, y = y, fill = val)) +
     geom_polygon(data = patches,
                  aes(y = lat,x = long, group = group, colour = id),
-                 alpha = 0, size = 0.7) +
+                 alpha = 0, size = outline_size) +
     theme_classic() +
     theme(axis.line = element_blank(),
           axis.title = element_blank(),

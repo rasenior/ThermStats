@@ -4,15 +4,15 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-
 plot_patches(df, patches, facet = FALSE, plot_distribution = TRUE,
   print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
   out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
-  text_size = 6, fig_width = 8, fig_height = 9, fig_units = "cm",
-  val_pal = c("black", "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0",
-  "#ba187f", "#d9365b", "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e",
-  "#fad61e"), patch_cols = c("mistyrose", "cornflowerblue"),
-  patch_labs = c("Hot spots", "Cold spots"), val_lab = NULL)
+  text_size = 6, outline_size = 0.7, fig_width = 8, fig_height = 9,
+  fig_units = "cm", val_pal = c("black", "#050155", "#120172", "#3b008e",
+  "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930", "#f76323", "#fa8600",
+  "#f6a704", "#fad61e", "#fad61e"), patch_cols = c("mistyrose",
+  "cornflowerblue"), patch_labs = c("Hot spots", "Cold spots"),
+  val_lab = NULL)
 }
 \arguments{
 \item{df}{A dataframe returned from \code{\link{get_patches}}.}
@@ -39,6 +39,8 @@ specified, uses generic names 'distribution' and 'patches'.}
 \item{lab_size}{Size of axes labels. Defaults to 8.}
 
 \item{text_size}{Size of axes text and legend text. Defaults to 6.}
+
+\item{outline_size}{Size of the outline. Defaults to 0.7.}
 
 \item{fig_width}{Figure width (if saved). Defaults to 8.}
 
