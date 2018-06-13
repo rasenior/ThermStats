@@ -3,6 +3,7 @@
 #' Calculate summary and spatial statistics across a single matrix or raster.
 #' @param val_mat A numeric matrix or raster.
 #' @param matrix_id The matrix ID (optional). Useful when iterating over numerous matrices.
+#' @param get_patches Whether to identify hot and cold spots. Defaults to TRUE.
 #' @param k Number of neighbours to use when calculating nearest neighbours
 #' using \code{spdep::}\code{\link[spdep]{knearneigh}}.
 #' @param style Style to use when calculating neighbourhood weights using
