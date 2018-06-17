@@ -101,6 +101,7 @@ stats_by_group <- function(metadata,
                             # Get stats
                             result <-
                               get_stats(val_mat = sub_mat,
+                                        get_patches = TRUE,
                                         matrix_id = x,
                                         k = k,
                                         style = style,
@@ -129,6 +130,7 @@ stats_by_group <- function(metadata,
              function(x){
                tryCatch({
                  sub_mat <- create_subset(metadata = metadata,
+                                          get_patches = TRUE,
                                           mat_list = mat_list,
                                           matrix_id = matrix_id,
                                           grouping_var = grouping_var,
