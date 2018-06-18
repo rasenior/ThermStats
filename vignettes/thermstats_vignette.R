@@ -1,15 +1,18 @@
 ## ----setup, include=FALSE------------------------------------------------
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.align = "centre", fig.width = 10/2.54)
 
-## ----install-------------------------------------------------------------
+## ----install, eval = -1--------------------------------------------------
 devtools::install_github("rasenior/ThermStats")
 library(ThermStats)
 
 ## ----batch-extract, echo= TRUE, results = "hide"-------------------------
 # Batch extract four FLIR thermal images included in ThermStats
 flir_raw <-
-    batch_extract("~./../Desktop/extdata",
-                  write_results = FALSE)
+  # NOTE this step may not work if there are spaces in the path to 
+  # where the package is installed
+   batch_extract(system.file("extdata", package = "ThermStats"),
+                 write_results = FALSE)
 
 ## ----batch-convert, echo= TRUE, results = "hide"-------------------------
 # Load raw data
@@ -61,4 +64,70 @@ flir_converted <-
                   E, OD, RTemp, ATemp, IRWTemp, IRT, RH,
                   PR1, PB, PF, PO, PR2,
                   write_results = FALSE)
+
+## ----get-stats, echo= TRUE, results = "hide"-----------------------------
+flir_stats <-
+    get_stats(
+        # The temperature matrix 
+        val_mat = flir_converted$`8565`,
+        # The ID of the matrix
+        matrix_id = "8565",
+        # Whether or not to identify hot and cold spots
+        get_patches = TRUE,
+        # The size of the neighourhood 
+        # (for calculating the local G statistic)
+        k = 8,
+        # The neghbour weighting style 
+        # (for calculating the local G statistic)
+        style = "W",
+        # The matrix projection
+        # (only relevant for geographic data)
+        mat_proj = NULL,
+        # The matrix extent
+        # (only relevant for geographic data)
+        mat_extent = NULL,
+        # The data to return
+        return_vals = c("df", "patches", "pstats"),
+        # The names of the statistics functions
+        pixel_fns = NULL,
+        # The summary statistics
+        median, perc_5, perc_95, SHDI
+    )
+
+## ----stats-by-group, results = "hide"------------------------------------
+flir_stats_group <-
+    stats_by_group(
+        # A dataframe denoting the grouping
+        metadata = metadata,
+        # List of temperature matrices
+        mat_list = flir_converted,
+        # Variable denoting the matrix IDs
+        matrix_id = "photo_no",
+        # Variable denoting the grouping
+        grouping_var = "rep_id",
+        # Desired precision of data
+        round_val = 0.5,
+        # The size of the neighourhood 
+        # (for calculating the local G statistic)
+        k = 8,
+        # The neghbour weighting style 
+        # (for calculating the local G statistic)
+        style = "W",
+        # Some summary statistics
+        median, perc_5, perc_95, SHDI
+        )
+
+## ----tab-B-1, tidy=FALSE-------------------------------------------------
+knitr::kable(
+  head(flir_stats_group[, c(1:5,8,13:17)], 10), booktabs = TRUE,
+  caption = "A snippet of hot spot patch statistics returned by 'stats_by_group', which implements 'get_stats' within groups."
+)
+
+## ----plot-patches, echo= TRUE, results = "hide"--------------------------
+plot_patches(
+    # The raw temperature data
+    df = flir_stats$df,
+    # The patch outlines
+    patches = flir_stats$patches
+        )
 
