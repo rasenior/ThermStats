@@ -84,7 +84,6 @@ stats_by_group <- function(metadata,
                            grouping_var,
                            round_val,...){
   pixel_fns <- paste(match.call(expand.dots = FALSE)$...)
-  print(pixel_fns)
 
   if (requireNamespace("pbapply", quietly = TRUE)) {
     temp_stats<-
