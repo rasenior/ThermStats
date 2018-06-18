@@ -23,7 +23,7 @@
 #' # Load raw data
 #' raw_dat <- flir_raw$raw_dat
 #' camera_params <- flir_raw$camera_params
-#' metadata <- flir_raw$metadata
+#' metadata <- flir_metadata
 #'
 #' # Batch convert
 #' mat_list <- batch_convert(raw_dat, write_results = FALSE)
@@ -83,6 +83,8 @@ stats_by_group <- function(metadata,
                            style = "W",
                            grouping_var,
                            round_val,...){
+  pixel_fns <- paste(match.call(expand.dots = FALSE)$...)
+  print(pixel_fns)
 
   if (requireNamespace("pbapply", quietly = TRUE)) {
     temp_stats<-
@@ -101,13 +103,14 @@ stats_by_group <- function(metadata,
                             # Get stats
                             result <-
                               get_stats(val_mat = sub_mat,
-                                        get_patches = TRUE,
                                         matrix_id = x,
+                                        get_patches = TRUE,
                                         k = k,
                                         style = style,
                                         mat_proj = NULL,
                                         mat_extent = NULL,
                                         return_vals = "pstats",
+                                        pixel_fns = pixel_fns,
                                         ...
                               )
                             # Add number matrices
@@ -130,7 +133,6 @@ stats_by_group <- function(metadata,
              function(x){
                tryCatch({
                  sub_mat <- create_subset(metadata = metadata,
-                                          get_patches = TRUE,
                                           mat_list = mat_list,
                                           matrix_id = matrix_id,
                                           grouping_var = grouping_var,
@@ -143,11 +145,13 @@ stats_by_group <- function(metadata,
                  result <-
                    get_stats(val_mat = sub_mat,
                              matrix_id = x,
+                             get_patches = TRUE,
                              k = k,
                              style = style,
                              mat_proj = NULL,
                              mat_extent = NULL,
                              return_vals = "pstats",
+                             pixel_fns = pixel_fns,
                              ...
                    )
                  # Add number matrices

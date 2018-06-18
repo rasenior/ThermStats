@@ -17,6 +17,7 @@
 #' (\code{patches}) and patch statistics dataframe (\code{pstats}). Note that
 #' \code{pstats} will always be returned -- if this is not desired, use
 #' \code{\link{get_patches}} instead.
+#' @param pixel_fns The names of the summary statistics to apply.
 #' @param ... Use to specify summary statistics that should be calculated across
 #' all pixels. Several helper functions are included for use here:
 #' \code{\link{perc_5}}, \code{\link{perc_95}},
@@ -43,7 +44,7 @@
 #' metadata <- flir_raw$metadata
 #'
 #' # Define individual matrix and raster
-#' val_mat <- mat_list$`8565`
+#' val_mat <- raw_dat$`8565`
 #' val_raster <- raster::raster(val_mat)
 #'
 #' # Define matrix ID (the photo number in this case)
@@ -52,8 +53,8 @@
 #' # Get stats!
 #' get_stats(val_mat = val_mat,
 #'           matrix_id = matrix_id,
-#'           k = k,
-#'           style = style,
+#'           k = 8,
+#'           style = "W",
 #'           mat_proj = NULL,
 #'           mat_extent = NULL,
 #'           return_vals = "pstats",
@@ -101,6 +102,7 @@ get_stats <- function(val_mat,
                       mat_proj = NULL,
                       mat_extent = NULL,
                       return_vals = c("df","patches","pstats"),
+                      pixel_fns = NULL,
                       ...){
 
   # If raster, coerce to matrix ------------------------------------------------
@@ -111,9 +113,11 @@ get_stats <- function(val_mat,
   # Pixel statistics -----------------------------------------------------------
   # -> these statistics are calculated across all pixels
 
-  # Define function names for pixel stats
-  pixel_fns <-
-    paste(match.call(expand.dots = FALSE)$...)
+  if(is.null(pixel_fns)){
+    # Define function names for pixel stats
+    pixel_fns <-
+      paste(match.call(expand.dots = FALSE)$...)
+  }
   # Get pixel stats
   pixel_stats <- multi_sapply(val_mat,...)
 

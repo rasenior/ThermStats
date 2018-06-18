@@ -6,7 +6,7 @@
 \usage{
 get_stats(val_mat, matrix_id = NULL, get_patches = TRUE, k = 8,
   style = "W", mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
-  "patches", "pstats"), ...)
+  "patches", "pstats"), pixel_fns = NULL, ...)
 }
 \arguments{
 \item{val_mat}{A numeric matrix or raster.}
@@ -32,6 +32,8 @@ data to plot correctly.}
 (\code{patches}) and patch statistics dataframe (\code{pstats}). Note that
 \code{pstats} will always be returned -- if this is not desired, use
 \code{\link{get_patches}} instead.}
+
+\item{pixel_fns}{The names of the summary statistics to apply.}
 
 \item{...}{Use to specify summary statistics that should be calculated across
 all pixels. Several helper functions are included for use here:
@@ -65,7 +67,7 @@ camera_params <- flir_raw$camera_params
 metadata <- flir_raw$metadata
 
 # Define individual matrix and raster
-val_mat <- mat_list$`8565`
+val_mat <- raw_dat$`8565`
 val_raster <- raster::raster(val_mat)
 
 # Define matrix ID (the photo number in this case)
@@ -74,8 +76,8 @@ matrix_id <- "8565"
 # Get stats!
 get_stats(val_mat = val_mat,
           matrix_id = matrix_id,
-          k = k,
-          style = style,
+          k = 8,
+          style = "W",
           mat_proj = NULL,
           mat_extent = NULL,
           return_vals = "pstats",

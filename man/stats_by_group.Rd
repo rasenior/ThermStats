@@ -43,7 +43,7 @@ Calculate summary and spatial statistics across multiple matrices within groups.
 # Load raw data
 raw_dat <- flir_raw$raw_dat
 camera_params <- flir_raw$camera_params
-metadata <- flir_raw$metadata
+metadata <- flir_metadata
 
 # Batch convert
 mat_list <- batch_convert(raw_dat, write_results = FALSE)
