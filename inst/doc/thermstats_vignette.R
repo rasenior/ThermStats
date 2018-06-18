@@ -1,6 +1,6 @@
 ## ----setup, include=FALSE------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.align = "centre", fig.width = 8/2.54)
+                      fig.align = "centre", fig.width = 16.6/2.54)
 
 ## ----install, eval = -1--------------------------------------------------
 devtools::install_github("rasenior/ThermStats")

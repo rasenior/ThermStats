@@ -33,12 +33,12 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.align = "centre", fig.width = 8/2.54)
+                      fig.align = "centre", fig.width = 16.6/2.54)
 ```
 
 # Summary
 
-`ThermStats` is designed for biologists using thermography to quantify thermal heteorgeneity. It uses the `Thermimage` package [@tattersall_thermimage:_2017] to batch process data from FLIR thermal cameras, and takes inspiration from FRAGSTATS [@fragstats_2012], `SDMTools`, @faye_toolbox_2016 and @shi_framework_2016 to facilitate the calculation of various metrics of thermal heteroeneity for any gridded temperature data.
+`ThermStats` is designed for biologists using thermography to quantify thermal heteorgeneity. It uses the `Thermimage` package [@tattersall_thermimage:_2017] to batch process data from FLIR thermal cameras, and takes inspiration from FRAGSTATS [@fragstats_2012], `SDMTools` [@sdmtools_2014], @faye_toolbox_2016 and @shi_framework_2016 to facilitate the calculation of various metrics of thermal heteroeneity for any gridded temperature data.
 
 The package is available to download from GitHub using `devtools`:
 
