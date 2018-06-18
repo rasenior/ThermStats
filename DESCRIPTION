@@ -26,4 +26,7 @@ Imports: spdep,
     ggplot2,
     Thermimage
 Suggests: gridExtra,
-    pbapply
+    pbapply,
+    knitr, 
+    rmarkdown
+VignetteBuilder: knitr

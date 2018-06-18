@@ -1,0 +1,42 @@
+---
+title: "Using ThermStats to calculate statistics for thermal images"
+output: rmarkdown::html_vignette
+author: Rebecca A. Senior
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+vignette: >
+  %\VignetteIndexEntry{Using ThermStats to calculate statistics for thermal images}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# tl;dr
+
+`ThermStats` is designed for biologists using thermography to quantify thermal heteorgeneity. It uses the `Thermimage` package [@tattersall_thermimage:_2017] to batch process data from FLIR thermal cameras, and takes inspiration from FRAGSTATS, `SDMTools`, @faye_toolbox_2016 and @shi_framework_2016 to facilitate the calculation of various metrics of thermal heteroeneity for any gridded temperature data.
+
+The package is available to download from GitHub using `devtools`:
+
+```{r install}
+devtools::install_github("rasenior/ThermStats")
+library(ThermStats)
+```
+
+# Extracting raw data
+
+# Converting raw data to temperature
+
+# Calculating thermal statistics
+
+# Plotting
+
+
+
+
+
+
+
+
+
