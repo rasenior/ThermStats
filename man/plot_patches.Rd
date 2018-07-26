@@ -4,20 +4,24 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(df, patches, facet = FALSE, plot_distribution = TRUE,
-  print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
-  out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
-  text_size = 6, outline_size = 0.7, fig_width = 8, fig_height = 9,
-  fig_units = "cm", val_pal = c("black", "#050155", "#120172", "#3b008e",
-  "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930", "#f76323", "#fa8600",
-  "#f6a704", "#fad61e", "#fad61e"), patch_cols = c("mistyrose",
-  "cornflowerblue"), patch_labs = c("Hot spots", "Cold spots"),
-  val_lab = NULL)
+plot_patches(df, patches, bg_poly = NULL, facet = FALSE,
+  plot_distribution = TRUE, print_plot = TRUE, save_plot = FALSE,
+  return_plot = FALSE, out_dir = NULL, file_name = NULL,
+  file_ext = "png", lab_size = 8, text_size = 6, outline_size = 0.7,
+  fig_width = 8, fig_height = 9, fig_units = "cm", val_pal = c("black",
+  "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b",
+  "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
+  patch_cols = c("mistyrose", "cornflowerblue"), patch_labs = c("Hot spots",
+  "Cold spots"), val_lab = NULL)
 }
 \arguments{
 \item{df}{A dataframe returned from \code{\link{get_patches}}.}
 
 \item{patches}{A SpatialPolygonsDataFrame returned from \code{\link{get_patches}}.}
+
+\item{bg_poly}{An optional background polygon. Can be a SpatialPolygonsDataFrame
+or fortified dataframe (see \code{ggplot2::}\code{\link[ggplot2]{fortify}})
+with the variables 'long', 'lat' and 'group'.}
 
 \item{facet}{Whether to plot facets by matrix_id. Defaults to FALSE.}
 
@@ -88,16 +92,16 @@ plot_patches(df = flir_results$df,
              save_plot = FALSE)
 
 # Worldclim2 temperature raster ---------------------------------------
-# Dataset 'worldclim_sulawesi' represents mean January temperature for the
+# Dataset 'sulawesi_temp' represents mean January temperature for the
 # island of Sulawesi
 
 # Define projection and extent
-mat_proj <- raster::projection(worldclim_sulawesi)
-mat_extent <- raster::extent(worldclim_sulawesi)
+mat_proj <- raster::projection(sulawesi_temp)
+mat_extent <- raster::extent(sulawesi_temp)
 
 # Find hot and cold patches
 worldclim_results <-
- get_patches(val_mat = worldclim_sulawesi,
+ get_patches(val_mat = sulawesi_temp,
              matrix_id = "sulawesi",
              k = 8,
              style = "W",
@@ -116,6 +120,7 @@ sp::plot(worldclim_results$patches)
 # Plot using ThermStats::plot_patches
 plot_patches(df = worldclim_results$df,
              patches = worldclim_results$patches,
+             bg_poly = sulawesi_bg,
              print_plot = TRUE,
              save_plot = FALSE)
 

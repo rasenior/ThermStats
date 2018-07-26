@@ -3,6 +3,9 @@
 #' Plot hot and cold patches returned from \code{\link{get_patches}}.
 #' @param df A dataframe returned from \code{\link{get_patches}}.
 #' @param patches A SpatialPolygonsDataFrame returned from \code{\link{get_patches}}.
+#' @param bg_poly An optional background polygon. Can be a SpatialPolygonsDataFrame
+#' or fortified dataframe (see \code{ggplot2::}\code{\link[ggplot2]{fortify}})
+#' with the variables 'long', 'lat' and 'group'.
 #' @param facet Whether to plot facets by matrix_id. Defaults to FALSE.
 #' @param plot_distribution Should a histogram be plotted? Defaults to TRUE.
 #' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
@@ -51,16 +54,16 @@
 #'              save_plot = FALSE)
 #'
 #' # Worldclim2 temperature raster ---------------------------------------
-#' # Dataset 'worldclim_sulawesi' represents mean January temperature for the
+#' # Dataset 'sulawesi_temp' represents mean January temperature for the
 #' # island of Sulawesi
 #'
 #' # Define projection and extent
-#' mat_proj <- raster::projection(worldclim_sulawesi)
-#' mat_extent <- raster::extent(worldclim_sulawesi)
+#' mat_proj <- raster::projection(sulawesi_temp)
+#' mat_extent <- raster::extent(sulawesi_temp)
 #'
 #' # Find hot and cold patches
 #' worldclim_results <-
-#'  get_patches(val_mat = worldclim_sulawesi,
+#'  get_patches(val_mat = sulawesi_temp,
 #'              matrix_id = "sulawesi",
 #'              k = 8,
 #'              style = "W",
@@ -79,6 +82,7 @@
 #' # Plot using ThermStats::plot_patches
 #' plot_patches(df = worldclim_results$df,
 #'              patches = worldclim_results$patches,
+#'              bg_poly = sulawesi_bg,
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
 #'
@@ -88,6 +92,7 @@
 #'
 plot_patches <- function(df,
                          patches,
+                         bg_poly = NULL,
                          facet = FALSE,
                          plot_distribution = TRUE,
                          print_plot = TRUE,
@@ -248,7 +253,18 @@ plot_patches <- function(df,
     scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0,0))
 
-  # If facetting is required
+  # If background polygon is supplied:
+  if(!(is.null(bg_poly))){
+    p2 <- p2 +
+      geom_polygon(data = bg_poly,
+                   aes(x = long,
+                       y = lat,
+                       group = group),
+                   colour = "black",
+                   alpha = 0)
+  }
+
+  # If facetting is required:
   if(facet){
     p2 <- p2 +
       facet_wrap(~ matrix_id) +
