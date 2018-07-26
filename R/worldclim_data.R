@@ -5,7 +5,7 @@
 #' time period (1970-2000).
 #'
 #' @docType data
-#' @usage worldclim_sulawesi
+#' @usage sulawesi_temp
 #' @format A geographic temperature raster
 #' @keywords datasets
 #' @references Fick, S.E. and Hijmans, R.J. (2017),
@@ -13,6 +13,6 @@
 #' areas. International Journal of Climatology. Available at:
 #' \url{http://worldclim.org/version2}.
 #' @examples
-#' plot(worldclim_sulawesi)
-#' hist(plot(worldclim_sulawesi))
-"worldclim_sulawesi"
+#' plot(sulawesi_temp)
+#' hist(plot(sulawesi_temp))
+"sulawesi_temp"

@@ -70,16 +70,16 @@
 #'
 #' # Worldclim2 temperature raster ---------------------------------------------
 #'
-#' # Dataset 'worldclim_sulawesi' represents mean January temperature for the
+#' # Dataset 'sulawesi_temp' represents mean January temperature for the
 #' # island of Sulawesi
 #'
 #' # Define projection and extent
-#' mat_proj <- projection(worldclim_sulawesi)
-#' mat_extent <- extent(worldclim_sulawesi)
+#' mat_proj <- projection(sulawesi_temp)
+#' mat_extent <- extent(sulawesi_temp)
 #'
 #' # Find hot and cold patches
 #' worldclim_results <-
-#'  get_stats(val_mat = worldclim_sulawesi,
+#'  get_stats(val_mat = sulawesi_temp,
 #'            matrix_id = "sulawesi",
 #'            k = 8,
 #'            style = "W",
