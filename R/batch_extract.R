@@ -23,6 +23,13 @@ batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL, file_nam
 
   # File names --------------------------------------------------------------
 
+  # If input directory path contains spaces 'readflirJPG' will not work, so
+  # must change working directory instead
+  if (grepl(" ", in_dir)){
+    setwd(in_dir)
+    in_dir <- "."
+  }
+
   # Get file names
   file.names <- list.files(in_dir, full.names = TRUE)
 
