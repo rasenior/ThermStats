@@ -4,7 +4,7 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(df, patches, bg_poly = NULL, facet = FALSE,
+plot_patches(df, patches, bg_poly = NULL, bg_colour = NULL, facet = FALSE,
   plot_distribution = TRUE, print_plot = TRUE, save_plot = FALSE,
   return_plot = FALSE, out_dir = NULL, file_name = NULL,
   file_ext = "png", lab_size = 8, text_size = 6, outline_size = 0.7,
@@ -22,6 +22,8 @@ plot_patches(df, patches, bg_poly = NULL, facet = FALSE,
 \item{bg_poly}{An optional background polygon. Can be a SpatialPolygonsDataFrame
 or fortified dataframe (see \code{ggplot2::}\code{\link[ggplot2]{fortify}})
 with the variables 'long', 'lat' and 'group'.}
+
+\item{bg_colour}{Colour of the background polygon.}
 
 \item{facet}{Whether to plot facets by matrix_id. Defaults to FALSE.}
 

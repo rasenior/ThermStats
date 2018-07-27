@@ -6,6 +6,7 @@
 #' @param bg_poly An optional background polygon. Can be a SpatialPolygonsDataFrame
 #' or fortified dataframe (see \code{ggplot2::}\code{\link[ggplot2]{fortify}})
 #' with the variables 'long', 'lat' and 'group'.
+#' @param bg_colour Colour of the background polygon.
 #' @param facet Whether to plot facets by matrix_id. Defaults to FALSE.
 #' @param plot_distribution Should a histogram be plotted? Defaults to TRUE.
 #' @param print_plot Should the resulting plots be printed? Defaults to FALSE.
@@ -93,6 +94,7 @@
 plot_patches <- function(df,
                          patches,
                          bg_poly = NULL,
+                         bg_colour = NULL,
                          facet = FALSE,
                          plot_distribution = TRUE,
                          print_plot = TRUE,
@@ -260,7 +262,7 @@ plot_patches <- function(df,
                    aes(x = long,
                        y = lat,
                        group = group),
-                   colour = "black",
+                   colour = bg_colour,
                    alpha = 0)
   }
 
