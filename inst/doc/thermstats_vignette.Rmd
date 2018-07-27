@@ -40,31 +40,28 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
 
 The package is available to download from GitHub using `devtools`:
 
-```{r install, echo = TRUE, eval = -1}
+```{r install, echo = TRUE}
 devtools::install_github("rasenior/ThermStats")
 library(ThermStats)
 ```
 
-Once loaded, the code below can be followed step-by-step. Please note that some steps may not work if there are spaces in the path to where the package is installed.
+Once loaded, the code below can be followed step-by-step.
 
 # Extracting raw data
 
 Data are extracted from FLIR images using `batch_extract`. This is a batch implementation of the `readflirJPG` function from `Thermimage`. It requires only the path to the directory of FLIR thermal images, and the freely available external software ['Exiftool'](https://www.sno.phy.queensu.ca/~phil/exiftool/ "Exiftool"). Besides raw data, this step also retrieves camera-specific calibration parameters which are required later to convert raw data to temperature values.
 
 ```{r batch-extract, echo= TRUE, results = "hide"}
-# Batch extract four FLIR thermal images included 
-# in the ThermStats package installation
+# Batch extract thermal images included in ThermStats installation
 flir_raw <-
-   batch_extract(in_dir = 
-                     system.file("extdata",
-                                 package = 
-                                     "ThermStats"),
-                 write_results = FALSE)
+    batch_extract(in_dir = system.file("extdata", 
+                                       package = "ThermStats"),
+                  write_results = FALSE)
 ```
 
 # Converting raw data to temperature
 
-Raw data are encoded in each thermal image as a 16 bit analog-to-digital signal, which represents the radiance received by the infrared sensor. The function `batch_convert` converts these raw data to temperature values using equations from infrared thermography, via a batch implementation of the function `raw2temp` in `Thermimage`. It uses environmental parameters defined by the user, and the calibration constants extracted in `batch_extract`. See [Chapter 3: Methods](#ch3-methods) for a full discussion of the different environmental parameters. In brief: 
+Raw data are encoded in each thermal image as a 16 bit analog-to-digital signal, which represents the radiance received by the infrared sensor. The function `batch_convert` converts these raw data to temperature values using equations from infrared thermography, via a batch implementation of the function `raw2temp` in `Thermimage`. It uses the calibration constants extracted in `batch_extract` and environmental parameters defined by the user:
 
 * Emissivity = the amount of radiation emmitted by a particular object, for a given temperature.
 * Object distance = the distance between the camera and the object of interest.
@@ -80,39 +77,29 @@ camera_params <- flir_raw$camera_params
 # Define metadata
 metadata <- flir_metadata
 
-# Create vector denoting the position of each 
-# photo within the metadata dataframe
+# Create vector denoting the position of each photo within metadata
 photo_index <- match(names(raw_dat), 
                      metadata$photo_no)
 
-# Batch convert ---------------------------------
+# Batch convert -----------------------------------------------------------------------------------
 flir_converted <-
     batch_convert(
         raw_dat = raw_dat,
-        # Emissivity = mean of the range in 
-        # Scheffers et al. 2017
+        # Emissivity = mean of the range in Scheffers et al. 2017
         E = mean(c(0.982,0.99)),
-        # Object distance = hypotenuse of a right
-        # triangle where the vertical side is 
-        # 1.3 m (breast height) & the angle down 
-        # is 45 degrees
+        # Object distance = hypotenuse of a right triangle where the vertical side is 1.3 m (breast 
+        # height) & the angle down is 45 degrees
         OD = (sqrt(2))*1.3,
-        # Apparent reflected temperature, 
-        # atmospheric temperature and infrared 
-        # window temperature set as the 
-        # atmospheric temperature measured in 
-        # the field
+        # Apparent reflected temperature, atmospheric temperature & infrared window temperature =
+        # atmospheric temperature measured in the field
         RTemp = metadata$atm_temp[photo_index],
         ATemp = metadata$atm_temp[photo_index],
         IRWTemp = metadata$atm_temp[photo_index],
-        # Infrared Window transmission kept at 
-        # default value of 1
+        # Infrared Window transmission = default value of 1
         IRT = 1,
-        # Relative humidity is set as the 
-        # relative humidity measured in the field
+        # Relative humidity = relative humidity measured in the field
         RH = metadata$rel_humidity[photo_index],
-        # Calibration constants from 
-        # batch_extract, constant for each camera
+        # Calibration constants from 'batch_extract'
         PR1 = camera_params[,"PlanckR1"],
         PB = camera_params[,"PlanckB"],
         PF = camera_params[,"PlanckF"],
@@ -135,28 +122,27 @@ flir_stats <-
         val_mat = flir_converted$`8565`,
         # The ID of the matrix
         matrix_id = "8565",
-        # Whether or not to identify hot and 
-        # cold spots
+        # Whether or not to identify hot and cold spots
         get_patches = TRUE,
-        # The size of the neighourhood 
-        # (for calculating local G statistic)
+        # The size of the neighourhood (for calculating local G stat)
         k = 8,
-        # The neghbour weighting style 
-        # (for calculating local G statistic)
+        # The neghbour weighting style (for calculating local G stat)
         style = "W",
-        # The matrix projection
-        # (only relevant for geographic data)
+        # The matrix projection (only relevant for geographic data)
         mat_proj = NULL,
-        # The matrix extent
-        # (only relevant for geographic data)
+        # The matrix extent (only relevant for geographic data)
         mat_extent = NULL,
         # The data to return
-        return_vals = c("df", 
-                        "patches", 
-                        "pstats"),
-        # The names of the statistics functions
+        return_vals = c(
+            # Temperature data as dataframe
+            "df", 
+            # SpatialPolygonsDataFrame of patch outlines
+            "patches", 
+            # Patch statistics dataframe
+            "pstats"),
+        # The names of the statistics functions (to manually name columns in the 'pstats' dataframe)
         pixel_fns = NULL,
-        # The summary statistics
+        # The summary statistics of interest
         median, perc_5, perc_95, SHDI
     )
 ```
@@ -191,15 +177,13 @@ flir_stats_group <-
         grouping_var = "rep_id",
         # Desired precision of data
         round_val = 0.5,
-        # The size of the neighourhood 
-        # (for calculating local G statistic)
+        # The size of the neighourhood (for calculating local G stat)
         k = 8,
-        # The neghbour weighting style 
-        # (for calculating local G statistic)
+        # The neghbour weighting style (for calculating local G stat)
         style = "W",
-        # Some summary statistics
+        # The summary statistics of interest
         median, perc_5, perc_95, SHDI
-        )
+    )
 ```
 
 By default, both `get_stats` and `stats_by_group` return a dataframe with patch statistics (Table 2) for each matrix or matrix group, respectively. 
@@ -226,15 +210,15 @@ cat(tab2) # output the table in a format good for HTML/PDF/docx conversion
 
 # Plotting
 
-In addition to patch statistics, `get_stats` can return (1) the temperature matrix in a dataframe format, and (2) a `SpatialPolygonsDataFrame` of its hot and cold spots. The function `plot_patches` can then plot the temperature distribution (if `plot_distribution = TRUE`), and recreates the original thermal image overlaid with outlines of hot and cold spots.
+In addition to patch statistics, `get_stats` can return (1) the temperature matrix in a dataframe format, and (2) a `SpatialPolygonsDataFrame` of its hot and cold spots. The function `plot_patches` can then recreate the original thermal image overlaid with outlines of hot and cold spots, and plot the temperature distribution (if `plot_distribution = TRUE`).
 
-```{r fig-B-1, fig.cap= "The output of 'plot_patches' includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the Getis-Ord local statistic."}
+```{r fig-B-1, fig.cap= "The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the Getis-Ord local statistic.", echo = TRUE}
 plot_patches(
     # The raw temperature data
     df = flir_stats$df,
     # The patch outlines
     patches = flir_stats$patches
-        )
+)
 ```
 
 # References
