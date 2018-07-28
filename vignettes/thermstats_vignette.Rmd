@@ -151,7 +151,7 @@ For grouped matrices, `stats_by_group` requires the user to supply a list of mat
 
 ```{r tab-B-1, results='asis'}
 tab1 <- "
-Table: Table 1 Example metadata denoting the grouping ('rep_id') of different temperature matrices. Statistics can be calculated over multiple matrices within a group, using the function `stats_by_group`.
+Table: Table 1: Example metadata denoting the grouping ('rep_id') of different temperature matrices. Statistics can be calculated over multiple matrices within a group, using the function `stats_by_group`.
 
 | photo_no|rep_id | atm_temp| rel_humidity|
 |--------:|:------|--------:|------------:|
@@ -190,7 +190,7 @@ By default, both `get_stats` and `stats_by_group` return a dataframe with patch 
 
 ```{r tab-B-2, results='asis'}
 tab2 <- "
-Table: Table 2 A snippet of hot spot patch statistics returned by `stats_by_group`, which implements `get_stats` within groups.
+Table: Table 2: A snippet of hot spot patch statistics returned by `stats_by_group`, which implements `get_stats` within groups.
 
 | median| perc_5| perc_95|     SHDI| hot_shape_index| hot_aggregation|
 |------:|------:|-------:|--------:|---------------:|---------------:|
