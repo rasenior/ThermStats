@@ -25,14 +25,14 @@ metadata <- flir_metadata
 photo_index <- match(names(raw_dat), 
                      metadata$photo_no)
 
-# Batch convert -----------------------------------------------------------------------------------
+# Batch convert
 flir_converted <-
     batch_convert(
         raw_dat = raw_dat,
         # Emissivity = mean of the range in Scheffers et al. 2017
         E = mean(c(0.982,0.99)),
-        # Object distance = hypotenuse of a right triangle where the vertical side is 1.3 m (breast 
-        # height) & the angle down is 45 degrees
+        # Object distance = hypotenuse of a right triangle where the vertical side is 1.3 m 
+        # (breast height) & the angle down is 45 degrees
         OD = (sqrt(2))*1.3,
         # Apparent reflected temperature, atmospheric temperature & infrared window temperature =
         # atmospheric temperature measured in the field
@@ -77,7 +77,7 @@ flir_stats <-
             "patches", 
             # Patch statistics dataframe
             "pstats"),
-        # The names of the statistics functions (to manually name columns in the 'pstats' dataframe)
+        # The names of the statistics functions (to manually name columns in 'pstats')
         pixel_fns = NULL,
         # The summary statistics of interest
         median, perc_5, perc_95, SHDI
@@ -85,7 +85,7 @@ flir_stats <-
 
 ## ----tab-B-1, results='asis'---------------------------------------------
 tab1 <- "
-Table: Example metadata denoting the grouping ('rep_id') of different temperature matrices. Statistics can be calculated over multiple matrices within a group, using the function `stats_by_group`.
+Table: Table 1: Example metadata denoting the grouping ('rep_id') of different temperature matrices. Statistics can be calculated over multiple matrices within a group, using the function `stats_by_group`.
 
 | photo_no|rep_id | atm_temp| rel_humidity|
 |--------:|:------|--------:|------------:|
@@ -120,7 +120,7 @@ flir_stats_group <-
 
 ## ----tab-B-2, results='asis'---------------------------------------------
 tab2 <- "
-Table: A snippet of hot spot patch statistics returned by `stats_by_group`, which implements `get_stats` within groups.
+Table: Table 2: A snippet of hot spot patch statistics returned by `stats_by_group`, which implements `get_stats` within groups.
 
 | median| perc_5| perc_95|     SHDI| hot_shape_index| hot_aggregation|
 |------:|------:|-------:|--------:|---------------:|---------------:|
