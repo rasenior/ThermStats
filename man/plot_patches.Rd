@@ -4,15 +4,17 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(df, patches, bg_poly = NULL, bg_colour = NULL, facet = FALSE,
-  plot_distribution = TRUE, print_plot = TRUE, save_plot = FALSE,
-  return_plot = FALSE, out_dir = NULL, file_name = NULL,
-  file_ext = "png", lab_size = 8, text_size = 6, outline_size = 0.7,
-  fig_width = 8, fig_height = 9, fig_units = "cm", val_pal = c("black",
-  "#050155", "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b",
-  "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
-  patch_cols = c("mistyrose", "cornflowerblue"), patch_labs = c("Hot spots",
-  "Cold spots"), val_lab = NULL)
+plot_patches(df, patches, bg_poly = NULL, bg_colour = NULL,
+  facet = FALSE, plot_distribution = TRUE, print_plot = TRUE,
+  save_plot = FALSE, return_plot = FALSE, out_dir = NULL,
+  file_name = NULL, file_ext = "png", lab_size = 8, text_size = 6,
+  outline_size = 0.7, fig_width = 8, fig_height = 9,
+  fig_units = "cm", val_pal = c("black", "#050155", "#120172",
+  "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
+  "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
+  fill_breaks = waiver(), patch_cols = c("mistyrose",
+  "cornflowerblue"), patch_labs = c("Hot spots", "Cold spots"),
+  val_lab = NULL)
 }
 \arguments{
 \item{df}{A dataframe returned from \code{\link{get_patches}}.}
@@ -58,6 +60,10 @@ specified, uses generic names 'distribution' and 'patches'.}
 derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
 "#7200a9", "#8f00a0","#ba187f", "#d9365b", "#ed5930","#f76323", "#fa8600",
 "#f6a704","#fad61e", "#fad61e")}.}
+
+\item{fill_breaks}{Option to manually specify breaks in colourbar. Defaults
+to \code{waiver()}, where breaks are computed by the transformation object
+(see \code{ggplot2::}\code{\link[ggplot2]{scale_fill_gradient}}).}
 
 \item{patch_cols}{Colours for the patch borders (hot spot colour followed by
 cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.}
