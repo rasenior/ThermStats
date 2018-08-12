@@ -5,8 +5,8 @@
 \title{get_stats}
 \usage{
 get_stats(val_mat, matrix_id = NULL, get_patches = TRUE, k = 8,
-  style = "W", mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
-  "patches", "pstats"), pixel_fns = NULL, ...)
+  style = "W", mat_proj = NULL, mat_extent = NULL,
+  return_vals = c("df", "patches", "pstats"), pixel_fns = NULL, ...)
 }
 \arguments{
 \item{val_mat}{A numeric matrix or raster.}

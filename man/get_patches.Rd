@@ -5,8 +5,8 @@
 \title{get_patches}
 \usage{
 get_patches(val_mat, matrix_id = NULL, k = 8, style = "W",
-  mat_proj = NULL, mat_extent = NULL, return_vals = c("df", "patches",
-  "pstats"))
+  mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
+  "patches", "pstats"))
 }
 \arguments{
 \item{val_mat}{A numeric matrix, such as that returned from

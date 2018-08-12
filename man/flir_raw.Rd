@@ -3,7 +3,6 @@
 \docType{data}
 \name{flir_raw}
 \alias{flir_raw}
-\alias{flir_raw}
 \title{Raw FLIR E40 thermal image data and camera parameters}
 \format{A list consisting of:
   \itemize{
