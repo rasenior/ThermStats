@@ -4,9 +4,10 @@
 \alias{get_stats}
 \title{get_stats}
 \usage{
-get_stats(val_mat, matrix_id = NULL, get_patches = TRUE, k = 8,
-  style = "W", mat_proj = NULL, mat_extent = NULL,
-  return_vals = c("df", "patches", "pstats"), pixel_fns = NULL, ...)
+get_stats(val_mat, matrix_id = NULL, calc_connectivity = TRUE,
+  conn_threshold = 1.5, get_patches = TRUE, k = 8, style = "W",
+  mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
+  "patches", "pstats"), sum_stats = c("mean", "min", "max"))
 }
 \arguments{
 \item{val_mat}{A numeric matrix or raster.}
@@ -61,35 +62,37 @@ Calculate summary and spatial statistics across a single matrix or raster.
 \examples{
 
 # FLIR temperature matrix ---------------------------------------------------
-# Load raw data
-raw_dat <- flir_raw$raw_dat
-camera_params <- flir_raw$camera_params
-metadata <- flir_raw$metadata
 
 # Define individual matrix and raster
-val_mat <- raw_dat$`8565`
+val_mat <- flir11835$flir_matrix
 val_raster <- raster::raster(val_mat)
 
 # Define matrix ID (the photo number in this case)
-matrix_id <- "8565"
+matrix_id <- flir11835$photo_no
 
 # Get stats!
 get_stats(val_mat = val_mat,
           matrix_id = matrix_id,
+          calc_connectivity = TRUE,
+          conn_threshold = 1.5,
+          get_patches = TRUE,
           k = 8,
           style = "W",
           mat_proj = NULL,
           mat_extent = NULL,
           return_vals = "pstats",
-          mean, min, max)
+          sum_stats = c("mean", "min","max"))
 get_stats(val_mat = val_raster,
           matrix_id = matrix_id,
-          k = k,
-          style = style,
+          calc_connectivity = TRUE,
+          conn_threshold = 1.5,
+          get_patches = TRUE,
+          k = 8,
+          style = "W",
           mat_proj = NULL,
           mat_extent = NULL,
           return_vals = "pstats",
-          mean, min, max)
+          sum_stats = c("mean", "min","max"))
 
 # Worldclim2 temperature raster ---------------------------------------------
 
@@ -104,12 +107,13 @@ mat_extent <- extent(sulawesi_temp)
 worldclim_results <-
  get_stats(val_mat = sulawesi_temp,
            matrix_id = "sulawesi",
+           calc_connectivity = FALSE,
            k = 8,
            style = "W",
            mat_proj = mat_proj,
            mat_extent = mat_extent,
            return_vals = c("df", "patches", "pstats"),
-           mean, min, max)
+           sum_stats = c("mean", "min","max"))
 
 # Plot!
 df <- worldclim_results$df
