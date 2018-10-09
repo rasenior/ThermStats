@@ -28,7 +28,7 @@
 #' "#f6a704","#fad61e", "#fad61e")}.
 #' @param fill_breaks Option to manually specify breaks in colourbar. Defaults
 #' to \code{waiver()}, where breaks are computed by the transformation object
-#' (see \code{ggplot2::}\code{\link[ggplot2]{scale_fill_gradient}}).
+#' (see \code{ggplot2::}\code{\link[ggplot2]{scale_colour_gradient}}).
 #' @param patch_cols Colours for the patch borders (hot spot colour followed by
 #' cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.
 #' @param patch_labs Labels to use in patch outline legend. Defaults to 'Hot

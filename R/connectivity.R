@@ -2,7 +2,7 @@
 #'
 #' Calculate climate connectivity and potential for temperature change.
 #' @param val_mat A numeric matrix.
-#' @param threshold Climate threshold to use for calculation of climate
+#' @param conn_thresh Climate threshold to use for calculation of climate
 #' connectivity (i.e. the amount of change that organisms would be seeking
 #' to avoid).
 #' @return A dataframe (one row for each pixel) containing:
@@ -15,10 +15,10 @@
 #'  destination pixel}
 #'  \item{diff_potential}{The potential for change achieved by following
 #'  gradient from hotter to cooler pixels}
-#'  \item{clim_conn}{Climate connectivity, calculated as the maximum potential
-#'  change (\code{diff_potential}) minus the climate \code{threshold}. Where
+#'  \item{therm_conn}{Thermal connectivity, calculated as the maximum potential
+#'  change (\code{diff_potential}) minus \code{conn_thresh}. Where
 #'  this value is positive, connectivity of the starting pixel is sufficient to
-#'  avoid the specified threshold of climate warming. See details.}
+#'  avoid the specified conn_thresh of warming. See details.}
 #' @details This measure of climate connectivity and potential for temperature
 #' change is analogous to that described in
 #' \href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
@@ -26,7 +26,7 @@
 #' to avoid; where pixels are sufficiently heterogenous and well connected
 #' organisms can move through the pixels to avoid delterious change.
 #' @references
-#' McGuire, J. L., Lawler, J. J., McRae, B. H., Nu?ez, T. A. and
+#' McGuire, J. L., Lawler, J. J., McRae, B. H., Nunez, T. A. and
 #' Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
 #' landscape. PNAS, 113: 7195-7200.
 #' \url{https://doi.org/10.1073/pnas.1602817113}
@@ -38,16 +38,17 @@
 #' # Get connectivity
 #' mat_conn <-
 #' connectivity(val_mat = val_mat,
-#'              threshold = 1.5)
+#'              conn_thresh = 1.5)
 #' head(mat_conn)
 #'
 #' @export
 
 connectivity <-
   function(val_mat,
-           threshold = 1.5){
+           conn_thresh = 1.5){
 
     # Identify neighbours -----------------------------------------------------
+    message("Identifying pixel neighbours")
 
     # Create a matrix of same size, with cell ID
     id_mat <- matrix(1:length(val_mat),
@@ -143,17 +144,12 @@ connectivity <-
     nbr <- nbr[,c("origin_pixel", "dest_pixel", "origin_val", "dest_val")]
 
     # Determine final destination ---------------------------------------------
+    message("Tracing pixels to coolest destination pixel")
 
-    agg <- aggregate(data=sample,
-                     dest_pixel ~ origin_pixel,
-                     function(x) list(unique(x)))
-    dest_pixels <- agg$dest_pixel
-    names(dest_pixels) <- agg$origin_pixel
-
-    # Identify all the neighbouring destination pixels for each origin pixel
+    # Identify all the neighbouring destination pixels for each unique pixel
     connectsto <-
-      sapply(1:nrow(val_df), function(x){
-        nbr$dest_pixel[nbr$origin_pixel == val_df[x,"pixel"]]
+      sapply(unique(val_df[,"pixel"]), function(x){
+        nbr$dest_pixel[nbr$origin_pixel == x]
       })
 
     # Create vector of unique vals
@@ -164,8 +160,7 @@ connectivity <-
     val_df$dest_val <- NA
     val_df$inter_pixel <- NA
 
-    # Define valorary list of pixels and vals to update as pixels are
-    # connected to each other
+    # Define list of pixels and vals to update as pixels are connected to each other
     running <- val_df[,c("pixel", "val")]
 
     # Loop through each unique temperature, from colder to warmer
@@ -225,7 +220,6 @@ connectivity <-
       }
     }
 
-
     # Calculate potential temperature diff ------------------------------------
 
     # This is the maximum val diff that can be achieved by traversing gradient
@@ -233,7 +227,7 @@ connectivity <-
     val_df$diff_potential <- val_df$val - val_df$dest_val
 
     # Is this sufficient to avoid climate warming?
-    val_df$clim_conn <- val_df$diff_potential - threshold
+    val_df$therm_conn <- val_df$diff_potential - conn_thresh
 
     # Return ------------------------------------------------------------------
     return(val_df)

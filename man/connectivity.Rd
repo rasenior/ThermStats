@@ -4,12 +4,12 @@
 \alias{connectivity}
 \title{connectivity}
 \usage{
-connectivity(val_mat, threshold = 1.5)
+connectivity(val_mat, conn_thresh = 1.5)
 }
 \arguments{
 \item{val_mat}{A numeric matrix.}
 
-\item{threshold}{Climate threshold to use for calculation of climate
+\item{conn_thresh}{Climate threshold to use for calculation of climate
 connectivity (i.e. the amount of change that organisms would be seeking
 to avoid).}
 }
@@ -24,10 +24,10 @@ A dataframe (one row for each pixel) containing:
  destination pixel}
  \item{diff_potential}{The potential for change achieved by following
  gradient from hotter to cooler pixels}
- \item{clim_conn}{Climate connectivity, calculated as the maximum potential
- change (\code{diff_potential}) minus the climate \code{threshold}. Where
+ \item{therm_conn}{Thermal connectivity, calculated as the maximum potential
+ change (\code{diff_potential}) minus \code{conn_thresh}. Where
  this value is positive, connectivity of the starting pixel is sufficient to
- avoid the specified threshold of climate warming. See details.}
+ avoid the specified conn_thresh of warming. See details.}
 }
 \description{
 Calculate climate connectivity and potential for temperature change.
@@ -47,12 +47,12 @@ val_mat <- flir11835$flir_matrix
 # Get connectivity
 mat_conn <-
 connectivity(val_mat = val_mat,
-             threshold = 1.5)
+             conn_thresh = 1.5)
 head(mat_conn)
 
 }
 \references{
-McGuire, J. L., Lawler, J. J., McRae, B. H., Nu?ez, T. A. and
+McGuire, J. L., Lawler, J. J., McRae, B. H., Nunez, T. A. and
 Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
 landscape. PNAS, 113: 7195-7200.
 \url{https://doi.org/10.1073/pnas.1602817113}

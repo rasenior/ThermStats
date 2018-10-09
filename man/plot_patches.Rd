@@ -63,7 +63,7 @@ derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
 
 \item{fill_breaks}{Option to manually specify breaks in colourbar. Defaults
 to \code{waiver()}, where breaks are computed by the transformation object
-(see \code{ggplot2::}\code{\link[ggplot2]{scale_fill_gradient}}).}
+(see \code{ggplot2::}\code{\link[ggplot2]{scale_colour_gradient}}).}
 
 \item{patch_cols}{Colours for the patch borders (hot spot colour followed by
 cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.}

@@ -82,6 +82,7 @@ get_stats(val_mat = val_mat,
           mat_extent = NULL,
           return_vals = "pstats",
           sum_stats = c("mean", "min","max"))
+
 get_stats(val_mat = val_raster,
           matrix_id = matrix_id,
           calc_connectivity = TRUE,

@@ -58,6 +58,7 @@
 #'           mat_extent = NULL,
 #'           return_vals = "pstats",
 #'           sum_stats = c("mean", "min","max"))
+#'
 #' get_stats(val_mat = val_raster,
 #'           matrix_id = matrix_id,
 #'           calc_connectivity = TRUE,
@@ -138,7 +139,7 @@ get_stats <- function(val_mat,
   # -> calculated across pixels
   if(calc_connectivity){
     pixel_conn <- connectivity(val_mat,
-                               threshold = conn_threshold)
+                               conn_thresh = conn_threshold)
     # Order by row & col
     pixel_conn <-
       pixel_conn[order(pixel_conn["y"],
