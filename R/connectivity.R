@@ -1,6 +1,6 @@
 #' connectivity
 #'
-#' Calculate potential for valerature change and climate connectivity.
+#' Calculate climate connectivity and potential for temperature change.
 #' @param val_mat A numeric matrix.
 #' @param threshold Climate threshold to use for calculation of climate
 #' connectivity (i.e. the amount of change that organisms would be seeking
@@ -16,27 +16,23 @@
 #'  \item{diff_potential}{The potential for change achieved by following
 #'  gradient from hotter to cooler pixels}
 #'  \item{clim_conn}{Climate connectivity, calculated as the maximum potential
-#'  change ('diff_potential') minus the climate threshold. Where this value is
-#'  positive, connectivity from the starting pixel is sufficient to avoid the
-#'  specified threshold of climate warming. See details.}
-#'  @details This measure of climate connectivity and potential for temperature
-#'  change is analogous to that described in
-#'  \href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
-#'  basic premise is there is a degree of change that organisms are seeking to
-#'  avoid, and where pixels are sufficiently heterogenous and well connected
-#'  simply moving through the pixels can allow organisms to avoid delterious
-#'  change.
-#'  @references
-#'  McGuire, J. L., Lawler, J. J., McRae, B. H., Nuñez, T. A. and
-#'  Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
-#'  landscape. PNAS, 113: 7195-7200.
+#'  change (\code{diff_potential}) minus the climate \code{threshold}. Where
+#'  this value is positive, connectivity of the starting pixel is sufficient to
+#'  avoid the specified threshold of climate warming. See details.}
+#' @details This measure of climate connectivity and potential for temperature
+#' change is analogous to that described in
+#' \href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
+#' basic premise is that there is a degree of change that organisms are seeking
+#' to avoid; where pixels are sufficiently heterogenous and well connected
+#' organisms can move through the pixels to avoid delterious change.
+#' @references
+#' McGuire, J. L., Lawler, J. J., McRae, B. H., Nu?ez, T. A. and
+#' Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
+#' landscape. PNAS, 113: 7195-7200.
 #' \url{https://doi.org/10.1073/pnas.1602817113}
 #'
 #' @examples
-#'
-#' # FLIR valerature matrix ---------------------------------------------------
-#'
-#' # Define individual matrix
+#' # Define matrix as FLIR thermal image
 #' val_mat <- flir11835$flir_matrix
 #'
 #' # Get connectivity
@@ -73,10 +69,10 @@ connectivity <-
     # Including only vertical and horizontal neighbours
     nbr <-
       as.data.frame(
-        cbind(N  = as.vector(id_mat.pad[row_ind - 1, col_ind    ]),
-              E  = as.vector(id_mat.pad[row_ind    , col_ind + 1]),
-              S  = as.vector(id_mat.pad[row_ind + 1, col_ind    ]),
-              W  = as.vector(id_mat.pad[row_ind    , col_ind - 1]))
+        cbind(nbrs_N  = as.vector(id_mat.pad[row_ind - 1, col_ind    ]),
+              nbrs_E  = as.vector(id_mat.pad[row_ind    , col_ind + 1]),
+              nbrs_S  = as.vector(id_mat.pad[row_ind + 1, col_ind    ]),
+              nbrs_W  = as.vector(id_mat.pad[row_ind    , col_ind - 1]))
       )
 
     # Add pixel ID column
@@ -91,7 +87,12 @@ connectivity <-
     nbr <- cbind(nbr, val_df)
 
     # Wide to long format (one row for each neighbour)
-    nbr <- gather(nbr, key = "direction", value = "nbrs", c("N", "E", "S", "W"))
+    nbr <- reshape(nbr,
+                   varying = 1:4,
+                   timevar = "direction",
+                   idvar = "pixel",
+                   direction = "long",
+                   sep = "_")
 
     # Remove NAs & direction col
     nbr <- nbr[!(is.na(nbr$nbrs)), c("y","x","pixel", "nbrs", "val")]
@@ -102,7 +103,7 @@ connectivity <-
     # Rename
     colnames(nbr) <- c("y","x","pixel1", "pixel2","val1")
 
-    # Assign valerature of nbr pixel
+    # Assign temperature of nbr pixel
     nbr$val2 <- val_df[nbr$pixel2,"val"]
 
     # Reduce to one side of neighbour relationship only
@@ -114,37 +115,42 @@ connectivity <-
 
     # Neighbour relationship --------------------------------------------------
 
-    # Determine, for each pair of neighbouring pixeles, which of the two is
+    # Determine, for each pair of neighbouring pixels, which of the two is
     # the hotter 'origin' pixel and which is the cooler 'destination' pixel
-    nbr$origin_pixel <- NA
-    nbr$dest_pixel <- NA
-    nbr$origin_val <- NA
-    nbr$dest_val <- NA
 
-    for (i in 1:nrow(nbr)){
-      # If val1 is more than val2, pixel1 is the origin and pixel 2 is
-      # the destination
-      if(nbr$val1[i] > nbr$val2[i]){
-        nbr$origin_pixel[i] <- nbr$pixel1[i]
-        nbr$origin_val[i] <- nbr$val1[i]
-        nbr$dest_pixel[i] <-nbr$pixel2[i]
-        nbr$dest_val[i] <- nbr$val2[i]
-        # If val2 is more than val1, pixel2 is the origin and pixel 1 is
-        # the destination
-      }else{
-        nbr$origin_pixel[i]<- nbr$pixel2[i]
-        nbr$origin_val[i] <- nbr$val2[i]
-        nbr$dest_pixel[i]<-nbr$pixel1[i]
-        nbr$dest_val[i] <- nbr$val1[i]
-      }
-    }
+    # If val1 is more than val2: pixel1 is the origin
+    nbr$origin_pixel <-
+      ifelse(nbr$val1 > nbr$val2,
+             nbr$pixel1,
+             nbr$pixel2)
+    # If val1 is less than or equal to val2: pixel1 is the destination
+    nbr$dest_pixel <-
+      ifelse(nbr$val1 <= nbr$val2,
+             nbr$pixel1,
+             nbr$pixel2)
+
+    # Also assign origin & dest values (same method as above)
+    nbr$origin_val <-
+      ifelse(nbr$val1 > nbr$val2,
+             nbr$val1,
+             nbr$val2)
+    nbr$dest_val <-
+      ifelse(nbr$val1 <= nbr$val2,
+             nbr$val1,
+             nbr$val2)
 
     # Remove unnecessary variables
     nbr <- nbr[,c("origin_pixel", "dest_pixel", "origin_val", "dest_val")]
 
     # Determine final destination ---------------------------------------------
 
-    # Identify all the neighbouring destination pixeles for each origin pixel
+    agg <- aggregate(data=sample,
+                     dest_pixel ~ origin_pixel,
+                     function(x) list(unique(x)))
+    dest_pixels <- agg$dest_pixel
+    names(dest_pixels) <- agg$origin_pixel
+
+    # Identify all the neighbouring destination pixels for each origin pixel
     connectsto <-
       sapply(1:nrow(val_df), function(x){
         nbr$dest_pixel[nbr$origin_pixel == val_df[x,"pixel"]]
@@ -162,11 +168,11 @@ connectivity <-
     # connected to each other
     running <- val_df[,c("pixel", "val")]
 
-    # Loop through each unique valerature, from colder to warmer
+    # Loop through each unique temperature, from colder to warmer
     for (j in 1:length(uniquevals)){
-      # Define the focal unique valerature
+      # Define the focal unique temperature
       warmer <- uniquevals[j]
-      # Define the indices of pixels that correspond to the focal valerature
+      # Define the indices of pixels that correspond to the focal temperature
       inds <- which(running[,"val"] == warmer)
 
       # Iterate over the indices
@@ -182,17 +188,17 @@ connectivity <-
         }else{
           # Retrieve indices of the destination pixels
           topixelsinds <- which(val_df$pixel %in%  connectsto[[ii]])
-          # Calculate which of the destination pixels has the lowest valerature
+          # Calculate which of the destination pixels has the lowest temperature
           t <- min(running[topixelsinds, "val"])
           # Retrieve indices of the destination pixels that correspond to
-          # this minimum valerature
+          # this minimum temperature
           a <- which(running[topixelsinds, "val"] == t)
 
           if(length(a)==1){
             # If there is only one coldest pixel, index that destination (colder) pixel &
             minind <- topixelsinds[a]
           }else{
-            # If there is more than one colder pixel w/ = valeratures, arbitrarily select the first one
+            # If there is more than one colder pixel w/ = temperatures, arbitrarily select the first one
             minind <- topixelsinds[a[1]]
           }
 
@@ -200,7 +206,7 @@ connectivity <-
           val_df$dest_val[ii] <- t
           # Assign the final pixel of the focal pixel as its coldest (destination) pixel
           val_df$dest_pixel[ii] <- running[minind, "pixel"]
-          # Assign the final pixel and its intermediate pixeles
+          # Assign the final pixel and its intermediate pixels
           inter_pixel <- val_df[minind, "inter_pixel"]
 
           if(!(is.na(inter_pixel))){
@@ -211,7 +217,7 @@ connectivity <-
           }else{
             val_df$inter_pixel[ii] <- val_df[minind, "pixel"]
           }
-          # Assign the final val of the focal pixel as the new minimum valerature
+          # Assign the final val of the focal pixel as the new minimum temperature
           running[ii, "val"] <- t
           # Have new colder (destination) pixel replace the origin pixel in runningpixel
           running[ii, "pixel"] <- running[minind, "pixel"]
@@ -220,10 +226,10 @@ connectivity <-
     }
 
 
-    # Calculate potential valerature diff ------------------------------------
+    # Calculate potential temperature diff ------------------------------------
 
     # This is the maximum val diff that can be achieved by traversing gradient
-    # of hotter to cooler pixeles
+    # of hotter to cooler pixels
     val_df$diff_potential <- val_df$val - val_df$dest_val
 
     # Is this sufficient to avoid climate warming?
@@ -232,7 +238,7 @@ connectivity <-
     # Return ------------------------------------------------------------------
     return(val_df)
 
-}
+  }
 
 
 

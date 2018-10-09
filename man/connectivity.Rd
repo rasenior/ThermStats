@@ -25,30 +25,23 @@ A dataframe (one row for each pixel) containing:
  \item{diff_potential}{The potential for change achieved by following
  gradient from hotter to cooler pixels}
  \item{clim_conn}{Climate connectivity, calculated as the maximum potential
- change ('diff_potential') minus the climate threshold. Where this value is
- positive, connectivity from the starting pixel is sufficient to avoid the
- specified threshold of climate warming. See details.}
- @details This measure of climate connectivity and potential for temperature
- change is analogous to that described in
- \href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
- basic premise is there is a degree of change that organisms are seeking to
- avoid, and where pixels are sufficiently heterogenous and well connected
- simply moving through the pixels can allow organisms to avoid delterious
- change.
- @references
- McGuire, J. L., Lawler, J. J., McRae, B. H., Nuñez, T. A. and
- Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
- landscape. PNAS, 113: 7195-7200.
-\url{https://doi.org/10.1073/pnas.1602817113}
+ change (\code{diff_potential}) minus the climate \code{threshold}. Where
+ this value is positive, connectivity of the starting pixel is sufficient to
+ avoid the specified threshold of climate warming. See details.}
 }
 \description{
-Calculate potential for valerature change and climate connectivity.
+Calculate climate connectivity and potential for temperature change.
+}
+\details{
+This measure of climate connectivity and potential for temperature
+change is analogous to that described in
+\href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
+basic premise is that there is a degree of change that organisms are seeking
+to avoid; where pixels are sufficiently heterogenous and well connected
+organisms can move through the pixels to avoid delterious change.
 }
 \examples{
-
-# FLIR valerature matrix ---------------------------------------------------
-
-# Define individual matrix
+# Define matrix as FLIR thermal image
 val_mat <- flir11835$flir_matrix
 
 # Get connectivity
@@ -57,4 +50,10 @@ connectivity(val_mat = val_mat,
              threshold = 1.5)
 head(mat_conn)
 
+}
+\references{
+McGuire, J. L., Lawler, J. J., McRae, B. H., Nu?ez, T. A. and
+Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
+landscape. PNAS, 113: 7195-7200.
+\url{https://doi.org/10.1073/pnas.1602817113}
 }
