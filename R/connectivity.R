@@ -1,8 +1,8 @@
 #' connectivity
 #'
-#' Calculate climate connectivity and potential for temperature change.
+#' Calculate thermal connectivity and potential for temperature change.
 #' @param val_mat A numeric matrix.
-#' @param conn_thresh Climate threshold to use for calculation of climate
+#' @param conn_thresh Climate threshold to use for calculation of thermal
 #' connectivity (i.e. the amount of change that organisms would be seeking
 #' to avoid).
 #' @return A dataframe (one row for each pixel) containing:
