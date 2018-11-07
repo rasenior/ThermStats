@@ -129,15 +129,18 @@ plot_patches <- function(df,
           sep="", collapse=" ")
   }
 
-  matrix_id_orig <- levels(df$matrix_id)
-  matrix_id <- vapply(matrix_id_orig, simpleCap, FUN.VALUE = character(1))
+  if(any(names(df) == "matrix_id")){
 
-  df$matrix_id <-
-    factor(df$matrix_id,
-           # Don't change levels
-           levels = matrix_id_orig,
-           # Do change labels
-           labels = matrix_id)
+    matrix_id_orig <- levels(df$matrix_id)
+    matrix_id <- vapply(matrix_id_orig, simpleCap, FUN.VALUE = character(1))
+
+    df$matrix_id <-
+      factor(df$matrix_id,
+             # Don't change levels
+             levels = matrix_id_orig,
+             # Do change labels
+             labels = matrix_id)
+  }
 
   # Fix patch outline colours
   names(patch_cols) <- patch_labs

@@ -9,7 +9,7 @@ connectivity(val_mat, conn_thresh = 1.5)
 \arguments{
 \item{val_mat}{A numeric matrix.}
 
-\item{conn_thresh}{Climate threshold to use for calculation of climate
+\item{conn_thresh}{Climate threshold to use for calculation of thermal
 connectivity (i.e. the amount of change that organisms would be seeking
 to avoid).}
 }
@@ -30,7 +30,7 @@ A dataframe (one row for each pixel) containing:
  avoid the specified conn_thresh of warming. See details.}
 }
 \description{
-Calculate climate connectivity and potential for temperature change.
+Calculate thermal connectivity and potential for temperature change.
 }
 \details{
 This measure of climate connectivity and potential for temperature
