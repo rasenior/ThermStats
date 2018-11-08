@@ -48,12 +48,13 @@ crop_mat <- function(val_mat){
   # Ask user for cropping shape
   shape <- menu(choices = c("ellipse", "rectangle"),
                 title = "Crop with an ellipse or rectangle?")
+
   # Ask user for parameters
-  args <- readlines("x coordinate of origin: ",
-                    "y coordinate of origin: ",
-                    "x-axis radius: ",
-                    "y-axis radius: ")
-  args <- lapply(args, as.numeric)
+  args <- define_params()
+  # Keep asking until all parameters are either numeric or empty
+  while(any(sapply(args, is.null))){
+    args <- define_params()
+  }
   names(args) <- c("x", "y", "radius.x", "radius.y")
 
   if(shape == 1){
@@ -91,12 +92,12 @@ crop_mat <- function(val_mat){
   while(check == 2){
 
     # Ask user for parameters
-    new_args <- readlines("x coordinate of origin: ",
-                          "y coordinate of origin: ",
-                          "x-axis radius: ",
-                          "y-axis radius: ")
-    new_args <- lapply(new_args, as.numeric)
+    new_args <- define_params()
+    while(any(sapply(new_args, is.null))){
+      new_args <- define_params()
+    }
     names(new_args) <- c("x", "y", "radius.x", "radius.y")
+
     new_ind <- which(!(is.na(new_args)))
 
     args <- replace(args, new_ind,new_args[new_ind])
@@ -164,3 +165,29 @@ crop_mat <- function(val_mat){
 readlines <- function(...) {
   lapply(list(...), readline)
 }
+
+define_params <- function(){
+  # Ask user for parameters
+  new_args <- readlines("x coordinate of origin: ",
+                        "y coordinate of origin: ",
+                        "x-axis radius: ",
+                        "y-axis radius: ")
+
+  # Coerce to numeric
+  new_args <- lapply(new_args, function(x){
+    tryCatch(
+      {
+        as.numeric(x)
+      },
+      warning=function(w) {
+        message("Non-numeric value specified: ", x, "\n")
+      })
+  })
+  return(new_args)
+}
+
+
+
+
+
+
