@@ -3,31 +3,24 @@
 #' Crops temperature matrix to the desired area.
 #' @param val_mat A numeric matrix, such as that returned from
 #' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
+#' @return A cropped version of the input matrix.
+#' @details Requires user input to iteratively refine the size and location of
+#' the cropping area.
 #' @examples
-#' path <- "C:\\Users\\Rebecca\\Google Drive\\PhD\\Ch3\\data\\flir_sample\\Test.jpg"
-#' img <- readflirJPG(path)
-#' settings <-
-#' flirsettings(path)$Info %>%
-#' dplyr::bind_rows()
-#' val_mat <- raw2temp(raw = img,
-#'                     E = settings$Emissivity,
-#'                     OD = settings$ObjectDistance,
-#'                     RTemp = settings$ReflectedApparentTemperature,
-#'                     ATemp = settings$AtmosphericTemperature,
-#'                     IRWTemp = settings$IRWindowTemperature,
-#'                     IRT = settings$IRWindowTransmission,
-#'                     RH = settings$RelativeHumidity,
-#'                     PR1 = settings$PlanckR1,
-#'                     PB = settings$PlanckB,
-#'                     PF = settings$PlanckF,
-#'                     PO = settings$PlanckO,
-#'                     PR2 = settings$PlanckR2)
+#' # Crop thermal image of wasp nest to the nest only
+#' # N.B. For this example, a good approximation is an ellipse with
+#' # origin coordinates at x = 350, y = 290, x-axis radius of 145
+#' # and y-axis radius of 190.
 #'
-#' # 350, 290, 145,190
-#' cropped <- crop_mat(val_mat = val_mat)
+#' cropped <- crop_mat(val_mat = waspnest_mat)
+#'
+#' # Get patches
 #' crop_patches <- get_patches(cropped)
+#'
+#' # Plot with patches
 #' plot_patches(df = crop_patches$df,
-#' patches = crop_patches$patches)
+#'              patches = crop_patches$patches,
+#'              plot_distribution = FALSE)
 #'
 #' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame
@@ -46,16 +39,20 @@ crop_mat <- function(val_mat){
                    ymn=1, ymx=nrows)
 
   # Plot
-  raster::plot(val_raster)
+  if(requireNamespace("viridisLite", quietly = TRUE)){
+    raster::plot(val_raster, col = viridisLite::magma(255))
+  }else{
+    raster::plot(val_raster, col = heat.colors(255))
+  }
 
   # Ask user for cropping shape
   shape <- menu(choices = c("ellipse", "rectangle"),
                 title = "Crop with an ellipse or rectangle?")
   # Ask user for parameters
   args <- readlines("x coordinate of origin: ",
-                   "y coordinate of origin: ",
-                   "x-axis radius: ",
-                   "y-axis radius: ")
+                    "y coordinate of origin: ",
+                    "x-axis radius: ",
+                    "y-axis radius: ")
   args <- lapply(args, as.numeric)
   names(args) <- c("x", "y", "radius.x", "radius.y")
 
@@ -88,15 +85,16 @@ crop_mat <- function(val_mat){
   }
 
   # User input
-  check <- readline(prompt="Happy with this? ")
+  check <- menu(choices = c("yes", "no"),
+                title = "Happy with this cropping area?")
 
-  while(tolower(check) == "no"){
+  while(check == 2){
 
     # Ask user for parameters
     new_args <- readlines("x coordinate of origin: ",
-                      "y coordinate of origin: ",
-                      "x-axis radius: ",
-                      "y-axis radius: ")
+                          "y coordinate of origin: ",
+                          "x-axis radius: ",
+                          "y-axis radius: ")
     new_args <- lapply(new_args, as.numeric)
     names(new_args) <- c("x", "y", "radius.x", "radius.y")
     new_ind <- which(!(is.na(new_args)))
@@ -105,8 +103,11 @@ crop_mat <- function(val_mat){
 
     # Create the ellipse again
     plot.new()
-    # Plot
-    raster::plot(val_raster)
+    if(requireNamespace("viridisLite", quietly = TRUE)){
+      raster::plot(val_raster, col = viridisLite::magma(255))
+    }else{
+      raster::plot(val_raster, col = heat.colors(255))
+    }
 
     if(shape == 1){
       poly <-
@@ -136,7 +137,8 @@ crop_mat <- function(val_mat){
     }
 
     # User input
-    check <- readline(prompt="Satisfied? ")
+    check <- menu(choices = c("yes", "no"),
+                  title = "Happy with this cropping area?")
 
   }
 
@@ -158,6 +160,7 @@ crop_mat <- function(val_mat){
 
 }
 
+# Function to request multiple user inputs sequentially
 readlines <- function(...) {
   lapply(list(...), readline)
 }

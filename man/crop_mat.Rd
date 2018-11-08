@@ -10,33 +10,30 @@ crop_mat(val_mat)
 \item{val_mat}{A numeric matrix, such as that returned from
 \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
 }
+\value{
+A cropped version of the input matrix.
+}
 \description{
 Crops temperature matrix to the desired area.
 }
+\details{
+Requires user input to iteratively refine the size and location of
+the cropping area.
+}
 \examples{
-path <- "C:\\\\Users\\\\Rebecca\\\\Google Drive\\\\PhD\\\\Ch3\\\\data\\\\flir_sample\\\\Test.jpg"
-img <- readflirJPG(path)
-settings <-
-flirsettings(path)$Info \%>\%
-dplyr::bind_rows()
-val_mat <- raw2temp(raw = img,
-                    E = settings$Emissivity,
-                    OD = settings$ObjectDistance,
-                    RTemp = settings$ReflectedApparentTemperature,
-                    ATemp = settings$AtmosphericTemperature,
-                    IRWTemp = settings$IRWindowTemperature,
-                    IRT = settings$IRWindowTransmission,
-                    RH = settings$RelativeHumidity,
-                    PR1 = settings$PlanckR1,
-                    PB = settings$PlanckB,
-                    PF = settings$PlanckF,
-                    PO = settings$PlanckO,
-                    PR2 = settings$PlanckR2)
+# Crop thermal image of wasp nest to the nest only
+# N.B. For this example, a good approximation is an ellipse with
+# origin coordinates at x = 350, y = 290, x-axis radius of 145
+# and y-axis radius of 190.
 
-# 350, 290, 145,190
-cropped <- crop_mat(val_mat = val_mat)
+cropped <- crop_mat(val_mat = waspnest_mat)
+
+# Get patches
 crop_patches <- get_patches(cropped)
+
+# Plot with patches
 plot_patches(df = crop_patches$df,
-patches = crop_patches$patches)
+             patches = crop_patches$patches,
+             plot_distribution = FALSE)
 
 }
