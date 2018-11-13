@@ -105,10 +105,10 @@ batch_convert <- function(raw_dat,
   if(write_results){
 
     if(is.null(out_dir)) out_dir <- getwd()
-    if(is.null(file_name)) file_name <- paste("flir_converted_", Sys.Date(),".Rds",sep="")
+    if(is.null(file_name)) file_name <- paste("flir_converted_", Sys.Date(),sep="")
 
     out_path <- file.path(out_dir, paste(file_name, ".Rds", sep = ""))
-    save(temp_dat,file = out_path)
+    saveRDS(temp_dat,file = out_path)
   }
   return(temp_dat)
 
