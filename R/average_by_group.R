@@ -60,36 +60,19 @@ average_by_group <- function(metadata,
                                   })
                               })
     }else{
-        temp_stats<-
+        mat_avgs <-
             lapply(unique(metadata[, grouping_var]),
                    function(x){
                        tryCatch({
-                           sub_mat <- create_subset(metadata = metadata,
-                                                    mat_list = mat_list,
-                                                    matrix_id = matrix_id,
-                                                    grouping_var = grouping_var,
-                                                    grouping_val = x,
-                                                    round_val = round_val)
-                           n_mat <- sub_mat[["n_mat"]]
-                           sub_mat <- sub_mat[["sub_mat"]]
+                           # Calculate mean for each group
+                           group_avg <- avg_stack(metadata = metadata, 
+                                                  mat_list = mat_list,
+                                                  matrix_id = matrix_id,
+                                                  grouping_var = grouping_var, 
+                                                  grouping_val = x)
                            
-                           # Get stats
-                           result <-
-                               get_stats(val_mat = sub_mat,
-                                         matrix_id = x,
-                                         get_patches = TRUE,
-                                         k = k,
-                                         style = style,
-                                         mat_proj = NULL,
-                                         mat_extent = NULL,
-                                         return_vals = "pstats",
-                                         pixel_fns = pixel_fns,
-                                         ...
-                               )
-                           # Add number matrices
-                           result <- cbind(result, n_mat)
                            # Return
-                           return(result)
+                           return(group_avg)
                            
                        },
                        error = function(err) {
@@ -101,11 +84,8 @@ average_by_group <- function(metadata,
                        })
                    })
     }
-    temp_stats <- do.call("rbind",temp_stats)
-    return(temp_stats)
-}
-
-
+    
+    
 }
 
 avg_stack <- function(metadata,
@@ -116,7 +96,7 @@ avg_stack <- function(metadata,
     
     # Define matrix IDs for the group
     ids <- metadata[metadata[,grouping_var] == grouping_val, matrix_id]
-
+    
     # Define the indices of these matrices in the matrix list
     inds <- which(gsub("[a-z]","",tolower(names(mat_list))) %in% ids)
     
