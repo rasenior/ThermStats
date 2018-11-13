@@ -19,24 +19,26 @@
 #'                   write_results = FALSE)
 #' @export
 #'
-batch_extract <- function(in_dir, write_results = TRUE, out_dir = NULL, file_name = NULL){
+batch_extract <- function(in_dir,
+                          write_results = TRUE,
+                          out_dir = NULL,
+                          file_name = NULL,
+                          exc = NULL){
 
   # File names --------------------------------------------------------------
-
-  # If input directory path contains spaces 'readflirJPG' will not work, so
-  # must change working directory instead
-  if (grepl(" ", in_dir)){
-    setwd(in_dir)
-    in_dir <- "."
-  }
 
   # Get file names
   file.names <- list.files(in_dir, full.names = TRUE)
 
+  # Exclude files
+  if(!(is.null(exc))){
+    file.names <- file.names[!(file.names %in% exc)]
+  }
+
   # Remove path & file extension to get photo number
-  photo_no <- gsub("FLIR","",file.names)
+  photo_no <- basename(file.names)
+  photo_no <- gsub("FLIR","",photo_no)
   photo_no <- gsub(".jpg","", photo_no)
-  photo_no <- gsub(paste("[", in_dir, "/]", sep = ""), "", photo_no)
 
   # Create empty list to populate with temperature matrices
   raw_dat <- vector("list", length(photo_no))
