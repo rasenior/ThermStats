@@ -2,6 +2,7 @@
 
 export(SHDI)
 export(SIDI)
+export(average_by_group)
 export(batch_convert)
 export(batch_extract)
 export(connectivity)
