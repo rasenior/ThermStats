@@ -4,12 +4,13 @@
 \alias{average_by_group}
 \title{average_by_group}
 \usage{
-average_by_group(metadata, mat_list, matrix_id, grouping_var, round_val)
+average_by_group(metadata, mat_list, matrix_id, grouping_var,
+  round_val = NULL)
 }
 \arguments{
 \item{metadata}{A dataframe denoting the grouping of different matrices.}
 
-\item{mat_list}{List of matrices.}
+\item{mat_list}{List of matrices or raster stack.}
 
 \item{matrix_id}{Name of the metadata variable that identifies unique
 matrices. Should match element names in the list of matrices.}
@@ -17,24 +18,64 @@ matrices. Should match element names in the list of matrices.}
 \item{grouping_var}{The name of the metadata variable that denotes the
 grouping of matrices.}
 
-\item{round_val}{Value to round to. Use 1 for no rounding.}
-
-\item{k}{Number of neighbours to use when calculating nearest neighbours
-using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
-
-\item{style}{Style to use when calculating neighbourhood weights using
-\code{spdep::}\code{\link[spdep]{nb2listw}}.}
-
-\item{...}{Use to specify summary statistics that should be calculated across
-all pixels. Several helper functions are included for use here:
-\code{\link{perc_5}}, \code{\link{perc_95}},
-\code{\link{SHDI}}, \code{\link{SIDI}},
-\code{\link{kurtosis}} and \code{\link{skewness}}. Also see examples below.}
+\item{round_val}{Number of decimals to round average matrices to (optional).}
 }
 \value{
-A dataframe with pixel and patch statistics. See
-\code{\link{patch_stats}} for details of all the patch statistics returned.
+If \code{mat_list} is supplied as a list of matrices, returns
+a new list of matrices with one element for each unique value of the grouping
+variable. 
+
+If \code{mat_list} is supplied as a raster stack, returns a new raster
+stack with one raster for each unique value of the grouping variable. 
+
+Grouping variables with no matching matrices are dropped.
 }
 \description{
 Average multiple matrices or rasters within groups.
+}
+\examples{
+# Load raw data
+raw_dat <- flir_raw$raw_dat
+camera_params <- flir_raw$camera_params
+metadata <- flir_metadata
+
+# Batch convert
+mat_list <- batch_convert(raw_dat, write_results = FALSE)
+
+# With list of matrices -----------------------------------------------------
+
+# Average matrices in list
+avg_list <- average_by_group(metadata = metadata,
+                             mat_list = mat_list,
+                             matrix_id = "photo_no",
+                             grouping_var = "rep_id")
+                             
+# With raster stack ---------------------------------------------------------
+
+# Coerce each matrix to a raster
+mat_stack <-
+    lapply(mat_list,
+           function(x) raster::raster(x,
+                                      xmn=0, xmx=ncol(mat_list[[1]]),
+                                      ymn=0, ymx=nrow(mat_list[[1]])))
+# Stack
+mat_stack <- raster::stack(mat_stack)
+
+# Average matrices in raster stack
+avg_stack <- average_by_group(metadata = metadata,
+                              mat_list = mat_stack,
+                              matrix_id = "photo_no",
+                              grouping_var = "rep_id")
+# Plot
+raster::plot(avg_stack)
+
+# Compare to invididual pics
+# Photos 8565 and 8583 were averaged to make T7P1
+# Photos 8589 and 8613 were averaged to make T7P2
+
+allstack <- raster::stack(mat_stack, avg_stack)
+rasterVis::levelplot(allstack,
+                    layout=c(2, 3),
+                    index.cond=list(c(1, 3, 2, 4, 5, 6)))
+                    
 }
