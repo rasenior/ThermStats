@@ -4,9 +4,8 @@
 \alias{get_patches}
 \title{get_patches}
 \usage{
-get_patches(val_mat, matrix_id = NULL, k = 8, style = "W",
-  mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
-  "patches", "pstats"))
+get_patches(val_mat, matrix_id = NULL, style = "C", mat_proj = NULL,
+  mat_extent = NULL, return_vals = c("df", "patches", "pstats"))
 }
 \arguments{
 \item{val_mat}{A numeric matrix, such as that returned from
@@ -15,11 +14,9 @@ get_patches(val_mat, matrix_id = NULL, k = 8, style = "W",
 \item{matrix_id}{The matrix ID (optional). Useful when iterating over
 numerous matrices.}
 
-\item{k}{Number of neighbours to use when calculating nearest neighbours
-using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
-
 \item{style}{Style to use when calculating neighbourhood weights using
-\code{spdep::}\code{\link[spdep]{nb2listw}}.}
+\code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
+standardised).}
 
 \item{mat_proj}{Spatial projection. Optional, but necessary for geographic
 data to plot correctly.}
@@ -83,8 +80,6 @@ mat_extent <- extent(sulawesi_temp)
 worldclim_results <-
  get_patches(val_mat = sulawesi_temp,
              matrix_id = "sulawesi",
-             k = 8,
-             style = "W",
              mat_proj = mat_proj,
              mat_extent = mat_extent)
 

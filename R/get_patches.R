@@ -5,10 +5,9 @@
 #' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
 #' @param matrix_id The matrix ID (optional). Useful when iterating over
 #' numerous matrices.
-#' @param k Number of neighbours to use when calculating nearest neighbours
-#' using \code{spdep::}\code{\link[spdep]{knearneigh}}.
 #' @param style Style to use when calculating neighbourhood weights using
-#'  \code{spdep::}\code{\link[spdep]{nb2listw}}.
+#'  \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
+#'  standardised).
 #' @param mat_proj Spatial projection. Optional, but necessary for geographic
 #' data to plot correctly.
 #' @param mat_extent Spatial extent. Optional, but necessary for geographic
@@ -63,8 +62,6 @@
 #' worldclim_results <-
 #'  get_patches(val_mat = sulawesi_temp,
 #'              matrix_id = "sulawesi",
-#'              k = 8,
-#'              style = "W",
 #'              mat_proj = mat_proj,
 #'              mat_extent = mat_extent)
 #'
@@ -86,7 +83,8 @@
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #' @export
 #'
-get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
+get_patches <- function(val_mat, matrix_id = NULL, 
+                        style = "C",
                         mat_proj = NULL,
                         mat_extent = NULL,
                         return_vals = c("df","patches","pstats")) {
@@ -112,11 +110,16 @@ get_patches <- function(val_mat, matrix_id = NULL, k = 8, style = "W",
 
   # Neighbour weights -------------------------------------------------------
   message("\nCalculating neighbourhood weights")
-  # Identify k nearest neighbours
-  nr_neigh <- spdep::knearneigh(cbind(df$x, df$y), k = k)
-  nr_neigh <- spdep::knn2nb(nr_neigh)
+  nr_neigh <- spdep::cell2nb(nrow = nrow(val_mat),
+                             ncol = ncol(val_mat),
+                             type = "queen",
+                             torus = FALSE)
+  
   # Get neighbour weights
-  nb_weights <- spdep::nb2listw(nr_neigh, style = style, zero.policy = FALSE)
+  nb_weights <- spdep::nb2listw(nr_neigh, 
+                                style = style, 
+                                zero.policy = FALSE)
+  
 
   # Local Getis-Ord ---------------------------------------------------------
   message("Calculating local G statistic")
