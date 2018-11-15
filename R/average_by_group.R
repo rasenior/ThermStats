@@ -154,10 +154,13 @@ avg_sub <- function(metadata,
                     round_val = NULL){
     
     # Define matrix IDs for the group
-    ids <- metadata[metadata[,grouping_var] == grouping_val, matrix_id]
+    ids <- unique(metadata[metadata[,grouping_var] == grouping_val, matrix_id])
+    
+    # If raster stack need to paste 'X' onto numeric ids
+    if(mat_type == "rasters" & is.numeric(ids)) ids <- paste("X", ids, sep = "")
     
     # Define the indices of these matrices in the matrix list
-    inds <- which(gsub("[a-z]","",tolower(names(mat_list))) %in% ids)
+    inds <- which(names(mat_list) %in% ids)
     
     # If there are no matches, return NA
     if(length(inds) == 0){
