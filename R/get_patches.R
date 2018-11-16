@@ -88,250 +88,249 @@ get_patches <- function(val_mat, matrix_id = NULL,
                         mat_proj = NULL,
                         mat_extent = NULL,
                         return_vals = c("df","patches","pstats")) {
-
-  # Setup ----------------------------------------------------------------------
-  if(!(is.null(matrix_id))){
-    message("\nProcessing: ", matrix_id)
-  }
-
-  # Determine whether the matrix is a true matrix or a raster
-  if(is.matrix(val_mat)){
-    df <- reshape2::melt(val_mat,
-                         varnames = c("y", "x"),
-                         value.name = "val")
-  }else if(class(val_mat)[1] == "RasterLayer"){
-    df <- raster::as.data.frame(val_mat, xy = TRUE)
-    colnames(df)[3] <- "val"
-  }
-
-  # Matrix needs to be long dataframe for calculating neighbour weights
-  # Remove NA values
-  df <- df[!(is.na(df[, "val"])),]
-
-  # Neighbour weights -------------------------------------------------------
-  message("\nCalculating neighbourhood weights")
-  nr_neigh <- spdep::cell2nb(nrow = nrow(val_mat),
-                             ncol = ncol(val_mat),
-                             type = "queen",
-                             torus = FALSE)
-  
-  # Get neighbour weights
-  nb_weights <- spdep::nb2listw(nr_neigh, 
-                                style = style, 
-                                zero.policy = FALSE)
-  
-
-  # Local Getis-Ord ---------------------------------------------------------
-  message("Calculating local G statistic")
-  local_g <-
-    spdep::localG(x = spdep::spNamedVec("val", df),
-                  listw = nb_weights,
-                  zero.policy = FALSE,
-                  spChk = NULL)
-
-  # Add Z-values to dataframe
-  df <- data.frame(df, Z_val = matrix(local_g))
-
-  rm(nr_neigh, nb_weights, local_g)
-
-  # Define significance categories, using critical values defined in  Getis and
-  # Ord (1996 )
-  get_critical_Z <- function(n){
-    if(n >= 1 & n < 10){
-      critical_z <- 1.6450
-    }else if(n >= 10 & n < 30){
-      critical_z <- 2.5683
-    }else if(n >= 30 & n < 50){
-      critical_z <- 2.9291
-    }else if(n >= 50 & n < 100){
-      critical_z <- 3.0833
-    }else if(n >= 100 & n < 1000){
-      critical_z <- 3.2889
-    }else if(n > 1000){
-      critical_z <- 3.8855
-    }else{
-      critical_z <- NA
+    
+    # Setup ----------------------------------------------------------------------
+    if(!(is.null(matrix_id))){
+        message("\nProcessing: ", matrix_id)
     }
-  }
-  critical_Z <- get_critical_Z(nrow(df))
-
-  df$G_bin <- ifelse(df$Z_val >= critical_Z, 1,
-                     ifelse(df$Z_val <= -critical_Z, -1, 0))
-
-  # Patch statistics --------------------------------------------------------
-  message("Matching pixels to hot and cold patches")
-
-  # 1. Create layer with one polygon for each hot/cold patch
-  # Dataframe to matrix
-  patch_mat <- reshape2::acast(df, y ~ x, value.var = "G_bin")
-
-  # Flip
-  patch_mat <-
-    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(patch_mat))
-
-  # Matrix to raster
-  patches <- raster::raster(patch_mat)
-
-  # Specify coordinates and mat_projection (if applicable)
-  if(!(is.null(mat_proj))){
-    raster::extent(patches) <- mat_extent
-    raster::projection(patches) <- mat_proj
-  }
-
-  # Raster to dissolved polygons
-  patches <- raster::rasterToPolygons(patches, dissolve = TRUE)
-  patches <- raster::disaggregate(patches)
-
-  # 2. Assign to each temperature cell the ID of the patch that it falls into
-  # Matrix to raster to points
-  val_mat <- reshape2::acast(df, y ~ x, value.var = "val")
-  # Flip
-  val_mat <-
-    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(val_mat))
-
-  # Matrix to raster
-  raw <- raster::raster(val_mat)
-
-  # Specify coordinates and mat_projection (if applicable)
-  if(!(is.null(mat_proj))){
-    raster::extent(raw) <- mat_extent
-    raster::projection(raw) <- mat_proj
-  }
-
-  # Raster to points
-  raw <- raster::rasterToPoints(raw, spatial = TRUE)
-
-  # Return overlay list where each element is the point, and within that the
-  # value is the hot/coldspot classification and the row name is the patch ID
-  n_features <- length(raw)
-
-  # Define function to overlay in subsets if too many features
-  over_sub <- function(min_i, max_i){
-    subdat <- raw[(min_i + 1):max_i,]
-    patchID <- sp::over(subdat, patches, returnList = TRUE)
-    return(patchID)
-  }
-
-  # Define function to reformat each dataframe within the list
-  reform <- function(x) {
-    x$patchID <- row.names(x)
-    colnames(x) <- c("G_bin", "patchID")
-    return(x)
-  }
-
-  if(n_features > 10^5){
-    lims <- seq(0, n_features, 10^5)
-    lims[lims == tail(lims, n = 1)] <- n_features
-
-    # Overlay by subset
-    patchID <-
-      lapply(1:(length(lims) - 1), function(i){
-        over_sub(lims[i], lims[i + 1])
-      })
-
-    patchID <-
-      lapply(patchID, function(x){
+    
+    # Determine whether the matrix is a true matrix or a raster
+    if(is.matrix(val_mat)){
+        df <- reshape2::melt(val_mat,
+                             varnames = c("y", "x"),
+                             value.name = "val")
+    }else if(class(val_mat)[1] == "RasterLayer"){
+        df <- raster::as.data.frame(val_mat, xy = TRUE)
+        colnames(df)[3] <- "val"
+    }
+    
+    # Matrix needs to be long dataframe for calculating neighbour weights
+    # Remove NA values
+    df <- df[!(is.na(df[, "val"])),]
+    
+    # Neighbour weights -------------------------------------------------------
+    message("\nCalculating neighbourhood weights")
+    
+    nr_neigh <- spdep::knearneigh(cbind(df$x, df$y), k = 8)
+    nr_neigh <- spdep::knn2nb(nr_neigh)
+    
+    # Get neighbour weights
+    nb_weights <- spdep::nb2listw(nr_neigh, 
+                                  style = style, 
+                                  zero.policy = FALSE)
+    
+    
+    # Local Getis-Ord ---------------------------------------------------------
+    message("Calculating local G statistic")
+    local_g <-
+        spdep::localG(x = spdep::spNamedVec("val", df),
+                      listw = nb_weights,
+                      zero.policy = FALSE,
+                      spChk = NULL)
+    
+    # Add Z-values to dataframe
+    df <- data.frame(df, Z_val = matrix(local_g))
+    
+    rm(nr_neigh, nb_weights, local_g)
+    
+    # Define significance categories, using critical values defined in  Getis and
+    # Ord (1996 )
+    get_critical_Z <- function(n){
+        if(n >= 1 & n < 10){
+            critical_z <- 1.6450
+        }else if(n >= 10 & n < 30){
+            critical_z <- 2.5683
+        }else if(n >= 30 & n < 50){
+            critical_z <- 2.9291
+        }else if(n >= 50 & n < 100){
+            critical_z <- 3.0833
+        }else if(n >= 100 & n < 1000){
+            critical_z <- 3.2889
+        }else if(n > 1000){
+            critical_z <- 3.8855
+        }else{
+            critical_z <- NA
+        }
+    }
+    critical_Z <- get_critical_Z(nrow(df))
+    
+    df$G_bin <- ifelse(df$Z_val >= critical_Z, 1,
+                       ifelse(df$Z_val <= -critical_Z, -1, 0))
+    
+    # Patch statistics --------------------------------------------------------
+    message("Matching pixels to hot and cold patches")
+    
+    # 1. Create layer with one polygon for each hot/cold patch
+    # Dataframe to matrix
+    patch_mat <- reshape2::acast(df, y ~ x, value.var = "G_bin")
+    
+    # Flip
+    patch_mat <-
+        Thermimage::mirror.matrix(Thermimage::rotate180.matrix(patch_mat))
+    
+    # Matrix to raster
+    patches <- raster::raster(patch_mat)
+    
+    # Specify coordinates and mat_projection (if applicable)
+    if(!(is.null(mat_proj))){
+        raster::extent(patches) <- mat_extent
+        raster::projection(patches) <- mat_proj
+    }
+    
+    # Raster to dissolved polygons
+    patches <- raster::rasterToPolygons(patches, dissolve = TRUE)
+    patches <- raster::disaggregate(patches)
+    
+    # 2. Assign to each temperature cell the ID of the patch that it falls into
+    # Matrix to raster to points
+    val_mat <- reshape2::acast(df, y ~ x, value.var = "val")
+    # Flip
+    val_mat <-
+        Thermimage::mirror.matrix(Thermimage::rotate180.matrix(val_mat))
+    
+    # Matrix to raster
+    raw <- raster::raster(val_mat)
+    
+    # Specify coordinates and mat_projection (if applicable)
+    if(!(is.null(mat_proj))){
+        raster::extent(raw) <- mat_extent
+        raster::projection(raw) <- mat_proj
+    }
+    
+    # Raster to points
+    raw <- raster::rasterToPoints(raw, spatial = TRUE)
+    
+    # Return overlay list where each element is the point, and within that the
+    # value is the hot/coldspot classification and the row name is the patch ID
+    n_features <- length(raw)
+    
+    # Define function to overlay in subsets if too many features
+    over_sub <- function(min_i, max_i){
+        subdat <- raw[(min_i + 1):max_i,]
+        patchID <- sp::over(subdat, patches, returnList = TRUE)
+        return(patchID)
+    }
+    
+    # Define function to reformat each dataframe within the list
+    reform <- function(x) {
+        x$patchID <- row.names(x)
+        colnames(x) <- c("G_bin", "patchID")
+        return(x)
+    }
+    
+    if(n_features > 10^5){
+        lims <- seq(0, n_features, 10^5)
+        lims[lims == tail(lims, n = 1)] <- n_features
+        
+        # Overlay by subset
+        patchID <-
+            lapply(1:(length(lims) - 1), function(i){
+                over_sub(lims[i], lims[i + 1])
+            })
+        
+        patchID <-
+            lapply(patchID, function(x){
+                # Reform each element (pixel) into a dataframe
+                df <-
+                    lapply(x, function(y){
+                        reform(y)
+                    })
+                # Bind pixel dataframes within subsets
+                df <- do.call("rbind", df)
+                return(df)
+            })
+        
+        # Bind all subsets
+        patchID <- do.call("rbind", patchID)
+        
+    }else{
+        patchID <- sp::over(raw, patches, returnList = TRUE)
         # Reform each element (pixel) into a dataframe
-        df <-
-          lapply(x, function(y){
-            reform(y)
-          })
-        # Bind pixel dataframes within subsets
-        df <- do.call("rbind", df)
-        return(df)
-      })
-
-    # Bind all subsets
-    patchID <- do.call("rbind", patchID)
-
-  }else{
-    patchID <- sp::over(raw, patches, returnList = TRUE)
-    # Reform each element (pixel) into a dataframe
-    patchID <- lapply(patchID, reform)
-
-    # Bind pixel dataframes
-    patchID <- do.call("rbind", patchID)
-  }
-
-  # Recreate dataframe
-  df <- data.frame(raw)[-4]
-  colnames(df)[which(names(df) == "layer")] <- "val"
-  df[, c("G_bin", "patchID")] <- patchID
-
-  rm(raw, patchID)
-
-  if(!(is.null(matrix_id))){
-    df$matrix_id <- matrix_id
-  }
-
-  ### 3. Calculate patch stats
-
-  message("Calculating patch statistics")
-
-  # Calculate median for each patch --------------------------------------------
-  if (requireNamespace("dplyr", quietly = TRUE)) {
-    patch_val <-
-      dplyr::summarise(dplyr::group_by(df[df$G_bin != 0, ],
-                                       patchID, G_bin),
-                       val = median(val, na.rm = TRUE))
-    patch_val <- as.data.frame(patch_val)
-  }else{
-    patchIDs <- unique(df[df[,"G_bin"] != 0, "patchID"])
-    patch_val <-
-      lapply(patchIDs, function(x){
-        patchID <- x
-        G_bin <- df[df[,"patchID"] == x,"G_bin"][1]
-        val <- median(df[df[,"patchID"] == x,"val"], na.rm = TRUE)
-        return(data.frame(patchID = patchID,
-                          G_bin = G_bin,
-                          val = val))
-      })
-    patch_val <- do.call("rbind", patch_val)
-  }
-
-  # Calculate stats for each class --------------------------------------------
-  pstats <-
-    lapply(c(1,-1), function(class){
-      # Spatial stats
-      results <- patch_stats(val_mat = patch_mat, class = class)
-      # Patch number
-      results[, "abundance"] <-
-        length(unique(df[df[,"G_bin"] == class, "patchID"]))
-      # Patch density
-      results[, "density"] <-
-        results[, "abundance"] / results[, "total_area"]
-
-      # Summary stats across patches (based on median values)
-      sumstats <-
-        t(as.matrix(summary(patch_val[patch_val[,"G_bin"] == class, "val"])))
-      colnames(sumstats) <-
-        tolower(gsub(" ", "", gsub("[.]", "", colnames(sumstats))))
-      results <- cbind(results, sumstats)
-
-      # Remove class column
-      results <- results[-1]
-
-      # Add patch class prefix to column names
-      prefix <- ifelse(class == 1, "hot", "cold")
-      colnames(results) <- paste(prefix, colnames(results), sep = "_")
-
-      # Return
-      return(results)
-    })
-
-  # Bind class results together
-  pstats <- do.call("cbind", pstats)
-
-  # Add matrix ID if available
-  if(!(is.null(matrix_id))) pstats[,"matrix_id"] <- matrix_id
-
-  # Return results ------------------------------------------------------------
-  if(length(return_vals) == 1){
-    return_vals <- eval(parse(text = return_vals))
-  }else{
-    return_vals <- sapply(return_vals, function(x) eval(parse(text = x)))
-  }
-
-  return(return_vals)
-
+        patchID <- lapply(patchID, reform)
+        
+        # Bind pixel dataframes
+        patchID <- do.call("rbind", patchID)
+    }
+    
+    # Recreate dataframe
+    df <- data.frame(raw)[-4]
+    colnames(df)[which(names(df) == "layer")] <- "val"
+    df[, c("G_bin", "patchID")] <- patchID
+    
+    rm(raw, patchID)
+    
+    if(!(is.null(matrix_id))){
+        df$matrix_id <- matrix_id
+    }
+    
+    ### 3. Calculate patch stats
+    
+    message("Calculating patch statistics")
+    
+    # Calculate median for each patch --------------------------------------------
+    if (requireNamespace("dplyr", quietly = TRUE)) {
+        patch_val <-
+            dplyr::summarise(dplyr::group_by(df[df$G_bin != 0, ],
+                                             patchID, G_bin),
+                             val = median(val, na.rm = TRUE))
+        patch_val <- as.data.frame(patch_val)
+    }else{
+        patchIDs <- unique(df[df[,"G_bin"] != 0, "patchID"])
+        patch_val <-
+            lapply(patchIDs, function(x){
+                patchID <- x
+                G_bin <- df[df[,"patchID"] == x,"G_bin"][1]
+                val <- median(df[df[,"patchID"] == x,"val"], na.rm = TRUE)
+                return(data.frame(patchID = patchID,
+                                  G_bin = G_bin,
+                                  val = val))
+            })
+        patch_val <- do.call("rbind", patch_val)
+    }
+    
+    # Calculate stats for each class --------------------------------------------
+    pstats <-
+        lapply(c(1,-1), function(class){
+            # Spatial stats
+            results <- patch_stats(val_mat = patch_mat, class = class)
+            # Patch number
+            results[, "abundance"] <-
+                length(unique(df[df[,"G_bin"] == class, "patchID"]))
+            # Patch density
+            results[, "density"] <-
+                results[, "abundance"] / results[, "total_area"]
+            
+            # Summary stats across patches (based on median values)
+            sumstats <-
+                t(as.matrix(summary(patch_val[patch_val[,"G_bin"] == class, "val"])))
+            colnames(sumstats) <-
+                tolower(gsub(" ", "", gsub("[.]", "", colnames(sumstats))))
+            results <- cbind(results, sumstats)
+            
+            # Remove class column
+            results <- results[-1]
+            
+            # Add patch class prefix to column names
+            prefix <- ifelse(class == 1, "hot", "cold")
+            colnames(results) <- paste(prefix, colnames(results), sep = "_")
+            
+            # Return
+            return(results)
+        })
+    
+    # Bind class results together
+    pstats <- do.call("cbind", pstats)
+    
+    # Add matrix ID if available
+    if(!(is.null(matrix_id))) pstats[,"matrix_id"] <- matrix_id
+    
+    # Return results ------------------------------------------------------------
+    if(length(return_vals) == 1){
+        return_vals <- eval(parse(text = return_vals))
+    }else{
+        return_vals <- sapply(return_vals, function(x) eval(parse(text = x)))
+    }
+    
+    return(return_vals)
+    
 }
