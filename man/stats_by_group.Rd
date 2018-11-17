@@ -4,8 +4,8 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, mat_list, matrix_id, k = 8, style = "W",
-  grouping_var, round_val, ...)
+stats_by_group(metadata, mat_list, matrix_id, style = "C", grouping_var,
+  round_val, sum_stats = c("mean", "min", "max"))
 }
 \arguments{
 \item{metadata}{A dataframe denoting the grouping of different matrices.}
@@ -15,9 +15,6 @@ stats_by_group(metadata, mat_list, matrix_id, k = 8, style = "W",
 \item{matrix_id}{Name of the metadata variable that identifies unique
 matrices. Should match element names in the list of matrices.}
 
-\item{k}{Number of neighbours to use when calculating nearest neighbours
-using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
-
 \item{style}{Style to use when calculating neighbourhood weights using
 \code{spdep::}\code{\link[spdep]{nb2listw}}.}
 
@@ -25,6 +22,9 @@ using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
 grouping of matrices.}
 
 \item{round_val}{Value to round to. Use 1 for no rounding.}
+
+\item{k}{Number of neighbours to use when calculating nearest neighbours
+using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
 
 \item{...}{Use to specify summary statistics that should be calculated across
 all pixels. Several helper functions are included for use here:
@@ -57,8 +57,7 @@ patch_stats_1 <-
                    matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   k = 8,
-                   style = "W",
+                   style = "C",
                    mean, max, min)
 
 # Pixel stats = kurtosis and sknewness
@@ -68,8 +67,7 @@ patch_stats_2 <-
                    matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   k = 8,
-                   style = "W",
+                   style = "C",
                    kurtosis, skewness)
 
 # Pixel stats = 5th and 95th percentiles
@@ -79,8 +77,7 @@ patch_stats_3 <-
                    matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   k = 8,
-                   style = "W",
+                   style = "C",
                    perc_5, perc_95)
 
 # Pixel stats = Shannon and Simpson Diversity Indices
@@ -90,7 +87,6 @@ patch_stats_4 <-
                    matrix_id = "photo_no",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   k = 8,
-                   style = "W",
+                   style = "C",
                    SHDI, SIDI)
 }
