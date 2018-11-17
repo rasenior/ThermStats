@@ -5,7 +5,7 @@
 \title{get_stats}
 \usage{
 get_stats(val_mat, matrix_id = NULL, calc_connectivity = TRUE,
-  conn_threshold = 1.5, get_patches = TRUE, k = 8, style = "W",
+  conn_threshold = 1.5, get_patches = TRUE, style = "W",
   mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
   "patches", "pstats"), sum_stats = c("mean", "min", "max"))
 }
@@ -15,9 +15,6 @@ get_stats(val_mat, matrix_id = NULL, calc_connectivity = TRUE,
 \item{matrix_id}{The matrix ID (optional). Useful when iterating over numerous matrices.}
 
 \item{get_patches}{Whether to identify hot and cold spots. Defaults to TRUE.}
-
-\item{k}{Number of neighbours to use when calculating nearest neighbours
-using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
 
 \item{style}{Style to use when calculating neighbourhood weights using
 \code{spdep::}\code{\link[spdep]{nb2listw}}.}
@@ -33,6 +30,9 @@ data to plot correctly.}
 (\code{patches}) and patch statistics dataframe (\code{pstats}). Note that
 \code{pstats} will always be returned -- if this is not desired, use
 \code{\link{get_patches}} instead.}
+
+\item{k}{Number of neighbours to use when calculating nearest neighbours
+using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
 
 \item{pixel_fns}{The names of the summary statistics to apply.}
 
