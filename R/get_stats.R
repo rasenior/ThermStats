@@ -103,123 +103,126 @@ get_stats <- function(val_mat,
                       calc_connectivity = TRUE,
                       conn_threshold = 1.5,
                       get_patches = TRUE,
-                      style = "W",
+                      style = "C",
                       mat_proj = NULL,
                       mat_extent = NULL,
                       return_vals = c("df","patches","pstats"),
                       sum_stats = c("mean", "min","max")){
-
-  # If raster, coerce to matrix ------------------------------------------------
-  if(class(val_mat)[1] == "RasterLayer"){
-    val_mat <- raster::as.matrix(val_mat)
-  }
-
-  # Record no cols & rows
-  ncols <- ncol(val_mat)
-  nrows <- nrow(val_mat)
-
-  # Pixel statistics -----------------------------------------------------------
-  # -> these statistics are calculated across all pixels
-
-  if(!(is.null(sum_stats))){
-    # Apply pixel-level summary stats
-    pixel_stats <-
-      lapply(sum_stats, function(x) get(x)(val_mat))
-
-    # Coerce to df
-    pixel_stats <- as.data.frame(t(do.call("rbind", pixel_stats)))
-
-    # Change column names
-    colnames(pixel_stats) <- sum_stats
-
-  }
-
-  # Connectivity ---------------------------------------------------------------
-  # -> calculated across pixels
-  if(calc_connectivity){
-    pixel_conn <- connectivity(val_mat,
-                               conn_thresh = conn_threshold)
-    # Order by row & col
-    pixel_conn <-
-      pixel_conn[order(pixel_conn["y"],
-                       pixel_conn["x"]),]
-
-    # Summarise
-    conn_summ <-
-      data.frame(temp_diff_min = min(pixel_conn$temp_diff),
-                 temp_diff_mean = mean(pixel_conn$temp_diff),
-                 temp_diff_median = median(pixel_conn$temp_diff),
-                 temp_diff_max = max(pixel_conn$temp_diff),
-                 cc_min = min(pixel_conn$clim_conn),
-                 cc_mean = mean(pixel_conn$clim_conn),
-                 cc_median = median(pixel_conn$clim_conn),
-                 cc_max = max(pixel_conn$clim_conn))
-  }
-
-  # Patch statistics -----------------------------------------------------------
-  # -> these statistics are calculated for hot and cold patches
-
-  # return_vals must include pstats (otherwise just use get_patches)
-  if(!("pstats" %in% return_vals)) return_vals <- c(return_vals, "pstats")
-
-  if(get_patches){
-    all_stats <- get_patches(val_mat = val_mat,
-                             matrix_id = matrix_id,
-                             style = style,
-                             mat_proj = mat_proj,
-                             mat_extent = mat_extent,
-                             return_vals = return_vals)
-
-    if("df" %in% return_vals){
-      # Rescale coordinates
-      all_stats[["df"]]["x_orig"] <- all_stats[["df"]]["x"] * ncols + 0.5
-      all_stats[["df"]]["y_orig"] <- all_stats[["df"]]["y"] * nrows + 0.5
-
-      # Order by row & col
-      all_stats[["df"]] <-
-        all_stats[["df"]][order(all_stats[["df"]]["y"],
-                                all_stats[["df"]]["x"]),]
+    
+    # If raster, coerce to matrix ------------------------------------------------
+    if(class(val_mat)[1] == "RasterLayer"){
+        val_mat <- raster::as.matrix(val_mat)
     }
-
-    # Return results -------------------------------------------------------------
-
-    # If length one then only includes pstats
-    if(length(return_vals) == 1){
-
-      # If calculating connectivity, add results to patch stats & temp df
-      if(calc_connectivity){
-        all_stats <- cbind(pixel_stats, conn_summ, all_stats)
-
+    
+    # Record no cols & rows
+    ncols <- ncol(val_mat)
+    nrows <- nrow(val_mat)
+    
+    # Pixel statistics -----------------------------------------------------------
+    # -> these statistics are calculated across all pixels
+    
+    if(!(is.null(sum_stats))){
+        # Apply pixel-level summary stats
+        pixel_stats <-
+            lapply(sum_stats, function(x) get(x)(val_mat, na.rm = TRUE))
+        
+        # Coerce to df
+        pixel_stats <- as.data.frame(t(do.call("rbind", pixel_stats)))
+        
+        # Change column names
+        colnames(pixel_stats) <- sum_stats
+        
+    }
+    
+    # Connectivity ---------------------------------------------------------------
+    # -> calculated across pixels
+    if(calc_connectivity){
+        pixel_conn <- connectivity(val_mat,
+                                   conn_thresh = conn_threshold)
+        # Order by row & col
+        pixel_conn <-
+            pixel_conn[order(pixel_conn["y"],
+                             pixel_conn["x"]),]
+        
+        # Summarise
+        conn_summ <-
+            data.frame(temp_diff_min = min(pixel_conn$temp_diff),
+                       temp_diff_mean = mean(pixel_conn$temp_diff),
+                       temp_diff_median = median(pixel_conn$temp_diff),
+                       temp_diff_max = max(pixel_conn$temp_diff),
+                       cc_min = min(pixel_conn$clim_conn),
+                       cc_mean = mean(pixel_conn$clim_conn),
+                       cc_median = median(pixel_conn$clim_conn),
+                       cc_max = max(pixel_conn$clim_conn))
+    }
+    
+    # Patch statistics -----------------------------------------------------------
+    # -> these statistics are calculated for hot and cold patches
+    
+    # return_vals must include pstats (otherwise just use get_patches)
+    if(!("pstats" %in% return_vals)) return_vals <- c(return_vals, "pstats")
+    
+    if(get_patches){
+        all_stats <- get_patches(val_mat = val_mat,
+                                 matrix_id = matrix_id,
+                                 style = style,
+                                 mat_proj = mat_proj,
+                                 mat_extent = mat_extent,
+                                 return_vals = return_vals)
+        
         if("df" %in% return_vals){
-          # Bind connectivity results to df
-          all_stats[["df"]] <-
-            cbind(all_stats[["df"]],
-                  pixel_conn[!(names(pixel_conn) %in% c("x","y","temp"))])
+            # Rescale coordinates
+            all_stats[["df"]]["x_orig"] <- all_stats[["df"]]["x"] * ncols + 0.5
+            all_stats[["df"]]["y_orig"] <- all_stats[["df"]]["y"] * nrows + 0.5
+            
+            # Order by row & col
+            all_stats[["df"]] <-
+                all_stats[["df"]][order(all_stats[["df"]]["y"],
+                                        all_stats[["df"]]["x"]),]
         }
-
-
-      }
+        
+        # Return results -------------------------------------------------------------
+        
+        # If length one then only includes pstats
+        if(length(return_vals) == 1){
+            
+            # If calculating connectivity, add results to patch stats & pixel stats
+            if(calc_connectivity){
+                all_stats <- cbind(pixel_stats, conn_summ, all_stats)
+                
+                if("df" %in% return_vals){
+                    # Bind connectivity results to df
+                    all_stats[["df"]] <-
+                        cbind(all_stats[["df"]],
+                              pixel_conn[!(names(pixel_conn) %in% c("x","y","temp"))])
+                    
+                }
+            # Just add pixel stats results to patch stats
+            } else{
+                all_stats <- cbind(pixel_stats, all_stats)
+            }
+        }else{
+            
+            # If calculating connectivity, add results to patch stats & temp df
+            if(calc_connectivity){
+                all_stats[["pstats"]] <- cbind(pixel_stats,
+                                               conn_summ,
+                                               all_stats[["pstats"]])
+                if("df" %in% return_vals){
+                    # Bind connectivity results to df
+                    all_stats[["df"]] <-
+                        cbind(all_stats[["df"]],
+                              pixel_conn[!(names(pixel_conn) %in% c("x","y","temp"))])
+                }
+            # Just add pixel stats results to patch stats
+            }else{
+                all_stats[["pstats"]] <- cbind(pixel_stats, all_stats[["pstats"]])
+            }
+        }
+        
+        return(all_stats)
     }else{
-
-      # If calculating connectivity, add results to patch stats & temp df
-      if(calc_connectivity){
-        all_stats[["pstats"]] <- cbind(pixel_stats,
-                                       conn_summ,
-                                       all_stats[["pstats"]])
-        if("df" %in% return_vals){
-          # Bind connectivity results to df
-          all_stats[["df"]] <-
-            cbind(all_stats[["df"]],
-                  pixel_conn[!(names(pixel_conn) %in% c("x","y","temp"))])
-        }
-      }else{
-        all_stats[["pstats"]] <- cbind(pixel_stats, all_stats[["pstats"]])
-      }
+        return(pixel_stats)
     }
-
-    return(all_stats)
-  }else{
-    return(pixel_stats)
-  }
-
+    
 }

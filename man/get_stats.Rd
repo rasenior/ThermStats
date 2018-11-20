@@ -5,7 +5,7 @@
 \title{get_stats}
 \usage{
 get_stats(val_mat, matrix_id = NULL, calc_connectivity = TRUE,
-  conn_threshold = 1.5, get_patches = TRUE, style = "W",
+  conn_threshold = 1.5, get_patches = TRUE, style = "C",
   mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
   "patches", "pstats"), sum_stats = c("mean", "min", "max"))
 }
