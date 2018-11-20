@@ -131,44 +131,46 @@ stats_by_group <- function(metadata,
     }else{
         temp_stats<-
             lapply(unique(metadata[, grouping_var]),
-                   function(x){
-                       tryCatch({
-                           sub_mat <- create_subset(metadata = metadata,
-                                                    mat_list = mat_list,
-                                                    matrix_id = matrix_id,
-                                                    grouping_var = grouping_var,
-                                                    grouping_val = x,
-                                                    round_val = round_val)
-                           n_mat <- sub_mat[["n_mat"]]
-                           sub_mat <- sub_mat[["sub_mat"]]
-                           
-                           # Get stats
-                           result <-
-                               get_stats(val_mat = sub_mat,
-                                         matrix_id = x,
-                                         get_patches = TRUE,
-                                         k = k,
-                                         style = style,
-                                         mat_proj = NULL,
-                                         mat_extent = NULL,
-                                         return_vals = "pstats",
-                                         pixel_fns = pixel_fns,
-                                         ...
-                               )
-                           # Add number matrices
-                           result <- cbind(result, n_mat)
-                           # Return
-                           return(result)
-                           
-                       },
-                       error = function(err) {
-                           
-                           # error handler picks up where error was generated
-                           message(paste("\nMY_ERROR:  ",err))
-                           return(NA)
-                           
-                       })
-                   })
+                              function(x){
+                                  tryCatch({
+                                      sub_mat <- create_subset(metadata = metadata,
+                                                               mat_list = mat_list,
+                                                               matrix_id = matrix_id,
+                                                               grouping_var = grouping_var,
+                                                               grouping_val = x,
+                                                               mat_type = mat_type,
+                                                               round_val = round_val)
+                                      n_mat <- sub_mat[["n_mat"]]
+                                      sub_mat <- sub_mat[["sub_mat"]]
+                                      
+                                      # Get stats
+                                      result <-
+                                          get_stats(val_mat = sub_mat,
+                                                    matrix_id = x,
+                                                    calc_connectivity = FALSE,
+                                                    conn_threshold = NULL,
+                                                    get_patches = TRUE,
+                                                    style = style,
+                                                    mat_proj = NULL,
+                                                    mat_extent = NULL,
+                                                    return_vals = "pstats",
+                                                    sum_stats = sum_stats
+                                          )
+                                      
+                                      # Add number matrices
+                                      result <- cbind(result, n_mat)
+                                      # Return
+                                      return(result)
+                                      
+                                  },
+                                  error = function(err) {
+                                      
+                                      # error handler picks up where error was generated
+                                      message(paste("\nMY_ERROR:  ",err))
+                                      return(NA)
+                                      
+                                  })
+                              })
     }
     temp_stats <- do.call("rbind",temp_stats)
     return(temp_stats)
