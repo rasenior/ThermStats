@@ -17,7 +17,8 @@ get_stats(val_mat, matrix_id = NULL, calc_connectivity = TRUE,
 \item{get_patches}{Whether to identify hot and cold spots. Defaults to TRUE.}
 
 \item{style}{Style to use when calculating neighbourhood weights using
-\code{spdep::}\code{\link[spdep]{nb2listw}}.}
+\code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
+standardised).}
 
 \item{mat_proj}{Spatial projection. Optional, but necessary for geographic
 data to plot correctly.}
@@ -31,12 +32,7 @@ data to plot correctly.}
 \code{pstats} will always be returned -- if this is not desired, use
 \code{\link{get_patches}} instead.}
 
-\item{k}{Number of neighbours to use when calculating nearest neighbours
-using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
-
-\item{pixel_fns}{The names of the summary statistics to apply.}
-
-\item{...}{Use to specify summary statistics that should be calculated across
+\item{sum_stats}{Summary statistics that should be calculated across
 all pixels. Several helper functions are included for use here:
 \code{\link{perc_5}}, \code{\link{perc_95}},
 \code{\link{SHDI}}, \code{\link{SIDI}},
@@ -76,8 +72,7 @@ get_stats(val_mat = val_mat,
           calc_connectivity = TRUE,
           conn_threshold = 1.5,
           get_patches = TRUE,
-          k = 8,
-          style = "W",
+          style = "C",
           mat_proj = NULL,
           mat_extent = NULL,
           return_vals = "pstats",
@@ -88,8 +83,7 @@ get_stats(val_mat = val_raster,
           calc_connectivity = TRUE,
           conn_threshold = 1.5,
           get_patches = TRUE,
-          k = 8,
-          style = "W",
+          style = "C",
           mat_proj = NULL,
           mat_extent = NULL,
           return_vals = "pstats",
@@ -109,8 +103,7 @@ worldclim_results <-
  get_stats(val_mat = sulawesi_temp,
            matrix_id = "sulawesi",
            calc_connectivity = FALSE,
-           k = 8,
-           style = "W",
+           style = "C",
            mat_proj = mat_proj,
            mat_extent = mat_extent,
            return_vals = c("df", "patches", "pstats"),
