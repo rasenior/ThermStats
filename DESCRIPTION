@@ -1,7 +1,7 @@
 Package: ThermStats
 Type: Package
 Title: Calculate statistics for thermal images
-Version: 0.5.3
+Version: 0.5.4
 Date: 2018-11-20
 Authors@R: person("Rebecca A.", "Senior", 
   email = "rebecca.a.senior@gmail.com",
