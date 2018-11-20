@@ -209,7 +209,7 @@ create_subset <- function(metadata,
         # Unstack
         raster_list <- unstack(sub_list)
         
-        # Subset matrices list by the desired matrix IDs
+    # Subset matrices list by the desired matrix IDs
     }else{
         sub_list <- mat_list[inds]
         # Coerce any raster layers to matrices
@@ -217,21 +217,15 @@ create_subset <- function(metadata,
             sub_list[which(sapply(sub_list, function(x) class(x) == "RasterLayer"))]
     }
     
+    # Coerce rasters to matrices
     if(length(raster_list) > 0){
-        raster_list <-
-            lapply(raster_list, function(rast){
-                # To dataframe first (seems to preserve coordinates more reliably)
-                temp_df <- raster::as.data.frame(rast, xy = TRUE)
-                # To matrix
-                val <- names(temp_df)[3]
-                temp_mat <- reshape2::acast(temp_df, y ~ x, value.var = val)
-                return(temp_mat)
-            })
+        raster_list <- lapply(raster_list, raster::as.matrix)
         
         if(mat_type == "rasters"){
+            # If stack then raster list replaces everything
             sub_list <- raster_list
         }else{
-            # Replace
+            # Replace only the elements that are rasters
             sub_list[which(sapply(sub_list, function(x) class(x) == "RasterLayer"))] <-
                 raster_list
         }
