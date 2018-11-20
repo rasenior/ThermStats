@@ -301,10 +301,18 @@ get_patches <- function(val_mat, matrix_id = NULL,
                 results[, "abundance"] / results[, "total_area"]
             
             # Summary stats across patches (based on median values)
-            sumstats <-
-                t(as.matrix(summary(patch_val[patch_val[,"G_bin"] == class, "val"])))
-            colnames(sumstats) <-
-                tolower(gsub(" ", "", gsub("[.]", "", colnames(sumstats))))
+            if(length(patch_val[patch_val[,"G_bin"] == class, "val"]) > 0){
+                sumstats <-
+                    t(as.matrix(summary(patch_val[patch_val[,"G_bin"] == class, "val"])))
+                colnames(sumstats) <-
+                    tolower(gsub(" ", "", gsub("[.]", "", colnames(sumstats))))
+                # If no patches in this class, fill manually
+            }else{
+                sumstats <- data.frame(rbind(rep(NA,6)))
+                colnames(sumstats) <- 
+                    c("min","1stqu","median","mean","3rdqu","max")
+            }
+            
             results <- cbind(results, sumstats)
             
             # Remove class column
