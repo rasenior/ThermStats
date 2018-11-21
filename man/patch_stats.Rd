@@ -4,10 +4,10 @@
 \alias{patch_stats}
 \title{patch_stats}
 \usage{
-patch_stats(val_mat, class)
+patch_stats(mat, class)
 }
 \arguments{
-\item{val_mat}{A numeric matrix.}
+\item{mat}{A numeric matrix.}
 
 \item{class}{The patch class for which statistics should be calculated.}
 }
@@ -42,14 +42,14 @@ and \href{https://doi.org/10.1111/2041-210X.12488}{Faye et al. 2016}
 }
 \examples{
 # Create matrix
-matrix(c(1,1,2,1,
-         1,0,2,0,
-         1,2,0,1,
-         2,2,0,1), nrow = 4, ncol  = 4,
-         byrow = TRUE)
+mat <- matrix(c(1,1,2,1,
+                1,0,2,0,
+                1,2,0,1,
+                2,2,0,1), nrow = 4, ncol  = 4,
+              byrow = TRUE)
 
-# Count edges in each of the three classes (1, 2 or 3)
-count_edges(val_mat)
+patch_stats(mat = mat, class = 1)
+
 }
 \references{
 \itemize{

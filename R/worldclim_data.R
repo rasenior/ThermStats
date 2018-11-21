@@ -13,6 +13,6 @@
 #' areas. International Journal of Climatology. Available at:
 #' \url{http://worldclim.org/version2}.
 #' @examples
-#' plot(sulawesi_temp)
-#' hist(plot(sulawesi_temp))
+#' raster::plot(sulawesi_temp)
+#' hist(sulawesi_temp)
 "sulawesi_temp"

@@ -4,10 +4,10 @@
 \alias{connectivity}
 \title{connectivity}
 \usage{
-connectivity(val_mat, conn_thresh = 1.5)
+connectivity(mat, conn_thresh = 1.5)
 }
 \arguments{
-\item{val_mat}{A numeric matrix.}
+\item{mat}{A numeric temperature matrix.}
 
 \item{conn_thresh}{Climate threshold to use for calculation of thermal
 connectivity (i.e. the amount of change that organisms would be seeking
@@ -27,7 +27,7 @@ A dataframe (one row for each pixel) containing:
  \item{therm_conn}{Thermal connectivity, calculated as the maximum potential
  change (\code{diff_potential}) minus \code{conn_thresh}. Where
  this value is positive, connectivity of the starting pixel is sufficient to
- avoid the specified conn_thresh of warming. See details.}
+ avoid the specified threshold of warming. See details.}
 }
 \description{
 Calculate thermal connectivity and potential for temperature change.
@@ -37,19 +37,26 @@ This measure of climate connectivity and potential for temperature
 change is analogous to that described in
 \href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
 basic premise is that there is a degree of change that organisms are seeking
-to avoid; where pixels are sufficiently heterogenous and well connected
-organisms can move through the pixels to avoid delterious change.
+to avoid, and when pixels are sufficiently heterogenous and well connected
+organisms can move through the pixels to avoid delterious temperature change.
 }
 \examples{
 # Define matrix as FLIR thermal image
-val_mat <- flir11835$flir_matrix
+mat <- flir11835$flir_matrix
 
 # Get connectivity
 mat_conn <-
-connectivity(val_mat = val_mat,
+connectivity(mat = mat,
              conn_thresh = 1.5)
 head(mat_conn)
 
+# Plot the potential for temperature change
+library(ggplot2)
+ggplot(mat_conn, 
+       aes(x = x, y = y, fill = diff_potential))+
+    geom_raster() +
+    scale_fill_viridis_c()
+               
 }
 \references{
 McGuire, J. L., Lawler, J. J., McRae, B. H., Nunez, T. A. and

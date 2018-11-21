@@ -14,8 +14,8 @@ Sulawesi. Temperature is average January temperature (°C) for the 'current'
 time period (1970-2000).
 }
 \examples{
-plot(sulawesi_temp)
-hist(plot(sulawesi_temp))
+raster::plot(sulawesi_temp)
+hist(sulawesi_temp)
 }
 \references{
 Fick, S.E. and Hijmans, R.J. (2017),

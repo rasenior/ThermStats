@@ -4,10 +4,10 @@
 \alias{count_edges}
 \title{count_edges}
 \usage{
-count_edges(val_mat, class, bidirectional = FALSE, diagonals = FALSE)
+count_edges(mat, class, bidirectional = FALSE, diagonals = FALSE)
 }
 \arguments{
-\item{val_mat}{The matrix.}
+\item{mat}{A numeric matrix.}
 
 \item{bidirectional}{Should both sides of each shared edge be counted?
 Defaults to FALSE.}
@@ -28,10 +28,15 @@ Count the number of edges shared by cells of the same class within a matrix
 set.seed(317)
 cols <- 100
 rows <- 50
-val_mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
+mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
               nrow = rows, ncol = cols)
 
 # Count edges in each of the three classes (1, 2 or 3)
-results <- lapply(1:3, count_edges, val_mat = val_mat)
-results <- do.call("rbind", results)
+results <- lapply(1:3, count_edges, mat = mat)
+do.call("rbind", results)
+>    [,1]
+> [1,] 1051
+> [2,] 1179
+> [3,] 1028
+
 }

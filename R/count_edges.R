@@ -1,7 +1,7 @@
 #' count_edges
 #'
 #' Count the number of edges shared by cells of the same class within a matrix
-#' @param val_mat The matrix.
+#' @param mat A numeric matrix.
 #' @param classes The patch class of interest. Must be numeric.
 #' @param bidirectional Should both sides of each shared edge be counted?
 #' Defaults to FALSE.
@@ -13,23 +13,28 @@
 #' set.seed(317)
 #' cols <- 100
 #' rows <- 50
-#' val_mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
+#' mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
 #'               nrow = rows, ncol = cols)
 #'
 #' # Count edges in each of the three classes (1, 2 or 3)
-#' results <- lapply(1:3, count_edges, val_mat = val_mat)
-#' results <- do.call("rbind", results)
+#' results <- lapply(1:3, count_edges, mat = mat)
+#' do.call("rbind", results)
+#' >    [,1]
+#' > [1,] 1051
+#' > [2,] 1179
+#' > [3,] 1028
+#' 
 #' @export
 
-count_edges <- function(val_mat, class,
+count_edges <- function(mat, class,
                         bidirectional = FALSE, diagonals = FALSE){
 
   # Define row and column length
-  n_cols <- ncol(val_mat)
-  n_rows <- nrow(val_mat)
+  n_cols <- ncol(mat)
+  n_rows <- nrow(mat)
 
   # Pad matrix with NAs
-  val_mat.pad <- rbind(NA, cbind(NA, val_mat, NA), NA)
+  mat.pad <- rbind(NA, cbind(NA, mat, NA), NA)
 
   # Define row and column indices (not including NAs)
   col_ind <- 2:(n_cols + 1)
@@ -39,21 +44,21 @@ count_edges <- function(val_mat, class,
   if(diagonals){
     # Including diagonal neighbours
     neigh <-
-      cbind(N  = as.vector(val_mat.pad[row_ind - 1, col_ind    ] == val_mat.pad[row_ind, col_ind]),
-            NE = as.vector(val_mat.pad[row_ind - 1, col_ind + 1] == val_mat.pad[row_ind, col_ind]),
-            E  = as.vector(val_mat.pad[row_ind    , col_ind + 1] == val_mat.pad[row_ind, col_ind]),
-            SE = as.vector(val_mat.pad[row_ind + 1, col_ind + 1] == val_mat.pad[row_ind, col_ind]),
-            S  = as.vector(val_mat.pad[row_ind + 1, col_ind    ] == val_mat.pad[row_ind, col_ind]),
-            SW = as.vector(val_mat.pad[row_ind + 1, col_ind - 1] == val_mat.pad[row_ind, col_ind]),
-            W  = as.vector(val_mat.pad[row_ind    , col_ind - 1] == val_mat.pad[row_ind, col_ind]),
-            NW = as.vector(val_mat.pad[row_ind + 1, col_ind - 1] == val_mat.pad[row_ind, col_ind]))
+      cbind(N  = as.vector(mat.pad[row_ind - 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            NE = as.vector(mat.pad[row_ind - 1, col_ind + 1] == mat.pad[row_ind, col_ind]),
+            E  = as.vector(mat.pad[row_ind    , col_ind + 1] == mat.pad[row_ind, col_ind]),
+            SE = as.vector(mat.pad[row_ind + 1, col_ind + 1] == mat.pad[row_ind, col_ind]),
+            S  = as.vector(mat.pad[row_ind + 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            SW = as.vector(mat.pad[row_ind + 1, col_ind - 1] == mat.pad[row_ind, col_ind]),
+            W  = as.vector(mat.pad[row_ind    , col_ind - 1] == mat.pad[row_ind, col_ind]),
+            NW = as.vector(mat.pad[row_ind + 1, col_ind - 1] == mat.pad[row_ind, col_ind]))
   }else{
     # Including only vertical and horizontal neighbours
     neigh <-
-      cbind(N  = as.vector(val_mat.pad[row_ind - 1, col_ind    ] == val_mat.pad[row_ind, col_ind]),
-            E  = as.vector(val_mat.pad[row_ind    , col_ind + 1] == val_mat.pad[row_ind, col_ind]),
-            S  = as.vector(val_mat.pad[row_ind + 1, col_ind    ] == val_mat.pad[row_ind, col_ind]),
-            W  = as.vector(val_mat.pad[row_ind    , col_ind - 1] == val_mat.pad[row_ind, col_ind]))
+      cbind(N  = as.vector(mat.pad[row_ind - 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            E  = as.vector(mat.pad[row_ind    , col_ind + 1] == mat.pad[row_ind, col_ind]),
+            S  = as.vector(mat.pad[row_ind + 1, col_ind    ] == mat.pad[row_ind, col_ind]),
+            W  = as.vector(mat.pad[row_ind    , col_ind - 1] == mat.pad[row_ind, col_ind]))
   }
 
   # Sum matches by row
@@ -61,7 +66,7 @@ count_edges <- function(val_mat, class,
                      ncol = n_cols, nrow = n_rows)
 
   # Sum shared edges by class
-  shared_edge <-  sum(edge_mat[which(val_mat == class)])
+  shared_edge <-  sum(edge_mat[which(mat == class)])
 
   # If only counting edges once, divide by two
   if(!(bidirectional)){

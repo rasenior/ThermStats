@@ -1,16 +1,16 @@
 Package: ThermStats
 Type: Package
 Title: Calculate statistics for thermal images
-Version: 0.5.6
+Version: 0.5.7
 Date: 2018-11-21
 Authors@R: person("Rebecca A.", "Senior", 
   email = "rebecca.a.senior@gmail.com",
   role = c("aut", "cre"))
 Description: Takes a temperature matrix or raster, such as that returned using 
-  the package Thermimage, and finds hot and cold patches. Pixels are matched to 
-  these patches, and statistics calculated for pixels and patches. 
-  Similarly to Thermimage, this package was written primarily for research 
-  purposes in biological applications of gridded temperature data.
+    the package Thermimage, and finds hot and cold patches. Pixels are matched to 
+    these patches, and statistics calculated for pixels and patches. 
+    Similarly to Thermimage, this package was written primarily for research 
+    purposes in biological applications of gridded temperature data.
 Depends: R (>= 3.3.3)
 License: GPL (>= 2)
 Encoding: UTF-8

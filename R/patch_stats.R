@@ -1,7 +1,7 @@
 #' patch_stats
 #'
 #' Calculate patch statistics for a given class (i.e. cell value) in a numeric matrix.
-#' @param val_mat A numeric matrix.
+#' @param mat A numeric matrix.
 #' @param class The patch class for which statistics should be calculated.
 #' @return A dataframe containing:
 #'  \item{class}{The patch class for which statistics were calculated.}
@@ -51,24 +51,24 @@
 #' }
 #' @examples
 #' # Create matrix
-#' matrix(c(1,1,2,1,
-#'          1,0,2,0,
-#'          1,2,0,1,
-#'          2,2,0,1), nrow = 4, ncol  = 4,
-#'          byrow = TRUE)
+#' mat <- matrix(c(1,1,2,1,
+#'                 1,0,2,0,
+#'                 1,2,0,1,
+#'                 2,2,0,1), nrow = 4, ncol  = 4,
+#'               byrow = TRUE)
 #'
-#' # Count edges in each of the three classes (1, 2 or 3)
-#' count_edges(val_mat)
+#'patch_stats(mat = mat, class = 1)
+#'
 #' @export
 #'
 
-patch_stats <- function(val_mat, class){
+patch_stats <- function(mat, class){
 
   # Calculate area (total number of cells)
-  area <- length(which(val_mat == class))
+  area <- length(which(mat == class))
 
   # Calculate the total area of the matrix
-  total_area <- length(val_mat)
+  total_area <- length(mat)
 
   # Calculate 'n', the side of the largest integer square smaller than 'area'
   n <- floor(sqrt(area))
@@ -78,7 +78,7 @@ patch_stats <- function(val_mat, class){
   max_edge <- max_edges(n = n, m = m)
 
   # Calculate the actual number of edges that are shared
-  shared_edge <- count_edges(val_mat = val_mat, class = class)
+  shared_edge <- count_edges(mat = mat, class = class)
 
   # Calculate the minimum perimeter, given the area
   min_perim <- min_p(area = area, n = n, m = m)
