@@ -1,15 +1,21 @@
 #' get_stats
 #'
 #' Calculate summary and spatial statistics across a single matrix or raster.
-#' @param val_mat A numeric matrix or raster.
-#' @param matrix_id The matrix ID (optional). Useful when iterating over numerous matrices.
+#' @param img A numeric temperature matrix (such as that returned from
+#' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or raster.
+#' @param id The image ID (optional). Useful when iterating over numerous images.
+#' @param calc_connectivity Whether or not to calculate cthermal connectivity
+#' across pixels (slow for large rasters). Defaults to TRUE.
+#' @param conn_threshold Climate threshold to use for calculation of thermal
+#' connectivity (i.e. the amount of change that organisms would be seeking
+#' to avoid). See \code{ThermStats::}\code{\link[ThermStats]{connectivity}}.
 #' @param get_patches Whether to identify hot and cold spots. Defaults to TRUE.
 #' @param style Style to use when calculating neighbourhood weights using
 #'  \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
 #'  standardised).
-#' @param mat_proj Spatial projection. Optional, but necessary for geographic
+#' @param img_proj Spatial projection. Optional, but necessary for geographic
 #' data to plot correctly.
-#' @param mat_extent Spatial extent. Optional, but necessary for geographic
+#' @param img_extent Spatial extent. Optional, but necessary for geographic
 #' data to plot correctly.
 #' @param return_vals Which values to return? Any combination of the dataframe
 #' (\code{df}), SpatialPolygonsDataFrame of hot and cold patches
@@ -38,32 +44,35 @@
 #' # FLIR temperature matrix ---------------------------------------------------
 #'
 #' # Define individual matrix and raster
-#' val_mat <- flir11835$flir_matrix
-#' val_raster <- raster::raster(val_mat)
+#' img <- flir11835$flir_matrix
+#' val_raster <- 
+#'     raster::raster(img,
+#'                    xmn=0, xmx=ncol(img),
+#'                    ymn=0, ymx=nrow(img))
 #'
-#' # Define matrix ID (the photo number in this case)
-#' matrix_id <- flir11835$photo_no
+#' # Define image ID (the photo number in this case)
+#' id <- flir11835$photo_no
 #'
 #' # Get stats!
-#' get_stats(val_mat = val_mat,
-#'           matrix_id = matrix_id,
+#' get_stats(img = img,
+#'           id = id,
 #'           calc_connectivity = TRUE,
 #'           conn_threshold = 1.5,
 #'           get_patches = TRUE,
 #'           style = "C",
-#'           mat_proj = NULL,
-#'           mat_extent = NULL,
+#'           img_proj = NULL,
+#'           img_extent = NULL,
 #'           return_vals = "pstats",
 #'           sum_stats = c("mean", "min","max"))
 #'
-#' get_stats(val_mat = val_raster,
-#'           matrix_id = matrix_id,
+#' get_stats(img = val_raster,
+#'           id = id,
 #'           calc_connectivity = TRUE,
 #'           conn_threshold = 1.5,
 #'           get_patches = TRUE,
 #'           style = "C",
-#'           mat_proj = NULL,
-#'           mat_extent = NULL,
+#'           img_proj = NULL,
+#'           img_extent = NULL,
 #'           return_vals = "pstats",
 #'           sum_stats = c("mean", "min","max"))
 #'
@@ -73,17 +82,17 @@
 #' # island of Sulawesi
 #'
 #' # Define projection and extent
-#' mat_proj <- projection(sulawesi_temp)
-#' mat_extent <- extent(sulawesi_temp)
+#' img_proj <- projection(sulawesi_temp)
+#' img_extent <- extent(sulawesi_temp)
 #'
 #' # Find hot and cold patches
 #' worldclim_results <-
-#'  get_stats(val_mat = sulawesi_temp,
-#'            matrix_id = "sulawesi",
+#'  get_stats(img = sulawesi_temp,
+#'            id = "sulawesi",
 #'            calc_connectivity = FALSE,
 #'            style = "C",
-#'            mat_proj = mat_proj,
-#'            mat_extent = mat_extent,
+#'            img_proj = img_proj,
+#'            img_extent = img_extent,
 #'            return_vals = c("df", "patches", "pstats"),
 #'            sum_stats = c("mean", "min","max"))
 #'
@@ -93,25 +102,25 @@
 #' plot_patches(df, patches, print_plot = TRUE, save_plot = FALSE)
 #' @export
 
-get_stats <- function(val_mat,
-                      matrix_id = NULL,
+get_stats <- function(img,
+                      id = NULL,
                       calc_connectivity = TRUE,
                       conn_threshold = 1.5,
                       get_patches = TRUE,
                       style = "C",
-                      mat_proj = NULL,
-                      mat_extent = NULL,
+                      img_proj = NULL,
+                      img_extent = NULL,
                       return_vals = c("df","patches","pstats"),
                       sum_stats = c("mean", "min","max")){
     
     # If raster, coerce to matrix ------------------------------------------------
-    if(class(val_mat)[1] == "RasterLayer"){
-        val_mat <- raster::as.matrix(val_mat)
+    if(class(img)[1] == "RasterLayer"){
+        img <- raster::as.matrix(img)
     }
     
     # Record no cols & rows
-    ncols <- ncol(val_mat)
-    nrows <- nrow(val_mat)
+    ncols <- ncol(img)
+    nrows <- nrow(img)
     
     # Pixel statistics -----------------------------------------------------------
     # -> these statistics are calculated across all pixels
@@ -120,7 +129,7 @@ get_stats <- function(val_mat,
         
         # Apply pixel-level summary stats
         pixel_stats <-
-            lapply(sum_stats, function(x) get(x)(na.omit(val_mat)))
+            lapply(sum_stats, function(x) get(x)(na.omit(as.vector(img))))
         
         # Coerce to df
         pixel_stats <- as.data.frame(t(do.call("rbind", pixel_stats)))
@@ -135,7 +144,7 @@ get_stats <- function(val_mat,
     # Connectivity ---------------------------------------------------------------
     # -> calculated across pixels
     if(calc_connectivity){
-        pixel_conn <- connectivity(val_mat,
+        pixel_conn <- connectivity(img,
                                    conn_thresh = conn_threshold)
         # Order by row & col
         pixel_conn <-
@@ -144,14 +153,14 @@ get_stats <- function(val_mat,
         
         # Summarise
         conn_summ <-
-            data.frame(temp_diff_min = min(pixel_conn$temp_diff),
-                       temp_diff_mean = mean(pixel_conn$temp_diff),
-                       temp_diff_median = median(pixel_conn$temp_diff),
-                       temp_diff_max = max(pixel_conn$temp_diff),
-                       cc_min = min(pixel_conn$clim_conn),
-                       cc_mean = mean(pixel_conn$clim_conn),
-                       cc_median = median(pixel_conn$clim_conn),
-                       cc_max = max(pixel_conn$clim_conn))
+            data.frame(temp_diff_min = min(pixel_conn$diff_potential, na.rm = TRUE),
+                       temp_diff_mean = mean(pixel_conn$diff_potential, na.rm = TRUE),
+                       temp_diff_median = median(pixel_conn$diff_potential, na.rm = TRUE),
+                       temp_diff_max = max(pixel_conn$diff_potential, na.rm = TRUE),
+                       cc_min = min(pixel_conn$therm_conn, na.rm = TRUE),
+                       cc_mean = mean(pixel_conn$therm_conn, na.rm = TRUE),
+                       cc_median = median(pixel_conn$therm_conn, na.rm = TRUE),
+                       cc_max = max(pixel_conn$therm_conn, na.rm = TRUE))
     }
     
     # Patch statistics -----------------------------------------------------------
@@ -161,11 +170,11 @@ get_stats <- function(val_mat,
     if(!("pstats" %in% return_vals)) return_vals <- c(return_vals, "pstats")
     
     if(get_patches){
-        all_stats <- get_patches(val_mat = val_mat,
-                                 matrix_id = matrix_id,
+        all_stats <- get_patches(img = img,
+                                 id = id,
                                  style = style,
-                                 mat_proj = mat_proj,
-                                 mat_extent = mat_extent,
+                                 img_proj = img_proj,
+                                 img_extent = img_extent,
                                  return_vals = return_vals)
         
         if("df" %in% return_vals){

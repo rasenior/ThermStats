@@ -1,16 +1,16 @@
 #' get_patches
 #'
 #' Find hot and cold patches in a numeric matrix or raster, and calculate patch statistics.
-#' @param val_mat A numeric matrix (such as that returned from
-#' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or a raster.
-#' @param matrix_id The matrix ID (optional). Useful when iterating over
-#' numerous matrices.
+#' @param img A numeric temperature matrix (such as that returned from
+#' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or raster.
+#' @param id The image ID (optional). Useful when iterating over
+#' numerous images.
 #' @param style Style to use when calculating neighbourhood weights using
 #'  \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
 #'  standardised).
-#' @param mat_proj Spatial projection. Optional, but necessary for geographic
+#' @param img_proj Spatial projection. Optional, but necessary for geographic
 #' data to plot correctly.
-#' @param mat_extent Spatial extent. Optional, but necessary for geographic
+#' @param img_extent Spatial extent. Optional, but necessary for geographic
 #' data to plot correctly.
 #' @param return_vals Which values to return? Any combination of the dataframe
 #' (\code{df}), SpatialPolygonsDataFrame of hot and cold patches
@@ -21,7 +21,7 @@
 #'  patch classification (G_bin) into hot (1), cold (-1) or no patch (0)
 #'  according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
 #'  the unique ID of the patch in which the pixel fell;
-#'  and the matrix ID (if applicable).}
+#'  and the image ID (if applicable).}
 #'  \item{patches}{A SpatialPolygonsDataFrame of hot and cold patches. Hot
 #'  patches have a value of 1, and cold patches a value of -1.}
 #'  \item{pstats}{A dataframe with patch statistics for hot patches and cold
@@ -29,11 +29,11 @@
 #'  statistics returned.}
 #' @examples
 #'
-#' # FLIR temperature matrix ---------------------------------------------
+#' # FLIR temperature matrix ----------------------------------------
 #' # Find hot and cold patches
 #' flir_results <-
-#'     get_patches(val_mat = flir11835$flir_matrix,
-#'     matrix_id = flir11835$photo_no)
+#'     get_patches(img = flir11835$flir_matrix,
+#'                 id = flir11835$photo_no)
 #'
 #' # Look at the results for individual pixels
 #' head(flir_results$df)
@@ -50,20 +50,20 @@
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
 #'
-#' # Worldclim2 temperature raster ---------------------------------------
-#' # Dataset 'sulawesi_temp' represents mean January temperature for the
-#' # island of Sulawesi
+#' # Worldclim2 temperature raster ----------------------------------
+#' # Dataset 'sulawesi_temp' represents mean January temperature for 
+#' # the island of Sulawesi
 #'
 #' # Define projection and extent
-#' mat_proj <- raster::projection(sulawesi_temp)
-#' mat_extent <- raster::extent(sulawesi_temp)
+#' img_proj <- raster::projection(sulawesi_temp)
+#' img_extent <- raster::extent(sulawesi_temp)
 #'
 #' # Find hot and cold patches
 #' worldclim_results <-
-#'  get_patches(val_mat = sulawesi_temp,
-#'              matrix_id = "sulawesi",
-#'              mat_proj = mat_proj,
-#'              mat_extent = mat_extent)
+#'  get_patches(img = sulawesi_temp,
+#'              id = "sulawesi",
+#'              img_proj = img_proj,
+#'              img_extent = img_extent)
 #'
 #' # Look at the results for individual pixels
 #' head(worldclim_results$df)
@@ -83,31 +83,31 @@
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #' @export
 #'
-get_patches <- function(val_mat, 
-                        matrix_id = NULL, 
+get_patches <- function(img, 
+                        id = NULL, 
                         style = "C",
-                        mat_proj = NULL,
-                        mat_extent = NULL,
+                        img_proj = NULL,
+                        img_extent = NULL,
                         return_vals = c("df","patches","pstats")) {
     
-    # Setup ----------------------------------------------------------------------
-    if(!(is.null(matrix_id))){
-        message("\nProcessing: ", matrix_id)
+    # Setup --------------------------------------------------------------------
+    if(!(is.null(id))){
+        message("\nProcessing: ", id)
     }
     
-    # Get matrix dimensions
-    nrows <- nrow(val_mat)
-    ncols <- ncol(val_mat)
+    # Get dimensions
+    nrows <- nrow(img)
+    ncols <- ncol(img)
     
-    # Determine whether the matrix is a true matrix or a raster
-    if(is.matrix(val_mat)){
+    # Determine whether matrix or raster
+    if(is.matrix(img)){
         # Melt to dataframe
-        df <- reshape2::melt(val_mat,
+        df <- reshape2::melt(img,
                              varnames = c("y", "x"),
                              value.name = "val")
-    }else if(class(val_mat)[1] == "RasterLayer"){
+    }else if(class(img)[1] == "RasterLayer"){
         # Coerce to dataframe
-        df <- raster::as.data.frame(val_mat, xy = TRUE)
+        df <- raster::as.data.frame(img, xy = TRUE)
         colnames(df)[3] <- "val"
     }
     
@@ -181,10 +181,10 @@ get_patches <- function(val_mat,
                        xmn=0, xmx=ncols,
                        ymn=0, ymx=nrows)
     
-    # Specify coordinates and mat_projection (if applicable)
-    if(!(is.null(mat_proj))){
-        raster::extent(patches) <- mat_extent
-        raster::projection(patches) <- mat_proj
+    # Specify coordinates and img_projection (if applicable)
+    if(!(is.null(img_proj))){
+        raster::extent(patches) <- img_extent
+        raster::projection(patches) <- img_proj
     }
     
     # Raster to dissolved polygons
@@ -193,20 +193,20 @@ get_patches <- function(val_mat,
     
     # 2. Assign to each temperature cell the ID of the patch that it falls into
     # Matrix to raster to points
-    val_mat <- reshape2::acast(df, y ~ x, value.var = "val")
+    img <- reshape2::acast(df, y ~ x, value.var = "val")
     # Flip
-    val_mat <-
-        Thermimage::mirror.matrix(Thermimage::rotate180.matrix(val_mat))
+    img <-
+        Thermimage::mirror.matrix(Thermimage::rotate180.matrix(img))
     
     # Matrix to raster
-    raw <- raster::raster(val_mat,
+    raw <- raster::raster(img,
                           xmn=0, xmx=ncols,
                           ymn=0, ymx=nrows)
     
-    # Specify coordinates and mat_projection (if applicable)
-    if(!(is.null(mat_proj))){
-        raster::extent(raw) <- mat_extent
-        raster::projection(raw) <- mat_proj
+    # Specify coordinates and img_projection (if applicable)
+    if(!(is.null(img_proj))){
+        raster::extent(raw) <- img_extent
+        raster::projection(raw) <- img_proj
     }
     
     # Raster to points
@@ -271,8 +271,8 @@ get_patches <- function(val_mat,
     
     rm(raw, patchID)
     
-    if(!(is.null(matrix_id))){
-        df$matrix_id <- matrix_id
+    if(!(is.null(id))){
+        df$id <- id
     }
     
     ### 3. Calculate patch stats
@@ -304,7 +304,7 @@ get_patches <- function(val_mat,
     pstats <-
         lapply(c(1,-1), function(class){
             # Spatial stats
-            results <- patch_stats(val_mat = patch_mat, class = class)
+            results <- patch_stats(mat = patch_mat, class = class)
             # Patch number
             results[, "abundance"] <-
                 length(unique(df[df[,"G_bin"] == class, "patchID"]))
@@ -341,8 +341,8 @@ get_patches <- function(val_mat,
     # Bind class results together
     pstats <- do.call("cbind", pstats)
     
-    # Add matrix ID if available
-    if(!(is.null(matrix_id))) pstats[,"matrix_id"] <- matrix_id
+    # Add image ID if available
+    if(!(is.null(id))) pstats[,"id"] <- id
     
     # Return results ------------------------------------------------------------
     if(length(return_vals) == 1){

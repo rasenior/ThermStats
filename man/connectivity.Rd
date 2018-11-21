@@ -4,12 +4,12 @@
 \alias{connectivity}
 \title{connectivity}
 \usage{
-connectivity(mat, conn_thresh = 1.5)
+connectivity(mat, conn_threshold = 1.5)
 }
 \arguments{
 \item{mat}{A numeric temperature matrix.}
 
-\item{conn_thresh}{Climate threshold to use for calculation of thermal
+\item{conn_threshold}{Climate threshold to use for calculation of thermal
 connectivity (i.e. the amount of change that organisms would be seeking
 to avoid).}
 }
@@ -25,7 +25,7 @@ A dataframe (one row for each pixel) containing:
  \item{diff_potential}{The potential for change achieved by following
  gradient from hotter to cooler pixels}
  \item{therm_conn}{Thermal connectivity, calculated as the maximum potential
- change (\code{diff_potential}) minus \code{conn_thresh}. Where
+ change (\code{diff_potential}) minus \code{conn_threshold}. Where
  this value is positive, connectivity of the starting pixel is sufficient to
  avoid the specified threshold of warming. See details.}
 }
@@ -47,7 +47,7 @@ mat <- flir11835$flir_matrix
 # Get connectivity
 mat_conn <-
 connectivity(mat = mat,
-             conn_thresh = 1.5)
+             conn_threshold = 1.5)
 head(mat_conn)
 
 # Plot the potential for temperature change

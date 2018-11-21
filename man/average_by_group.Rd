@@ -4,31 +4,30 @@
 \alias{average_by_group}
 \title{average_by_group}
 \usage{
-average_by_group(metadata, mat_list, matrix_id, grouping_var,
-  round_val = NULL)
+average_by_group(metadata, img_list, id, grouping_var, round_val = NULL)
 }
 \arguments{
-\item{metadata}{A dataframe denoting the grouping of different matrices.}
+\item{metadata}{A dataframe denoting the grouping of different images.}
 
-\item{mat_list}{List of matrices or raster stack.}
+\item{img_list}{List or stack of numeric temperature matrices or rasters.}
 
-\item{matrix_id}{Name of the metadata variable that identifies unique
-matrices. Should match element names in the list of matrices.}
+\item{id}{Name of the metadata variable that identifies unique
+images. Should match element names in the image list.}
 
 \item{grouping_var}{The name of the metadata variable that denotes the
-grouping of matrices.}
+grouping of images.}
 
-\item{round_val}{Number of decimals to round average matrices to (optional).}
+\item{round_val}{Number of decimals to round to (optional).}
 }
 \value{
-If \code{mat_list} is supplied as a list of matrices, returns
+If \code{img_list} is supplied as a list of matrices, returns
 a new list of matrices with one element for each unique value of the grouping
 variable. 
 
-If \code{mat_list} is supplied as a raster stack, returns a new raster
+If \code{img_list} is supplied as a raster stack, returns a new raster
 stack with one raster for each unique value of the grouping variable. 
 
-Grouping variables with no matching matrices are dropped.
+Grouping variables with no matching images are dropped.
 }
 \description{
 Average multiple matrices or rasters within groups.
@@ -40,31 +39,31 @@ camera_params <- flir_raw$camera_params
 metadata <- flir_metadata
 
 # Batch convert
-mat_list <- batch_convert(raw_dat, write_results = FALSE)
+img_list <- batch_convert(raw_dat, write_results = FALSE)
 
 # With list of matrices -----------------------------------------------------
 
 # Average matrices in list
 avg_list <- average_by_group(metadata = metadata,
-                             mat_list = mat_list,
-                             matrix_id = "photo_no",
+                             img_list = img_list,
+                             id = "photo_no",
                              grouping_var = "rep_id")
                              
 # With raster stack ---------------------------------------------------------
 
 # Coerce each matrix to a raster
 mat_stack <-
-    lapply(mat_list,
+    lapply(img_list,
            function(x) raster::raster(x,
-                                      xmn=0, xmx=ncol(mat_list[[1]]),
-                                      ymn=0, ymx=nrow(mat_list[[1]])))
+                                      xmn=0, xmx=ncol(img_list[[1]]),
+                                      ymn=0, ymx=nrow(img_list[[1]])))
 # Stack
 mat_stack <- raster::stack(mat_stack)
 
-# Average matrices in raster stack
+# Average in raster stack
 avg_stack <- average_by_group(metadata = metadata,
-                              mat_list = mat_stack,
-                              matrix_id = "photo_no",
+                              img_list = mat_stack,
+                              id = "photo_no",
                               grouping_var = "rep_id")
 # Plot
 raster::plot(avg_stack)

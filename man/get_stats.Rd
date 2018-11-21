@@ -4,15 +4,23 @@
 \alias{get_stats}
 \title{get_stats}
 \usage{
-get_stats(val_mat, matrix_id = NULL, calc_connectivity = TRUE,
+get_stats(img, id = NULL, calc_connectivity = TRUE,
   conn_threshold = 1.5, get_patches = TRUE, style = "C",
-  mat_proj = NULL, mat_extent = NULL, return_vals = c("df",
+  img_proj = NULL, img_extent = NULL, return_vals = c("df",
   "patches", "pstats"), sum_stats = c("mean", "min", "max"))
 }
 \arguments{
-\item{val_mat}{A numeric matrix or raster.}
+\item{img}{A numeric temperature matrix (such as that returned from
+\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or raster.}
 
-\item{matrix_id}{The matrix ID (optional). Useful when iterating over numerous matrices.}
+\item{id}{The image ID (optional). Useful when iterating over numerous images.}
+
+\item{calc_connectivity}{Whether or not to calculate cthermal connectivity
+across pixels (slow for large rasters). Defaults to TRUE.}
+
+\item{conn_threshold}{Climate threshold to use for calculation of thermal
+connectivity (i.e. the amount of change that organisms would be seeking
+to avoid). See \code{ThermStats::}\code{\link[ThermStats]{connectivity}}.}
 
 \item{get_patches}{Whether to identify hot and cold spots. Defaults to TRUE.}
 
@@ -20,10 +28,10 @@ get_stats(val_mat, matrix_id = NULL, calc_connectivity = TRUE,
 \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
 standardised).}
 
-\item{mat_proj}{Spatial projection. Optional, but necessary for geographic
+\item{img_proj}{Spatial projection. Optional, but necessary for geographic
 data to plot correctly.}
 
-\item{mat_extent}{Spatial extent. Optional, but necessary for geographic
+\item{img_extent}{Spatial extent. Optional, but necessary for geographic
 data to plot correctly.}
 
 \item{return_vals}{Which values to return? Any combination of the dataframe
@@ -60,32 +68,35 @@ Calculate summary and spatial statistics across a single matrix or raster.
 # FLIR temperature matrix ---------------------------------------------------
 
 # Define individual matrix and raster
-val_mat <- flir11835$flir_matrix
-val_raster <- raster::raster(val_mat)
+img <- flir11835$flir_matrix
+val_raster <- 
+    raster::raster(img,
+                   xmn=0, xmx=ncol(img),
+                   ymn=0, ymx=nrow(img))
 
-# Define matrix ID (the photo number in this case)
-matrix_id <- flir11835$photo_no
+# Define image ID (the photo number in this case)
+id <- flir11835$photo_no
 
 # Get stats!
-get_stats(val_mat = val_mat,
-          matrix_id = matrix_id,
+get_stats(img = img,
+          id = id,
           calc_connectivity = TRUE,
           conn_threshold = 1.5,
           get_patches = TRUE,
           style = "C",
-          mat_proj = NULL,
-          mat_extent = NULL,
+          img_proj = NULL,
+          img_extent = NULL,
           return_vals = "pstats",
           sum_stats = c("mean", "min","max"))
 
-get_stats(val_mat = val_raster,
-          matrix_id = matrix_id,
+get_stats(img = val_raster,
+          id = id,
           calc_connectivity = TRUE,
           conn_threshold = 1.5,
           get_patches = TRUE,
           style = "C",
-          mat_proj = NULL,
-          mat_extent = NULL,
+          img_proj = NULL,
+          img_extent = NULL,
           return_vals = "pstats",
           sum_stats = c("mean", "min","max"))
 
@@ -95,17 +106,17 @@ get_stats(val_mat = val_raster,
 # island of Sulawesi
 
 # Define projection and extent
-mat_proj <- projection(sulawesi_temp)
-mat_extent <- extent(sulawesi_temp)
+img_proj <- projection(sulawesi_temp)
+img_extent <- extent(sulawesi_temp)
 
 # Find hot and cold patches
 worldclim_results <-
- get_stats(val_mat = sulawesi_temp,
-           matrix_id = "sulawesi",
+ get_stats(img = sulawesi_temp,
+           id = "sulawesi",
            calc_connectivity = FALSE,
            style = "C",
-           mat_proj = mat_proj,
-           mat_extent = mat_extent,
+           img_proj = img_proj,
+           img_extent = img_extent,
            return_vals = c("df", "patches", "pstats"),
            sum_stats = c("mean", "min","max"))
 

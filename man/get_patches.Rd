@@ -4,24 +4,24 @@
 \alias{get_patches}
 \title{get_patches}
 \usage{
-get_patches(val_mat, matrix_id = NULL, style = "C", mat_proj = NULL,
-  mat_extent = NULL, return_vals = c("df", "patches", "pstats"))
+get_patches(img, id = NULL, style = "C", img_proj = NULL,
+  img_extent = NULL, return_vals = c("df", "patches", "pstats"))
 }
 \arguments{
-\item{val_mat}{A numeric matrix (such as that returned from
-\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or a raster.}
+\item{img}{A numeric temperature matrix (such as that returned from
+\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or raster.}
 
-\item{matrix_id}{The matrix ID (optional). Useful when iterating over
-numerous matrices.}
+\item{id}{The image ID (optional). Useful when iterating over
+numerous images.}
 
 \item{style}{Style to use when calculating neighbourhood weights using
 \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
 standardised).}
 
-\item{mat_proj}{Spatial projection. Optional, but necessary for geographic
+\item{img_proj}{Spatial projection. Optional, but necessary for geographic
 data to plot correctly.}
 
-\item{mat_extent}{Spatial extent. Optional, but necessary for geographic
+\item{img_extent}{Spatial extent. Optional, but necessary for geographic
 data to plot correctly.}
 
 \item{return_vals}{Which values to return? Any combination of the dataframe
@@ -35,7 +35,7 @@ A list containing:
  patch classification (G_bin) into hot (1), cold (-1) or no patch (0)
  according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
  the unique ID of the patch in which the pixel fell;
- and the matrix ID (if applicable).}
+ and the image ID (if applicable).}
  \item{patches}{A SpatialPolygonsDataFrame of hot and cold patches. Hot
  patches have a value of 1, and cold patches a value of -1.}
  \item{pstats}{A dataframe with patch statistics for hot patches and cold
@@ -47,11 +47,11 @@ Find hot and cold patches in a numeric matrix or raster, and calculate patch sta
 }
 \examples{
 
-# FLIR temperature matrix ---------------------------------------------
+# FLIR temperature matrix ----------------------------------------
 # Find hot and cold patches
 flir_results <-
-    get_patches(val_mat = flir11835$flir_matrix,
-    matrix_id = flir11835$photo_no)
+    get_patches(img = flir11835$flir_matrix,
+                id = flir11835$photo_no)
 
 # Look at the results for individual pixels
 head(flir_results$df)
@@ -68,20 +68,20 @@ plot_patches(df = flir_results$df,
              print_plot = TRUE,
              save_plot = FALSE)
 
-# Worldclim2 temperature raster ---------------------------------------
-# Dataset 'sulawesi_temp' represents mean January temperature for the
-# island of Sulawesi
+# Worldclim2 temperature raster ----------------------------------
+# Dataset 'sulawesi_temp' represents mean January temperature for 
+# the island of Sulawesi
 
 # Define projection and extent
-mat_proj <- raster::projection(sulawesi_temp)
-mat_extent <- raster::extent(sulawesi_temp)
+img_proj <- raster::projection(sulawesi_temp)
+img_extent <- raster::extent(sulawesi_temp)
 
 # Find hot and cold patches
 worldclim_results <-
- get_patches(val_mat = sulawesi_temp,
-             matrix_id = "sulawesi",
-             mat_proj = mat_proj,
-             mat_extent = mat_extent)
+ get_patches(img = sulawesi_temp,
+             id = "sulawesi",
+             img_proj = img_proj,
+             img_extent = img_extent)
 
 # Look at the results for individual pixels
 head(worldclim_results$df)

@@ -28,7 +28,7 @@
 #' "#f6a704","#fad61e", "#fad61e")}.
 #' @param fill_breaks Option to manually specify breaks in colourbar. Defaults
 #' to \code{waiver()}, where breaks are computed by the transformation object
-#' (see \code{ggplot2::}\code{\link[ggplot2]{scale_colour_gradient}}).
+#' (see \code{ggplot2::}\code{scale_colour_gradient}).
 #' @param patch_cols Colours for the patch borders (hot spot colour followed by
 #' cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.
 #' @param patch_labs Labels to use in patch outline legend. Defaults to 'Hot
@@ -39,8 +39,8 @@
 #' # FLIR temperature matrix ---------------------------------------------------
 #' # Find hot and cold patches
 #' flir_results <-
-#'     get_patches(val_mat = flir11835$flir_matrix,
-#'     matrix_id = flir11835$photo_no)
+#'     get_patches(img = flir11835$flir_matrix,
+#'                 id = flir11835$photo_no)
 #'
 #' # Look at the results for individual pixels
 #' head(flir_results$df)
@@ -62,17 +62,16 @@
 #' # island of Sulawesi
 #'
 #' # Define projection and extent
-#' mat_proj <- raster::projection(sulawesi_temp)
-#' mat_extent <- raster::extent(sulawesi_temp)
+#' img_proj <- raster::projection(sulawesi_temp)
+#' img_extent <- raster::extent(sulawesi_temp)
 #'
 #' # Find hot and cold patches
 #' worldclim_results <-
-#'  get_patches(val_mat = sulawesi_temp,
-#'              matrix_id = "sulawesi",
-#'              k = 8,
-#'              style = "W",
-#'              mat_proj = mat_proj,
-#'              mat_extent = mat_extent)
+#'  get_patches(img = sulawesi_temp,
+#'              id = "sulawesi",
+#'              style = "C",
+#'              img_proj = img_proj,
+#'              img_extent = img_extent)
 #'
 #' # Look at the results for individual pixels
 #' head(worldclim_results$df)

@@ -63,7 +63,7 @@ derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
 
 \item{fill_breaks}{Option to manually specify breaks in colourbar. Defaults
 to \code{waiver()}, where breaks are computed by the transformation object
-(see \code{ggplot2::}\code{\link[ggplot2]{scale_colour_gradient}}).}
+(see \code{ggplot2::}\code{scale_colour_gradient}).}
 
 \item{patch_cols}{Colours for the patch borders (hot spot colour followed by
 cold spot colour). Defaults to: \code{c("mistyrose", "cornflowerblue")}.}
@@ -81,8 +81,8 @@ Plot hot and cold patches returned from \code{\link{get_patches}}.
 # FLIR temperature matrix ---------------------------------------------------
 # Find hot and cold patches
 flir_results <-
-    get_patches(val_mat = flir11835$flir_matrix,
-    matrix_id = flir11835$photo_no)
+    get_patches(img = flir11835$flir_matrix,
+                id = flir11835$photo_no)
 
 # Look at the results for individual pixels
 head(flir_results$df)
@@ -104,17 +104,16 @@ plot_patches(df = flir_results$df,
 # island of Sulawesi
 
 # Define projection and extent
-mat_proj <- raster::projection(sulawesi_temp)
-mat_extent <- raster::extent(sulawesi_temp)
+img_proj <- raster::projection(sulawesi_temp)
+img_extent <- raster::extent(sulawesi_temp)
 
 # Find hot and cold patches
 worldclim_results <-
- get_patches(val_mat = sulawesi_temp,
-             matrix_id = "sulawesi",
-             k = 8,
-             style = "W",
-             mat_proj = mat_proj,
-             mat_extent = mat_extent)
+ get_patches(img = sulawesi_temp,
+             id = "sulawesi",
+             style = "C",
+             img_proj = img_proj,
+             img_extent = img_extent)
 
 # Look at the results for individual pixels
 head(worldclim_results$df)

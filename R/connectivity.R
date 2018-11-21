@@ -2,7 +2,7 @@
 #'
 #' Calculate thermal connectivity and potential for temperature change.
 #' @param mat A numeric temperature matrix.
-#' @param conn_thresh Climate threshold to use for calculation of thermal
+#' @param conn_threshold Climate threshold to use for calculation of thermal
 #' connectivity (i.e. the amount of change that organisms would be seeking
 #' to avoid).
 #' @return A dataframe (one row for each pixel) containing:
@@ -16,7 +16,7 @@
 #'  \item{diff_potential}{The potential for change achieved by following
 #'  gradient from hotter to cooler pixels}
 #'  \item{therm_conn}{Thermal connectivity, calculated as the maximum potential
-#'  change (\code{diff_potential}) minus \code{conn_thresh}. Where
+#'  change (\code{diff_potential}) minus \code{conn_threshold}. Where
 #'  this value is positive, connectivity of the starting pixel is sufficient to
 #'  avoid the specified threshold of warming. See details.}
 #' @details This measure of climate connectivity and potential for temperature
@@ -38,7 +38,7 @@
 #' # Get connectivity
 #' mat_conn <-
 #' connectivity(mat = mat,
-#'              conn_thresh = 1.5)
+#'              conn_threshold = 1.5)
 #' head(mat_conn)
 #' 
 #' # Plot the potential for temperature change
@@ -52,7 +52,7 @@
 
 connectivity <-
     function(mat,
-             conn_thresh = 1.5){
+             conn_threshold = 1.5){
         
         # Identify neighbours -----------------------------------------------------
         message("Identifying pixel neighbours")
@@ -234,7 +234,7 @@ connectivity <-
         val_df$diff_potential <- val_df$val - val_df$dest_val
         
         # Is this sufficient to avoid climate warming?
-        val_df$therm_conn <- val_df$diff_potential - conn_thresh
+        val_df$therm_conn <- val_df$diff_potential - conn_threshold
         
         # Return ------------------------------------------------------------------
         return(val_df)

@@ -4,29 +4,26 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, mat_list, matrix_id, style = "C", grouping_var,
+stats_by_group(metadata, img_list, id, style = "C", grouping_var,
   round_val, sum_stats = c("mean", "min", "max"))
 }
 \arguments{
-\item{metadata}{A dataframe denoting the grouping of different matrices.}
+\item{metadata}{A dataframe denoting the grouping of different images.}
 
-\item{mat_list}{List of matrices.}
+\item{img_list}{List or stack of numeric temperature matrices or rasters.}
 
-\item{matrix_id}{Name of the metadata variable that identifies unique
-matrices. Should match element names in the list of matrices.}
+\item{id}{Name of the metadata variable that identifies unique
+images. Should match element names in the image list.}
 
 \item{style}{Style to use when calculating neighbourhood weights using
 \code{spdep::}\code{\link[spdep]{nb2listw}}.}
 
 \item{grouping_var}{The name of the metadata variable that denotes the
-grouping of matrices.}
+grouping of images.}
 
 \item{round_val}{Value to round to. Use 1 for no rounding.}
 
-\item{k}{Number of neighbours to use when calculating nearest neighbours
-using \code{spdep::}\code{\link[spdep]{knearneigh}}.}
-
-\item{...}{Use to specify summary statistics that should be calculated across
+\item{sum_stats}{Summary statistics that should be calculated across
 all pixels. Several helper functions are included for use here:
 \code{\link{perc_5}}, \code{\link{perc_95}},
 \code{\link{SHDI}}, \code{\link{SIDI}},
@@ -37,7 +34,7 @@ A dataframe with pixel and patch statistics. See
 \code{\link{patch_stats}} for details of all the patch statistics returned.
 }
 \description{
-Calculate summary and spatial statistics across multiple matrices within groups.
+Calculate summary and spatial statistics across multiple images within groups.
 }
 \examples{
 # Load raw data
@@ -46,47 +43,47 @@ camera_params <- flir_raw$camera_params
 metadata <- flir_metadata
 
 # Batch convert
-mat_list <- batch_convert(raw_dat, write_results = FALSE)
+img_list <- batch_convert(raw_dat, write_results = FALSE)
 
 # Calculate patch and pixel stats! ------------------------------------------
 
 # Pixel stats = mean, max and min
 patch_stats_1 <-
     stats_by_group(metadata = metadata,
-                   mat_list = mat_list,
-                   matrix_id = "photo_no",
+                   img_list = img_list,
+                   id = "photo_no",
+                   style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   style = "C",
-                   mean, max, min)
+                   sum_stats = c("mean", "max", "min"))
 
 # Pixel stats = kurtosis and sknewness
 patch_stats_2 <-
     stats_by_group(metadata = metadata,
-                   mat_list = mat_list,
-                   matrix_id = "photo_no",
+                   img_list = img_list,
+                   id = "photo_no",
+                   style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   style = "C",
-                   kurtosis, skewness)
+                   sum_stats = c("kurtosis", "skewness"))
 
 # Pixel stats = 5th and 95th percentiles
 patch_stats_3 <-
     stats_by_group(metadata = metadata,
-                   mat_list = mat_list,
-                   matrix_id = "photo_no",
+                   img_list = img_list,
+                   id = "photo_no",
+                   style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   style = "C",
-                   perc_5, perc_95)
+                   sum_stats = c("perc_5", "perc_95"))
 
 # Pixel stats = Shannon and Simpson Diversity Indices
 patch_stats_4 <-
     stats_by_group(metadata = metadata,
-                   mat_list = mat_list,
-                   matrix_id = "photo_no",
+                   img_list = img_list,
+                   id = "photo_no",
+                   style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
-                   style = "C",
-                   SHDI, SIDI)
+                   sum_stats = c("SHDI", "SIDI"))
 }
