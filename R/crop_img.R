@@ -1,7 +1,7 @@
-#' crop_mat
+#' crop_img
 #'
 #' Crops temperature matrix to the desired area.
-#' @param val_mat A numeric matrix, such as that returned from
+#' @param img A numeric temperature matrix, such as that returned from
 #' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
 #' @return A cropped version of the input matrix.
 #' @details Requires user input to iteratively refine the size and location of
@@ -12,7 +12,7 @@
 #' # origin coordinates at x = 350, y = 290, x-axis radius of 145
 #' # and y-axis radius of 190.
 #'
-#' cropped <- crop_mat(val_mat = waspnest_mat)
+#' cropped <- crop_img(img = waspnest_mat)
 #'
 #' # Get patches
 #' crop_patches <- get_patches(cropped)
@@ -26,15 +26,15 @@
 #' @importClassesFrom sp SpatialPolygonsDataFrame
 #'
 
-crop_mat <- function(val_mat){
+crop_img <- function(img){
 
   # Get matrix dimensions
-  nrows <- nrow(val_mat)
-  ncols <- ncol(val_mat)
+  nrows <- nrow(img)
+  ncols <- ncol(img)
 
   # Rasterise matrix
   val_raster <-
-    raster::raster(val_mat,
+    raster::raster(img,
                    xmn=1, xmx=ncols,
                    ymn=1, ymx=nrows)
 
@@ -152,12 +152,12 @@ crop_mat <- function(val_mat){
   val_raster <- raster::mask(val_raster, sps)
 
   # Return as matrix
-  val_mat <- raster::as.matrix(val_raster)
+  img <- raster::as.matrix(val_raster)
   # Flip
-  val_mat <-
-    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(val_mat))
+  img <-
+    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(img))
 
-  return(val_mat)
+  return(img)
 
 }
 
