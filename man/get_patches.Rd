@@ -8,8 +8,8 @@ get_patches(val_mat, matrix_id = NULL, style = "C", mat_proj = NULL,
   mat_extent = NULL, return_vals = c("df", "patches", "pstats"))
 }
 \arguments{
-\item{val_mat}{A numeric matrix, such as that returned from
-\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+\item{val_mat}{A numeric matrix (such as that returned from
+\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or a raster.}
 
 \item{matrix_id}{The matrix ID (optional). Useful when iterating over
 numerous matrices.}
@@ -32,7 +32,7 @@ data to plot correctly.}
 A list containing:
  \item{df}{A dataframe with one row for each pixel, and variables denoting:
  the pixel value (val); the original spatial location of the pixel (x and y);
- its patch classification (G_bin) into a hot (1), cold (-1) or no patch (0)
+ patch classification (G_bin) into hot (1), cold (-1) or no patch (0)
  according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
  the unique ID of the patch in which the pixel fell;
  and the matrix ID (if applicable).}
@@ -43,11 +43,11 @@ A list containing:
  statistics returned.}
 }
 \description{
-Find hot and cold patches in a numeric matrix and calculate patch statistics.
+Find hot and cold patches in a numeric matrix or raster, and calculate patch statistics.
 }
 \examples{
 
-# FLIR temperature matrix ---------------------------------------------------
+# FLIR temperature matrix ---------------------------------------------
 # Find hot and cold patches
 flir_results <-
     get_patches(val_mat = flir11835$flir_matrix,
@@ -73,8 +73,8 @@ plot_patches(df = flir_results$df,
 # island of Sulawesi
 
 # Define projection and extent
-mat_proj <- projection(sulawesi_temp)
-mat_extent <- extent(sulawesi_temp)
+mat_proj <- raster::projection(sulawesi_temp)
+mat_extent <- raster::extent(sulawesi_temp)
 
 # Find hot and cold patches
 worldclim_results <-

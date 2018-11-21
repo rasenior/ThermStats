@@ -1,8 +1,8 @@
 #' get_patches
 #'
-#' Find hot and cold patches in a numeric matrix and calculate patch statistics.
-#' @param val_mat A numeric matrix, such as that returned from
-#' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
+#' Find hot and cold patches in a numeric matrix or raster, and calculate patch statistics.
+#' @param val_mat A numeric matrix (such as that returned from
+#' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or a raster.
 #' @param matrix_id The matrix ID (optional). Useful when iterating over
 #' numerous matrices.
 #' @param style Style to use when calculating neighbourhood weights using
@@ -18,7 +18,7 @@
 #' @return A list containing:
 #'  \item{df}{A dataframe with one row for each pixel, and variables denoting:
 #'  the pixel value (val); the original spatial location of the pixel (x and y);
-#'  its patch classification (G_bin) into a hot (1), cold (-1) or no patch (0)
+#'  patch classification (G_bin) into hot (1), cold (-1) or no patch (0)
 #'  according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
 #'  the unique ID of the patch in which the pixel fell;
 #'  and the matrix ID (if applicable).}
@@ -29,7 +29,7 @@
 #'  statistics returned.}
 #' @examples
 #'
-#' # FLIR temperature matrix ---------------------------------------------------
+#' # FLIR temperature matrix ---------------------------------------------
 #' # Find hot and cold patches
 #' flir_results <-
 #'     get_patches(val_mat = flir11835$flir_matrix,
@@ -55,8 +55,8 @@
 #' # island of Sulawesi
 #'
 #' # Define projection and extent
-#' mat_proj <- projection(sulawesi_temp)
-#' mat_extent <- extent(sulawesi_temp)
+#' mat_proj <- raster::projection(sulawesi_temp)
+#' mat_extent <- raster::extent(sulawesi_temp)
 #'
 #' # Find hot and cold patches
 #' worldclim_results <-
@@ -83,7 +83,8 @@
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #' @export
 #'
-get_patches <- function(val_mat, matrix_id = NULL, 
+get_patches <- function(val_mat, 
+                        matrix_id = NULL, 
                         style = "C",
                         mat_proj = NULL,
                         mat_extent = NULL,
@@ -94,23 +95,29 @@ get_patches <- function(val_mat, matrix_id = NULL,
         message("\nProcessing: ", matrix_id)
     }
     
+    # Get matrix dimensions
+    nrows <- nrow(val_mat)
+    ncols <- ncol(val_mat)
+    
     # Determine whether the matrix is a true matrix or a raster
     if(is.matrix(val_mat)){
+        # Melt to dataframe
         df <- reshape2::melt(val_mat,
                              varnames = c("y", "x"),
                              value.name = "val")
     }else if(class(val_mat)[1] == "RasterLayer"){
+        # Coerce to dataframe
         df <- raster::as.data.frame(val_mat, xy = TRUE)
         colnames(df)[3] <- "val"
     }
     
-    # Matrix needs to be long dataframe for calculating neighbour weights
     # Remove NA values
     df <- df[!(is.na(df[, "val"])),]
     
     # Neighbour weights -------------------------------------------------------
     message("\nCalculating neighbourhood weights")
     
+    # Identify nearest 8 neighbours
     nr_neigh <- spdep::knearneigh(cbind(df$x, df$y), k = 8)
     nr_neigh <- spdep::knn2nb(nr_neigh)
     
@@ -118,7 +125,6 @@ get_patches <- function(val_mat, matrix_id = NULL,
     nb_weights <- spdep::nb2listw(nr_neigh, 
                                   style = style, 
                                   zero.policy = FALSE)
-    
     
     # Local Getis-Ord ---------------------------------------------------------
     message("Calculating local G statistic")
@@ -168,8 +174,12 @@ get_patches <- function(val_mat, matrix_id = NULL,
     patch_mat <-
         Thermimage::mirror.matrix(Thermimage::rotate180.matrix(patch_mat))
     
-    # Matrix to raster
-    patches <- raster::raster(patch_mat)
+    # Rasterise matrix
+    # patches <- raster::raster(patch_mat)
+    patches <-
+        raster::raster(patch_mat,
+                       xmn=0, xmx=ncols,
+                       ymn=0, ymx=nrows)
     
     # Specify coordinates and mat_projection (if applicable)
     if(!(is.null(mat_proj))){
@@ -189,7 +199,9 @@ get_patches <- function(val_mat, matrix_id = NULL,
         Thermimage::mirror.matrix(Thermimage::rotate180.matrix(val_mat))
     
     # Matrix to raster
-    raw <- raster::raster(val_mat)
+    raw <- raster::raster(val_mat,
+                          xmn=0, xmx=ncols,
+                          ymn=0, ymx=nrows)
     
     # Specify coordinates and mat_projection (if applicable)
     if(!(is.null(mat_proj))){
