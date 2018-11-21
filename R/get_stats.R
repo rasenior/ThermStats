@@ -8,7 +8,7 @@
 #' across pixels (slow for large rasters). Defaults to TRUE.
 #' @param conn_threshold Climate threshold to use for calculation of thermal
 #' connectivity (i.e. the amount of change that organisms would be seeking
-#' to avoid). See \code{ThermStats::}\code{\link[ThermStats]{connectivity}}.
+#' to avoid). See \code{ThermStats::}\code{\link{connectivity}}.
 #' @param get_patches Whether to identify hot and cold spots. Defaults to TRUE.
 #' @param style Style to use when calculating neighbourhood weights using
 #'  \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
