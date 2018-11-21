@@ -13,8 +13,49 @@ batch_convert(raw_dat, E = 1, OD = 1, RTemp = 20, ATemp = RTemp,
 \item{raw_dat}{A list of raw FLIR matrices returned from
 \code{\link{batch_extract}}.}
 
+\item{E}{Emissivity. Defaults to 1. 
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{OD}{Object distance (metres).
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{RTemp}{Apparent reflected temperature (°C). Defaults to 20.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{ATemp}{Atmospheric temperature (°C). Defaults to reflected temperature.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{IRWTemp}{Infrared Window Temperature (°C). Defaults to reflected temp.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{IRT}{Infrared Window transmission. Defaults to 1.0.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{RH}{Relative humidity (\%). Defaults to 50.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{PR1}{PlanckR1. A calibration constant for FLIR cameras.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{PB}{PlanckB. A calibration constant for FLIR cameras.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{PF}{PlanckF. A calibration constant for FLIR cameras.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{PO}{PlanckO. A calibration constant for FLIR cameras.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{PR2}{PlanckR2. A calibration constant for FLIR cameras.
+See \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+
+\item{write_results}{Should results be written to file? Defaults to TRUE.}
+
 \item{out_dir}{Path to directory where converted temperature data will be
-written.}
+written. Defaults to NULL, writing to current directory.}
+
+\item{file_name}{File name (without extension). Defaults to NULL, with the 
+name 'flir_converted_' plus the current date. File format is .Rds}
 }
 \value{
 A list with one element per input thermal image. Each element is a
@@ -30,29 +71,31 @@ Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
 }
 \examples{
 
-# Setup --------------------------------------------------------------------
+# Setup ----------------------------------------------------------
 
 # Load raw data
 raw_dat <- flir_raw$raw_dat
 camera_params <- flir_raw$camera_params
 metadata <- flir_raw$metadata
 
-# Create vector denoting the position of each element of raw_dat (each photo)
-# within the metadata dataframe
+# Create vector denoting the position of each element of raw_dat 
+# (each photo) within the metadata dataframe
 photo_index <- match(names(raw_dat), metadata$photo_no)
 
-# Define environmental parameters ------------------------------------------
+# Define environmental parameters --------------------------------
 
 # Emissivity is mean of range given in Scheffers et al. 2017
 # (onlinelibrary.wiley.com/doi/10.1111/btp.12355/full)
 E <- mean(c(0.982,0.99))
 
-# Object distance is calculated as the hypotenuse of a right triangle where
-# the vertical side is 1.3 m (breast height) and the angle down is 45 degrees
+# Object distance is calculated as the hypotenuse of a right 
+# triangle where the vertical side is 1.3 m (breast height) and 
+# the angle down is 45 degrees
 OD <- (sqrt(2))*1.3
 
-# Apparent reflected temperature, atmospheric temperature and infrared
-# window temperature set as the atmospheric temperature measured in the field.
+# Apparent reflected temperature, atmospheric temperature and 
+# infrared window temperature set as the atmospheric temperature 
+# easured in the field.
 RTemp <- metadata$atm_temp[photo_index]
 ATemp <- metadata$atm_temp[photo_index]
 IRWTemp <- metadata$atm_temp[photo_index]
@@ -60,20 +103,21 @@ IRWTemp <- metadata$atm_temp[photo_index]
 # Infrared Window transmission is kept at default.
 IRT <- 1
 
-# Relative humidity is set as the relative humidity measured in the field.
+# Relative humidity is set as the relative humidity measured 
+# in the field.
 RH <- metadata$rel_humidity[photo_index]
 
-# Define camera parameters -------------------------------------------------
+# Define camera parameters ---------------------------------------
 
-# These parameters are calibration constants, and therefore constant for
-# each camera
+# These parameters are calibration constants, and therefore 
+# constant for each camera
 PR1 <- camera_params[,"PlanckR1"]
 PB <- camera_params[,"PlanckB"]
 PF <- camera_params[,"PlanckF"]
 PO <- camera_params[,"PlanckO"]
 PR2 <- camera_params[,"PlanckR2"]
 
-# Batch convert! -----------------------------------------------------------
+# Batch convert! -------------------------------------------------
 results <-
     batch_convert(raw_dat,
                   E, OD, RTemp, ATemp, IRWTemp, IRT, RH,
