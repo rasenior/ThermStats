@@ -97,7 +97,7 @@ average_by_group <- function(metadata,
                                   error = function(err) {
                                       
                                       # error handler picks up where error was generated
-                                      message(paste("\nMY_ERROR:  ",err))
+                                      message(paste("\nError:  ",err))
                                       return(NA)
                                       
                                   })
@@ -123,7 +123,7 @@ average_by_group <- function(metadata,
                        error = function(err) {
                            
                            # error handler picks up where error was generated
-                           message(paste("\nMY_ERROR:  ",err))
+                           message(paste("\nError:  ",err))
                            return(NA)
                            
                        })

@@ -123,7 +123,7 @@ stats_by_group <- function(metadata,
                                   error = function(err) {
                                       
                                       # error handler picks up where error was generated
-                                      message(paste("\nMY_ERROR:  ",err))
+                                      message(paste("\nError:  ",err))
                                       return(NA)
                                       
                                   })
@@ -166,7 +166,7 @@ stats_by_group <- function(metadata,
                        error = function(err) {
                            
                            # error handler picks up where error was generated
-                           message(paste("\nMY_ERROR:  ",err))
+                           message(paste("\nError:  ",err))
                            return(NA)
                            
                        })
@@ -203,14 +203,14 @@ create_subset <- function(metadata,
     # Define the number of matrices  in this group
     n_mat <- length(ids)
     
-    # Subset raster stack by the desired matrix IDs
     if(mat_type == "rasters"){
+        # Subset raster stack by the desired matrix IDs
         sub_list <- mat_list[[inds]]
         # Unstack
         raster_list <- unstack(sub_list)
         
-    # Subset matrices list by the desired matrix IDs
     }else{
+        # Subset matrices list by the desired matrix IDs
         sub_list <- mat_list[inds]
         # Coerce any raster layers to matrices
         raster_list <-
