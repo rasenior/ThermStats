@@ -23,22 +23,31 @@ batch_extract <- function(in_dir,
                           write_results = TRUE,
                           out_dir = NULL,
                           file_name = NULL,
+                          inc = NULL,
                           exc = NULL){
 
   # File names --------------------------------------------------------------
 
   # Get file names
   file.names <- list.files(in_dir, full.names = TRUE)
-
-  # Exclude files
-  if(!(is.null(exc))){
-    file.names <- file.names[!(file.names %in% exc)]
-  }
-
+  
   # Remove path & file extension to get photo number
   photo_no <- basename(file.names)
   photo_no <- gsub("FLIR","",photo_no)
   photo_no <- gsub(".jpg","", photo_no)
+  
+  # Subset files
+  if(!(is.null(inc))){
+      photo_no <- photo_no[(photo_no %in% inc)]
+  }
+
+  # Exclude files
+  if(!(is.null(exc))){
+      photo_no <- photo_no[!(photo_no %in% exc)]
+  }
+  
+  # Reconstruct file names
+  file.names <- file.path(in_dir, paste("FLIR", photo_no, ".jpg", sep = ""))
 
   # Create empty list to populate with temperature matrices
   raw_dat <- vector("list", length(photo_no))
