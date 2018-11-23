@@ -242,9 +242,8 @@ plot_patches <- function(df,
         geom_polygon(data = patches,
                      aes(y = lat,x = long, group = group, colour = id),
                      alpha = 0, size = outline_size) +
-        theme_classic() +
-        theme(axis.line = element_blank(),
-              axis.title = element_blank(),
+        theme_bw() +
+        theme(axis.title = element_blank(),
               axis.text = element_blank(),
               axis.ticks = element_blank(),
               legend.box.spacing = unit(0,"cm"),
@@ -285,8 +284,38 @@ plot_patches <- function(df,
     # If facetting is required:
     if(facet){
         p2 <- p2 +
-            facet_wrap(~ img_id, nrow = facet_rows, ncol = facet_cols)
-            theme(strip.background = element_blank())
+            facet_wrap(~ img_id, nrow = facet_rows, ncol = facet_cols) +
+            theme()
+        
+        # If plotting facetted distribution as well, move the colourbar
+        if(plot_distribution){
+            val_lab <- paste("Temperature\n(", "\U00B0", "C)",
+                             sep = "")
+            p2 <-
+                p2 +
+                theme(axis.title = element_text(colour = "transparent",
+                                                size = lab_size),
+                      axis.text = element_text(colour = "transparent",
+                                               size = text_size),
+                      axis.ticks = element_line(colour = "transparent"),
+                      panel.grid = element_blank(),
+                      legend.box.spacing = unit(0.1,"cm"),
+                      legend.position = "right",
+                      plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm")) +
+                guides(fill = guide_colorbar(order = 1,
+                                             title = val_lab,
+                                             title.position = "top",
+                                             title.hjust = 0.5,
+                                             direction  = "vertical",
+                                             barwidth = 0.8),
+                       colour = guide_legend(order = 2,
+                                             keywidth = 0.7,
+                                             keyheight = 0.7,
+                                             direction = "vertical",
+                                             override.aes = list(alpha = 1,
+                                                                 fill = "black",
+                                                                 size = 0.8)))
+        }
     }
     
     # Printing/saving plots -----------------------------------------------------
