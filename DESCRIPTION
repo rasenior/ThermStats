@@ -25,7 +25,8 @@ Imports: spdep,
     rgeos,
     ggplot2,
     Thermimage,
-    DescTools
+    DescTools,
+    dplyr
 Suggests: gridExtra,
     pbapply,
     knitr, 
