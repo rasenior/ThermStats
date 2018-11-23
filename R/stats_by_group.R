@@ -74,8 +74,9 @@ stats_by_group <- function(metadata,
                            img_list,
                            id,
                            style = "C",
-                           grouping_var,
+                           grouping_var = NULL,
                            round_val,
+                           return_vals = "pstats",
                            sum_stats = c("mean", "min","max")){
     
     # Determine if raster stack or list of matrices
@@ -83,18 +84,28 @@ stats_by_group <- function(metadata,
         list_type <- "rasterstack"
     }else list_type <- "list"
     
+    # If grouping variable is NULL, assume there is only one image per group
+    # and therefore the grouping variable is the same as the ID variable
+    if(is.null(grouping_var)) grouping_var <- id
+    
+    # return_vals must include pstats
+    if(!("pstats" %in% return_vals)) return_vals <- c(return_vals, "pstats")
+    
     if (requireNamespace("pbapply", quietly = TRUE)) {
-        temp_stats<-
+        temp_stats <-
             pbapply::pblapply(unique(metadata[, grouping_var]),
                               function(x){
                                   tryCatch({
                                       sub_list <- create_subset(metadata = metadata,
-                                                               img_list = img_list,
-                                                               id = id,
-                                                               grouping_var = grouping_var,
-                                                               grouping_val = x,
-                                                               list_type = list_type,
-                                                               round_val = round_val)
+                                                                img_list = img_list,
+                                                                id = id,
+                                                                grouping_var = grouping_var,
+                                                                grouping_val = x,
+                                                                list_type = list_type,
+                                                                round_val = round_val)
+                                      
+                                      if(length(sub_list) == 0) return(NA)
+                                      
                                       n_img <- sub_list[["n_img"]]
                                       sub_list <- sub_list[["sub_list"]]
                                       
@@ -108,12 +119,15 @@ stats_by_group <- function(metadata,
                                                     style = style,
                                                     img_proj = NULL,
                                                     img_extent = NULL,
-                                                    return_vals = "pstats",
+                                                    return_vals = return_vals,
                                                     sum_stats = sum_stats
                                           )
                                       
                                       # Add number of images
-                                      result <- cbind(result, n_img)
+                                      if(length(return_vals) > 1){
+                                          result$pstats <- 
+                                              cbind(result$pstats, n_img)
+                                      }else result <- cbind(result, n_img)
                                       # Return
                                       return(result)
                                       
@@ -127,51 +141,82 @@ stats_by_group <- function(metadata,
                                   })
                               })
     }else{
-        temp_stats<-
+        temp_stats <-
             lapply(unique(metadata[, grouping_var]),
-                   function(x){
-                       tryCatch({
-                           sub_list <- create_subset(metadata = metadata,
-                                                    img_list = img_list,
-                                                    id = id,
-                                                    grouping_var = grouping_var,
-                                                    grouping_val = x,
-                                                    list_type = list_type,
-                                                    round_val = round_val)
-                           n_img <- sub_list[["n_img"]]
-                           sub_list <- sub_list[["sub_list"]]
-                           
-                           # Get stats
-                           result <-
-                               get_stats(img = sub_list,
-                                         id = x,
-                                         calc_connectivity = FALSE,
-                                         conn_threshold = NULL,
-                                         get_patches = TRUE,
-                                         style = style,
-                                         img_proj = NULL,
-                                         img_extent = NULL,
-                                         return_vals = "pstats",
-                                         sum_stats = sum_stats
-                               )
-                           
-                           # Add number of images
-                           result <- cbind(result, n_img)
-                           # Return
-                           return(result)
-                           
-                       },
-                       error = function(err) {
-                           
-                           # error handler picks up where error was generated
-                           message(paste("\nError:  ",err))
-                           return(NA)
-                           
-                       })
-                   })
+                              function(x){
+                                  tryCatch({
+                                      sub_list <- create_subset(metadata = metadata,
+                                                                img_list = img_list,
+                                                                id = id,
+                                                                grouping_var = grouping_var,
+                                                                grouping_val = x,
+                                                                list_type = list_type,
+                                                                round_val = round_val)
+                                      
+                                      if(length(sub_list) == 0) return(NA)
+                                      
+                                      n_img <- sub_list[["n_img"]]
+                                      sub_list <- sub_list[["sub_list"]]
+                                      
+                                      # Get stats
+                                      result <-
+                                          get_stats(img = sub_list,
+                                                    id = x,
+                                                    calc_connectivity = FALSE,
+                                                    conn_threshold = NULL,
+                                                    get_patches = TRUE,
+                                                    style = style,
+                                                    img_proj = NULL,
+                                                    img_extent = NULL,
+                                                    return_vals = return_vals,
+                                                    sum_stats = sum_stats
+                                          )
+                                      
+                                      # Add number of images
+                                      if(length(return_vals) > 1){
+                                          result$pstats <- 
+                                              cbind(result$pstats, n_img)
+                                      }else result <- cbind(result, n_img)
+                                      # Return
+                                      return(result)
+                                      
+                                  },
+                                  error = function(err) {
+                                      
+                                      # error handler picks up where error was generated
+                                      message(paste("\nError:  ",err))
+                                      return(NA)
+                                      
+                                  })
+                              })
     }
-    temp_stats <- do.call("rbind",temp_stats)
-    return(temp_stats)
+    
+    # Drop NAs
+    temp_stats <- temp_stats[!(is.na(temp_stats))]
+    
+    # Bind pstats
+    pstats <- 
+        do.call("rbind",
+            lapply(temp_stats,function(x) rbind(x[["pstats"]])))
+    
+    # Bind df
+    if("df" %in% return_vals){
+        df <- 
+            do.call("rbind",
+                    lapply(temp_stats,function(x) rbind(x[["df"]])))
+    }
+    
+    # Bind patches
+    if("patches" %in% return_vals){
+        patches <- lapply(temp_stats,function(x) rbind(x[["patches"]]))
+    }
+    
+    # Bind everything together
+    results <- lapply(return_vals, function(x) eval(parse(text = x)))
+    names(results) <- return_vals
+    
+    # Return
+    return(results)
 }
 
 
@@ -192,10 +237,10 @@ create_subset <- function(metadata,
     # Define the indices of these images in the list
     inds <- which(names(img_list) %in% ids)
     
-    # If there are no matches, return NA
+    # If there are no matches, return empty
     if(length(inds) == 0){
         # Return
-        return(NA) 
+        return(NULL) 
     }
     
     # Define the number of images in this group
@@ -205,7 +250,9 @@ create_subset <- function(metadata,
         # Subset raster stack by the desired matrix IDs
         sub_list <- img_list[[inds]]
         # Unstack
-        raster_list <- unstack(sub_list)
+        if(class(sub_list) == "RasterStack"){
+            raster_list <- unstack(sub_list)
+        }else raster_list <- list(sub_list)
         
     }else{
         # Subset list by the desired matrix IDs
@@ -230,16 +277,20 @@ create_subset <- function(metadata,
     }
     
     # Round values to desired precision
-    sub_list<-
-        lapply(sub_list, function(x){
-            round_val * round(x / round_val)
-        })
+    if(!is.null(round_val)){
+        sub_list<-
+            lapply(sub_list, function(x){
+                round_val * round(x / round_val)
+            })
+    }
     
     # Pad with NAs (because they are not actually adjacent in space)
-    sub_list <-
-        lapply(sub_list, function(x){
-            cbind(x, NA)
-        })
+    if(n_img > 1){
+        sub_list <-
+            lapply(sub_list, function(x){
+                cbind(x, NA)
+            })
+    }
     
     # Bind together
     sub_list <- do.call("cbind", sub_list)
