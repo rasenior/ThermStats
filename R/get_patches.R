@@ -273,6 +273,7 @@ get_patches <- function(img,
     
     if(!(is.null(id))){
         df$id <- id
+        names(patches) <- id
     }
     
     ### 3. Calculate patch stats
