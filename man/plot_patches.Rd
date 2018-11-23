@@ -5,9 +5,10 @@
 \title{plot_patches}
 \usage{
 plot_patches(df, patches, bg_poly = NULL, bg_colour = NULL,
-  facet = FALSE, plot_distribution = TRUE, print_plot = TRUE,
-  save_plot = FALSE, return_plot = FALSE, out_dir = NULL,
-  file_name = NULL, file_ext = "png", lab_size = 8, text_size = 6,
+  facet = FALSE, facet_cols = NULL, facet_rows = NULL,
+  plot_distribution = TRUE, print_plot = TRUE, save_plot = FALSE,
+  return_plot = FALSE, out_dir = NULL, file_name = NULL,
+  file_ext = "png", lab_size = 8, text_size = 6,
   outline_size = 0.7, fig_width = 8, fig_height = 9,
   fig_units = "cm", val_pal = c("black", "#050155", "#120172",
   "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
@@ -27,7 +28,11 @@ with the variables 'long', 'lat' and 'group'.}
 
 \item{bg_colour}{Colour of the background polygon.}
 
-\item{facet}{Whether to plot facets by matrix_id. Defaults to FALSE.}
+\item{facet}{Whether to plot facets by image ID. Defaults to FALSE.}
+
+\item{facet_cols}{Number of facet columns. Defaults to NULL.}
+
+\item{facet_rows}{Number of facet rows. Defaults to NULL.}
 
 \item{plot_distribution}{Should a histogram be plotted? Defaults to TRUE.}
 
