@@ -27,163 +27,165 @@
 #'
 
 crop_img <- function(img){
-
-  # Get matrix dimensions
-  nrows <- nrow(img)
-  ncols <- ncol(img)
-
-  # Rasterise matrix
-  val_raster <-
-    raster::raster(img,
-                   xmn=1, xmx=ncols,
-                   ymn=1, ymx=nrows)
-
-  # Plot
-  if(requireNamespace("viridisLite", quietly = TRUE)){
-    raster::plot(val_raster, col = viridisLite::magma(255))
-  }else{
-    raster::plot(val_raster, col = heat.colors(255))
-  }
-
-  # Ask user for cropping shape
-  shape <- menu(choices = c("ellipse", "rectangle"),
-                title = "Crop with an ellipse or rectangle?")
-
-  # Ask user for parameters
-  args <- define_params()
-  # Keep asking until all parameters are either numeric or empty
-  while(any(sapply(args, is.null))){
-    args <- define_params()
-  }
-  names(args) <- c("x", "y", "radius.x", "radius.y")
-
-  if(shape == 1){
-    # Create elliptical polygon
-    poly <-
-      DescTools::DrawRegPolygon(x = args$x,
-                                y = args$y,
-                                radius.x = args$radius.x,
-                                radius.y = args$radius.y,
-                                rot = 0,
-                                nv = 100,
-                                col = "transparent",
-                                plot = TRUE)
-  }else{
-
-    xleft <- args$x - args$radius.x
-    ybottom <- args$y - args$radius.y
-    xright <- args$x + args$radius.x
-    ytop <- args$y + args$radius.y
-
-    rect(xleft = xleft,
-         ybottom = ybottom,
-         xright = xright,
-         ytop = ytop)
-
-    poly <- list(x = c(xleft, xleft, xright, xright),
-                 y = c(ybottom, ytop, ytop, ybottom))
-
-  }
-
-  # User input
-  check <- menu(choices = c("yes", "no"),
-                title = "Happy with this cropping area?")
-
-  while(check == 2){
-
-    # Ask user for parameters
-    new_args <- define_params()
-    while(any(sapply(new_args, is.null))){
-      new_args <- define_params()
+    
+    # Get matrix dimensions
+    nrows <- nrow(img)
+    ncols <- ncol(img)
+    
+    # Rasterise matrix
+    if(is.matrix(img)){
+        img <-
+            raster::raster(img,
+                           xmn=1, xmx=ncols,
+                           ymn=1, ymx=nrows)
     }
-    names(new_args) <- c("x", "y", "radius.x", "radius.y")
-
-    new_ind <- which(!(is.na(new_args)))
-
-    args <- replace(args, new_ind,new_args[new_ind])
-
-    # Create the ellipse again
-    plot.new()
+    
+    # Plot
     if(requireNamespace("viridisLite", quietly = TRUE)){
-      raster::plot(val_raster, col = viridisLite::magma(255))
+        raster::plot(img, col = viridisLite::magma(255))
     }else{
-      raster::plot(val_raster, col = heat.colors(255))
+        raster::plot(img, col = heat.colors(255))
     }
-
+    
+    # Ask user for cropping shape
+    shape <- menu(choices = c("ellipse", "rectangle"),
+                  title = "Crop with an ellipse or rectangle?")
+    
+    # Ask user for parameters
+    args <- define_params()
+    # Keep asking until all parameters are either numeric or empty
+    while(any(sapply(args, is.null))){
+        args <- define_params()
+    }
+    names(args) <- c("x", "y", "radius.x", "radius.y")
+    
     if(shape == 1){
-      poly <-
-        DescTools::DrawRegPolygon(x = args$x,
-                                  y = args$y,
-                                  radius.x = args$radius.x,
-                                  radius.y = args$radius.y,
-                                  rot = 0,
-                                  nv = 100,
-                                  col = "transparent",
-                                  plot = TRUE)
+        # Create elliptical polygon
+        poly <-
+            DescTools::DrawRegPolygon(x = args$x,
+                                      y = args$y,
+                                      radius.x = args$radius.x,
+                                      radius.y = args$radius.y,
+                                      rot = 0,
+                                      nv = 100,
+                                      col = "transparent",
+                                      plot = TRUE)
     }else{
-
-      xleft <- args$x - args$radius.x
-      ybottom <- args$y - args$radius.y
-      xright <- args$x + args$radius.x
-      ytop <- args$y + args$radius.y
-
-      rect(xleft = xleft,
-           ybottom = ybottom,
-           xright = xright,
-           ytop = ytop)
-
-      poly <- list(x = c(xleft, xleft, xright, xright),
-                   y = c(ybottom, ytop, ytop, ybottom))
-
+        
+        xleft <- args$x - args$radius.x
+        ybottom <- args$y - args$radius.y
+        xright <- args$x + args$radius.x
+        ytop <- args$y + args$radius.y
+        
+        rect(xleft = xleft,
+             ybottom = ybottom,
+             xright = xright,
+             ytop = ytop)
+        
+        poly <- list(x = c(xleft, xleft, xright, xright),
+                     y = c(ybottom, ytop, ytop, ybottom))
+        
     }
-
+    
     # User input
     check <- menu(choices = c("yes", "no"),
                   title = "Happy with this cropping area?")
-
-  }
-
-  p = sp::Polygon(cbind(poly$x, poly$y))
-  ps = sp::Polygons(list(p),1)
-  sps = sp::SpatialPolygons(list(ps))
-
-  # Crop and mask
-  val_raster <- raster::crop(val_raster, raster::extent(sps))
-  val_raster <- raster::mask(val_raster, sps)
-
-  # Return as matrix
-  img <- raster::as.matrix(val_raster)
-  # Flip
-  img <-
-    Thermimage::mirror.matrix(Thermimage::rotate180.matrix(img))
-
-  return(img)
-
+    
+    while(check == 2){
+        
+        # Ask user for parameters
+        new_args <- define_params()
+        while(any(sapply(new_args, is.null))){
+            new_args <- define_params()
+        }
+        names(new_args) <- c("x", "y", "radius.x", "radius.y")
+        
+        new_ind <- which(!(is.na(new_args)))
+        
+        args <- replace(args, new_ind,new_args[new_ind])
+        
+        # Create the ellipse again
+        plot.new()
+        if(requireNamespace("viridisLite", quietly = TRUE)){
+            raster::plot(img, col = viridisLite::magma(255))
+        }else{
+            raster::plot(img, col = heat.colors(255))
+        }
+        
+        if(shape == 1){
+            poly <-
+                DescTools::DrawRegPolygon(x = args$x,
+                                          y = args$y,
+                                          radius.x = args$radius.x,
+                                          radius.y = args$radius.y,
+                                          rot = 0,
+                                          nv = 100,
+                                          col = "transparent",
+                                          plot = TRUE)
+        }else{
+            
+            xleft <- args$x - args$radius.x
+            ybottom <- args$y - args$radius.y
+            xright <- args$x + args$radius.x
+            ytop <- args$y + args$radius.y
+            
+            rect(xleft = xleft,
+                 ybottom = ybottom,
+                 xright = xright,
+                 ytop = ytop)
+            
+            poly <- list(x = c(xleft, xleft, xright, xright),
+                         y = c(ybottom, ytop, ytop, ybottom))
+            
+        }
+        
+        # User input
+        check <- menu(choices = c("yes", "no"),
+                      title = "Happy with this cropping area?")
+        
+    }
+    
+    p = sp::Polygon(cbind(poly$x, poly$y))
+    ps = sp::Polygons(list(p),1)
+    sps = sp::SpatialPolygons(list(ps))
+    
+    # Crop and mask
+    img <- raster::crop(img, raster::extent(sps))
+    img <- raster::mask(img, sps)
+    
+    # Return as matrix
+    img <- raster::as.matrix(img)
+    # Flip
+    img <-
+        Thermimage::mirror.matrix(Thermimage::rotate180.matrix(img))
+    
+    return(img)
+    
 }
 
 # Function to request multiple user inputs sequentially
 readlines <- function(...) {
-  lapply(list(...), readline)
+    lapply(list(...), readline)
 }
 
 define_params <- function(){
-  # Ask user for parameters
-  new_args <- readlines("x coordinate of origin: ",
-                        "y coordinate of origin: ",
-                        "x-axis radius: ",
-                        "y-axis radius: ")
-
-  # Coerce to numeric
-  new_args <- lapply(new_args, function(x){
-    tryCatch(
-      {
-        as.numeric(x)
-      },
-      warning=function(w) {
-        message("Non-numeric value specified: ", x, "\n")
-      })
-  })
-  return(new_args)
+    # Ask user for parameters
+    new_args <- readlines("x coordinate of origin: ",
+                          "y coordinate of origin: ",
+                          "x-axis radius: ",
+                          "y-axis radius: ")
+    
+    # Coerce to numeric
+    new_args <- lapply(new_args, function(x){
+        tryCatch(
+            {
+                as.numeric(x)
+            },
+            warning=function(w) {
+                message("Non-numeric value specified: ", x, "\n")
+            })
+    })
+    return(new_args)
 }
 
 
