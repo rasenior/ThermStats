@@ -91,6 +91,9 @@ connectivity <-
                                  varnames = c("y", "x"),
                                  value.name = "val")
         
+        # Assign pixel ID (row index)
+        val_df$pixel <- as.numeric(row.names(val_df))
+        
         # Bind nbr and value dfs
         nbr <- cbind(nbr, val_df)
         
@@ -118,8 +121,10 @@ connectivity <-
         nbr <- nbr[(nbr$pixel2 - nbr$pixel1) > 0,]
         row.names(nbr) <- NULL
         
-        # Assign pixel ID (row index)
-        val_df$pixel <- as.numeric(row.names(val_df))
+        # Drop NAs
+        val_df <- val_df[!(is.na(val_df[,"val"])),]
+        nbr <- nbr[!(is.na(nbr[,"val1"])),]
+        nbr <- nbr[!(is.na(nbr[,"val2"])),]
         
         # Neighbour relationship --------------------------------------------------
         
@@ -154,10 +159,18 @@ connectivity <-
         message("Tracing pixels to coolest destination pixel")
         
         # Identify all the neighbouring destination pixels for each unique pixel
+        # Join on origin pixel
         connectsto <-
-            sapply(unique(val_df[,"pixel"]), function(x){
-                nbr$dest_pixel[nbr$origin_pixel == x]
-            })
+            dplyr::left_join(val_df, nbr[,c("origin_pixel", "dest_pixel")], 
+                  by = c("pixel" = "origin_pixel"))[,c("pixel", "dest_pixel")]
+        # Summarise by origin pixel
+        connectsto <- 
+            dplyr::summarise(
+                dplyr::group_by(connectsto, pixel), dest = list(dest_pixel))
+        # Name by origin pixel
+        names(connectsto[["dest"]]) <- connectsto[["pixel"]]
+        # List only
+        connectsto <- connectsto[["dest"]]
         
         # Create vector of unique vals
         uniquevals <- sort(unique(val_df$val))
@@ -171,7 +184,7 @@ connectivity <-
         running <- val_df[,c("pixel", "val")]
         
         # Loop through each unique temperature, from colder to warmer
-        for (j in 1:length(uniquevals)){
+        for (j in seq_along(uniquevals)){
             # Define the focal unique temperature
             warmer <- uniquevals[j]
             # Define the indices of pixels that correspond to the focal temperature
@@ -183,7 +196,7 @@ connectivity <-
                 # If the focal pixel associated with this index does not connect to
                 # any other pixel, the final destination pixel is the same as the focal
                 # pixel and its final val is the same as its starting val
-                if(length(connectsto[[ii]]) == 0){
+                if(any(is.na(connectsto[[ii]]))){
                     val_df$dest_val[ii]<- warmer
                     val_df$dest_pixel[ii]<- running[ii, "pixel"]
                     # If it does connect to another pixel...
