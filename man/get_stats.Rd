@@ -5,7 +5,7 @@
 \title{get_stats}
 \usage{
 get_stats(img, id = NULL, calc_connectivity = TRUE,
-  conn_threshold = 1.5, get_patches = TRUE, style = "C",
+  conn_threshold = 1.5, patches = TRUE, style = "C",
   img_proj = NULL, img_extent = NULL, return_vals = c("df",
   "patches", "pstats"), sum_stats = c("mean", "min", "max"))
 }
@@ -22,7 +22,7 @@ across pixels (slow for large rasters). Defaults to TRUE.}
 connectivity (i.e. the amount of change that organisms would be seeking
 to avoid). See \code{ThermStats::}\code{\link{connectivity}}.}
 
-\item{get_patches}{Whether to identify hot and cold spots. Defaults to TRUE.}
+\item{patches}{Whether to identify hot and cold spots. Defaults to TRUE.}
 
 \item{style}{Style to use when calculating neighbourhood weights using
 \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
@@ -82,7 +82,7 @@ get_stats(img = img,
           id = id,
           calc_connectivity = TRUE,
           conn_threshold = 1.5,
-          get_patches = TRUE,
+          patches = TRUE,
           style = "C",
           img_proj = NULL,
           img_extent = NULL,
@@ -93,7 +93,7 @@ get_stats(img = val_raster,
           id = id,
           calc_connectivity = TRUE,
           conn_threshold = 1.5,
-          get_patches = TRUE,
+          patches = TRUE,
           style = "C",
           img_proj = NULL,
           img_extent = NULL,

@@ -4,7 +4,8 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, img_list, id, style = "C",
+stats_by_group(metadata, img_list, id, calc_connectivity = FALSE,
+  conn_threshold = NULL, patches = patches, style = "C",
   grouping_var = NULL, round_val, return_vals = "pstats",
   sum_stats = c("mean", "min", "max"))
 }
