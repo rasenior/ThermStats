@@ -271,6 +271,7 @@ get_patches <- function(img,
     rm(raw, patchID)
     
     if(!(is.null(id))){
+        if(is.numeric(id)) id <- paste("X", id, sep = "")
         df$id <- id
         names(patches) <- id
     }
