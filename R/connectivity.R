@@ -54,7 +54,7 @@ connectivity <-
     function(mat,
              conn_threshold = 1.5){
         
-        message("Calculating thermal connectivity...")
+        message("Calculating thermal connectivity")
         
         # Identify neighbours -----------------------------------------------------
         message("\t...identifying pixel neighbours")

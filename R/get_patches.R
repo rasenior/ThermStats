@@ -92,7 +92,7 @@ get_patches <- function(img,
     
     # Setup --------------------------------------------------------------------
     
-    message("Getting patches...")
+    message("Getting patches")
     
     # Get dimensions
     nrows <- nrow(img)
