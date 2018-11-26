@@ -9,7 +9,7 @@
 #' @param conn_threshold Climate threshold to use for calculation of thermal
 #' connectivity (i.e. the amount of change that organisms would be seeking
 #' to avoid). See \code{ThermStats::}\code{\link{connectivity}}.
-#' @param get_patches Whether to identify hot and cold spots. Defaults to TRUE.
+#' @param patches Whether to identify hot and cold spots. Defaults to TRUE.
 #' @param style Style to use when calculating neighbourhood weights using
 #'  \code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
 #'  standardised).
@@ -58,7 +58,7 @@
 #'           id = id,
 #'           calc_connectivity = TRUE,
 #'           conn_threshold = 1.5,
-#'           get_patches = TRUE,
+#'           patches = TRUE,
 #'           style = "C",
 #'           img_proj = NULL,
 #'           img_extent = NULL,
@@ -69,7 +69,7 @@
 #'           id = id,
 #'           calc_connectivity = TRUE,
 #'           conn_threshold = 1.5,
-#'           get_patches = TRUE,
+#'           patches = TRUE,
 #'           style = "C",
 #'           img_proj = NULL,
 #'           img_extent = NULL,
@@ -106,7 +106,7 @@ get_stats <- function(img,
                       id = NULL,
                       calc_connectivity = TRUE,
                       conn_threshold = 1.5,
-                      get_patches = TRUE,
+                      patches = TRUE,
                       style = "C",
                       img_proj = NULL,
                       img_extent = NULL,
@@ -169,7 +169,7 @@ get_stats <- function(img,
     # return_vals must include pstats (otherwise just use get_patches)
     if(!("pstats" %in% return_vals)) return_vals <- c(return_vals, "pstats")
     
-    if(get_patches){
+    if(patches){
         all_stats <- get_patches(img = img,
                                  id = id,
                                  style = style,
@@ -201,7 +201,8 @@ get_stats <- function(img,
                     # Bind connectivity results to df
                     all_stats[["df"]] <-
                         cbind(all_stats[["df"]],
-                              pixel_conn[!(names(pixel_conn) %in% c("x","y","temp"))])
+                              # Exclude cols already in all_stats
+                              pixel_conn[!(names(pixel_conn) %in% c("x","y","temp", "val"))])
                     
                 }
             # Just add pixel stats results to patch stats
@@ -219,7 +220,7 @@ get_stats <- function(img,
                     # Bind connectivity results to df
                     all_stats[["df"]] <-
                         cbind(all_stats[["df"]],
-                              pixel_conn[!(names(pixel_conn) %in% c("x","y","temp"))])
+                              pixel_conn[!(names(pixel_conn) %in% c("x","y","temp", "val"))])
                 }
             # Just add pixel stats results to patch stats
             }else{
