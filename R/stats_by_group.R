@@ -73,6 +73,9 @@
 stats_by_group <- function(metadata,
                            img_list,
                            id,
+                           calc_connectivity = FALSE,
+                           conn_threshold = NULL,
+                           patches = patches,
                            style = "C",
                            grouping_var = NULL,
                            round_val,
@@ -96,6 +99,8 @@ stats_by_group <- function(metadata,
             pbapply::pblapply(unique(metadata[, grouping_var]),
                               function(x){
                                   tryCatch({
+                                      message("\nProcessing: ", x)
+                                      
                                       sub_list <- create_subset(metadata = metadata,
                                                                 img_list = img_list,
                                                                 id = id,
@@ -113,9 +118,9 @@ stats_by_group <- function(metadata,
                                       result <-
                                           get_stats(img = sub_list,
                                                     id = x,
-                                                    calc_connectivity = FALSE,
-                                                    conn_threshold = NULL,
-                                                    get_patches = TRUE,
+                                                    calc_connectivity = calc_connectivity,
+                                                    conn_threshold = conn_threshold,
+                                                    patches = patches,
                                                     style = style,
                                                     img_proj = NULL,
                                                     img_extent = NULL,
@@ -145,6 +150,8 @@ stats_by_group <- function(metadata,
             lapply(unique(metadata[, grouping_var]),
                               function(x){
                                   tryCatch({
+                                      message("\nProcessing: ", x)
+                                      
                                       sub_list <- create_subset(metadata = metadata,
                                                                 img_list = img_list,
                                                                 id = id,
@@ -162,9 +169,9 @@ stats_by_group <- function(metadata,
                                       result <-
                                           get_stats(img = sub_list,
                                                     id = x,
-                                                    calc_connectivity = FALSE,
-                                                    conn_threshold = NULL,
-                                                    get_patches = TRUE,
+                                                    calc_connectivity = calc_connectivity,
+                                                    conn_threshold = conn_threshold,
+                                                    patches = patches,
                                                     style = style,
                                                     img_proj = NULL,
                                                     img_extent = NULL,

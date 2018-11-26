@@ -54,8 +54,10 @@ connectivity <-
     function(mat,
              conn_threshold = 1.5){
         
+        message("Calculating thermal connectivity")
+        
         # Identify neighbours -----------------------------------------------------
-        message("Identifying pixel neighbours")
+        message("\tIdentifying pixel neighbours")
         
         # Create a matrix of same size, with cell ID
         id_mat <- matrix(1:length(mat),
@@ -156,7 +158,7 @@ connectivity <-
         nbr <- nbr[,c("origin_pixel", "dest_pixel", "origin_val", "dest_val")]
         
         # Determine final destination ---------------------------------------------
-        message("Tracing pixels to coolest destination pixel")
+        message("\tTracing pixels to coolest destination pixel")
         
         # Identify all the neighbouring destination pixels for each unique pixel
         # Join on origin pixel
