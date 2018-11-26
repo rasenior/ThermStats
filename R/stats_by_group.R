@@ -3,7 +3,7 @@
 #' Calculate summary and spatial statistics across multiple images within groups.
 #' @param metadata A dataframe denoting the grouping of different images.
 #' @param img_list List or stack of numeric temperature matrices or rasters.
-#' @param id Name of the metadata variable that identifies unique
+#' @param idvar Name of the metadata variable that identifies unique
 #' images. Should match element names in the image list.
 #' @param style Style to use when calculating neighbourhood weights using
 #'  \code{spdep::}\code{\link[spdep]{nb2listw}}.
@@ -32,7 +32,7 @@
 #' patch_stats_1 <-
 #'     stats_by_group(metadata = metadata,
 #'                    img_list = img_list,
-#'                    id = "photo_no",
+#'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
@@ -42,7 +42,7 @@
 #' patch_stats_2 <-
 #'     stats_by_group(metadata = metadata,
 #'                    img_list = img_list,
-#'                    id = "photo_no",
+#'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
@@ -52,7 +52,7 @@
 #' patch_stats_3 <-
 #'     stats_by_group(metadata = metadata,
 #'                    img_list = img_list,
-#'                    id = "photo_no",
+#'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
@@ -62,7 +62,7 @@
 #' patch_stats_4 <-
 #'     stats_by_group(metadata = metadata,
 #'                    img_list = img_list,
-#'                    id = "photo_no",
+#'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
@@ -72,15 +72,15 @@
 # Define function to return stats for each grouping
 stats_by_group <- function(metadata,
                            img_list,
-                           id,
-                           calc_connectivity = FALSE,
-                           conn_threshold = NULL,
-                           patches = patches,
-                           style = "C",
+                           idvar,
                            grouping_var = NULL,
-                           round_val,
-                           return_vals = "pstats",
-                           sum_stats = c("mean", "min","max")){
+                           calc_connectivity = FALSE,
+                           conn_threshold = 1.5,
+                           patches = TRUE,
+                           style = "C",
+                           return_vals = c("df", "patches", "pstats"),
+                           round_val = NULL,
+                           sum_stats = c("mean", "max", "min")){
     
     # Determine if raster stack or list of matrices
     if(class(img_list)[1] == "RasterStack"){
@@ -89,10 +89,13 @@ stats_by_group <- function(metadata,
     
     # If grouping variable is NULL, assume there is only one image per group
     # and therefore the grouping variable is the same as the ID variable
-    if(is.null(grouping_var)) grouping_var <- id
+    if(is.null(grouping_var)) grouping_var <- idvar
     
     # return_vals must include pstats
     if(!("pstats" %in% return_vals)) return_vals <- c(return_vals, "pstats")
+    
+    # Only return pstats if not getting patches
+    if(!(patches)) return_vals <- "pstats"
     
     if (requireNamespace("pbapply", quietly = TRUE)) {
         temp_stats <-
@@ -103,7 +106,7 @@ stats_by_group <- function(metadata,
                                       
                                       sub_list <- create_subset(metadata = metadata,
                                                                 img_list = img_list,
-                                                                id = id,
+                                                                id = idvar,
                                                                 grouping_var = grouping_var,
                                                                 grouping_val = x,
                                                                 list_type = list_type,
@@ -154,7 +157,7 @@ stats_by_group <- function(metadata,
                                       
                                       sub_list <- create_subset(metadata = metadata,
                                                                 img_list = img_list,
-                                                                id = id,
+                                                                id = idvar,
                                                                 grouping_var = grouping_var,
                                                                 grouping_val = x,
                                                                 list_type = list_type,
@@ -201,10 +204,14 @@ stats_by_group <- function(metadata,
     # Drop NAs
     temp_stats <- temp_stats[!(is.na(temp_stats))]
     
+    if(length(return_vals) > 1){
     # Bind pstats
     pstats <- 
         do.call("rbind",
             lapply(temp_stats,function(x) rbind(x[["pstats"]])))
+    }else{
+        pstats <- do.call("rbind", temp_stats)
+    }
     
     # Bind df
     if("df" %in% return_vals){

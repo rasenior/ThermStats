@@ -4,24 +4,24 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, img_list, id, calc_connectivity = FALSE,
-  conn_threshold = NULL, patches = patches, style = "C",
-  grouping_var = NULL, round_val, return_vals = "pstats",
-  sum_stats = c("mean", "min", "max"))
+stats_by_group(metadata, img_list, idvar, grouping_var = NULL,
+  calc_connectivity = FALSE, conn_threshold = 1.5, patches = TRUE,
+  style = "C", return_vals = c("df", "patches", "pstats"),
+  round_val = NULL, sum_stats = c("mean", "max", "min"))
 }
 \arguments{
 \item{metadata}{A dataframe denoting the grouping of different images.}
 
 \item{img_list}{List or stack of numeric temperature matrices or rasters.}
 
-\item{id}{Name of the metadata variable that identifies unique
+\item{idvar}{Name of the metadata variable that identifies unique
 images. Should match element names in the image list.}
-
-\item{style}{Style to use when calculating neighbourhood weights using
-\code{spdep::}\code{\link[spdep]{nb2listw}}.}
 
 \item{grouping_var}{The name of the metadata variable that denotes the
 grouping of images.}
+
+\item{style}{Style to use when calculating neighbourhood weights using
+\code{spdep::}\code{\link[spdep]{nb2listw}}.}
 
 \item{round_val}{Value to round to. Use 1 for no rounding.}
 
@@ -53,7 +53,7 @@ img_list <- batch_convert(raw_dat, write_results = FALSE)
 patch_stats_1 <-
     stats_by_group(metadata = metadata,
                    img_list = img_list,
-                   id = "photo_no",
+                   idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
@@ -63,7 +63,7 @@ patch_stats_1 <-
 patch_stats_2 <-
     stats_by_group(metadata = metadata,
                    img_list = img_list,
-                   id = "photo_no",
+                   idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
@@ -73,7 +73,7 @@ patch_stats_2 <-
 patch_stats_3 <-
     stats_by_group(metadata = metadata,
                    img_list = img_list,
-                   id = "photo_no",
+                   idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
@@ -83,7 +83,7 @@ patch_stats_3 <-
 patch_stats_4 <-
     stats_by_group(metadata = metadata,
                    img_list = img_list,
-                   id = "photo_no",
+                   idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
                    round_val = 0.5,
