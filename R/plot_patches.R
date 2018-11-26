@@ -99,7 +99,6 @@ plot_patches <- function(df,
                          patches,
                          bg_poly = NULL,
                          bg_colour = NULL,
-                         facet = FALSE,
                          facet_cols = NULL,
                          facet_rows = NULL,
                          plot_distribution = TRUE,
@@ -153,6 +152,8 @@ plot_patches <- function(df,
                          sep = "")
     }
     
+    if(is.list(patches)) facet = TRUE
+    
     # Histogram --------------------------------------------------------------
     
     if(plot_distribution){
@@ -177,7 +178,10 @@ plot_patches <- function(df,
                   panel.grid = element_blank(),
                   plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
         if(facet){
-            p1 <- p1 + facet_wrap(~ img_id, nrow = facet_rows, ncol = facet_cols)
+            p1 <- p1 + 
+                facet_wrap(~ img_id, 
+                           nrow = facet_rows, ncol = facet_cols, 
+                           scales = "free")
         }
         
     }else{

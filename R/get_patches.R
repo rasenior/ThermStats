@@ -92,7 +92,7 @@ get_patches <- function(img,
     
     # Setup --------------------------------------------------------------------
     
-    message("Getting patches")
+    message("Getting patches...")
     
     # Get dimensions
     nrows <- nrow(img)
@@ -114,7 +114,7 @@ get_patches <- function(img,
     df <- df[!(is.na(df[, "val"])),]
     
     # Neighbour weights -------------------------------------------------------
-    message("\tCalculating neighbourhood weights")
+    message("\t...calculating neighbourhood weights")
     
     # Identify nearest 8 neighbours
     nr_neigh <- spdep::knearneigh(cbind(df$x, df$y), k = 8)
@@ -126,7 +126,7 @@ get_patches <- function(img,
                                   zero.policy = FALSE)
     
     # Local Getis-Ord ---------------------------------------------------------
-    message("\tCalculating local G statistic")
+    message("\t...calculating local G statistic")
     local_g <-
         spdep::localG(x = spdep::spNamedVec("val", df),
                       listw = nb_weights,
@@ -163,7 +163,7 @@ get_patches <- function(img,
                        ifelse(df$Z_val <= -critical_Z, -1, 0))
     
     # Patch statistics --------------------------------------------------------
-    message("\tMatching pixels to hot and cold patches")
+    message("\t...matching pixels to hot and cold patches")
     
     # 1. Create layer with one polygon for each hot/cold patch
     # Dataframe to matrix
@@ -277,7 +277,7 @@ get_patches <- function(img,
     
     ### 3. Calculate patch stats
     
-    message("\tCalculating patch statistics")
+    message("\t...calculating patch statistics")
     
     # Calculate median for each patch --------------------------------------------
     if (requireNamespace("dplyr", quietly = TRUE)) {
