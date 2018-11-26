@@ -104,7 +104,7 @@
 
 get_stats <- function(img,
                       id = NULL,
-                      calc_connectivity = TRUE,
+                      calc_connectivity,
                       conn_threshold = 1.5,
                       patches = TRUE,
                       style = "C",
