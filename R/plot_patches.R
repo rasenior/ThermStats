@@ -7,7 +7,6 @@
 #' or fortified dataframe (see \code{ggplot2::}\code{\link[ggplot2]{fortify}})
 #' with the variables 'long', 'lat' and 'group'.
 #' @param bg_colour Colour of the background polygon.
-#' @param facet Whether to plot facets by image ID. Defaults to FALSE.
 #' @param facet_cols Number of facet columns. Defaults to NULL.
 #' @param facet_rows Number of facet rows. Defaults to NULL.
 #' @param plot_distribution Should a histogram be plotted? Defaults to TRUE.

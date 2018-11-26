@@ -5,11 +5,10 @@
 \title{plot_patches}
 \usage{
 plot_patches(df, patches, bg_poly = NULL, bg_colour = NULL,
-  facet = FALSE, facet_cols = NULL, facet_rows = NULL,
-  plot_distribution = TRUE, print_plot = TRUE, save_plot = FALSE,
-  return_plot = FALSE, out_dir = NULL, file_name = NULL,
-  file_ext = "png", lab_size = 8, text_size = 6,
-  outline_size = 0.7, fig_width = 8, fig_height = 9,
+  facet_cols = NULL, facet_rows = NULL, plot_distribution = TRUE,
+  print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
+  out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
+  text_size = 6, outline_size = 0.7, fig_width = 8, fig_height = 9,
   fig_units = "cm", val_pal = c("black", "#050155", "#120172",
   "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
   "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
@@ -27,8 +26,6 @@ or fortified dataframe (see \code{ggplot2::}\code{\link[ggplot2]{fortify}})
 with the variables 'long', 'lat' and 'group'.}
 
 \item{bg_colour}{Colour of the background polygon.}
-
-\item{facet}{Whether to plot facets by image ID. Defaults to FALSE.}
 
 \item{facet_cols}{Number of facet columns. Defaults to NULL.}
 
@@ -78,6 +75,8 @@ spots' and 'Cold spots'.}
 
 \item{val_lab}{Label to describe the variable of interest - corresponds to
 the x axis of the histogram, and the fill legend of the raster plot.}
+
+\item{facet}{Whether to plot facets by image ID. Defaults to FALSE.}
 }
 \description{
 Plot hot and cold patches returned from \code{\link{get_patches}}.
