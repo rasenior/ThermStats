@@ -125,7 +125,7 @@ plot_patches <- function(df,
     
     # Define function to capitalise first letter
     simpleCap <- function(x) {
-        s <- strsplit(x, " ")[[1]]
+        s <- strsplit(as.character(x), " ")[[1]]
         paste(toupper(substring(s, 1,1)), substring(s, 2),
               sep="", collapse=" ")
     }
@@ -254,6 +254,7 @@ plot_patches <- function(df,
               legend.title = element_text(size = text_size),
               legend.text = element_text(size = text_size),
               legend.key = element_rect(fill = "black"),
+              panel.grid = element_blank(),
               plot.margin = margin(0.1, 0.1, 0, 0, unit = "cm")) +
         scale_fill_gradientn(colours = val_pal,
                              breaks = fill_breaks) +
@@ -301,7 +302,6 @@ plot_patches <- function(df,
                       axis.text = element_text(colour = "transparent",
                                                size = text_size),
                       axis.ticks = element_line(colour = "transparent"),
-                      panel.grid = element_blank(),
                       legend.box.spacing = unit(0.1,"cm"),
                       legend.position = "right",
                       plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm")) +
