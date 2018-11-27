@@ -80,6 +80,7 @@
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
 #'
+#' @import rgeos
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #' @export
 #'
