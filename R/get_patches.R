@@ -80,7 +80,6 @@
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
 #'
-#' @import rgeos
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #' @export
 #'
@@ -188,7 +187,7 @@ get_patches <- function(img,
     }
     
     # Raster to dissolved polygons
-    patches <- raster::rasterToPolygons(patches, dissolve = TRUE)
+    patches <- suppressMessages(raster::rasterToPolygons(patches, dissolve = TRUE))
     patches <- raster::disaggregate(patches)
     
     # 2. Assign to each temperature cell the ID of the patch that it falls into
