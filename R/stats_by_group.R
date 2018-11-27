@@ -1,10 +1,14 @@
 #' stats_by_group
 #'
 #' Calculate summary and spatial statistics across multiple images within groups.
-#' @param metadata A dataframe denoting the grouping of different images.
 #' @param img_list List or stack of numeric temperature matrices or rasters.
+#' @param metadata A dataframe denoting the grouping of different images. 
+#' Defaults to NULL as this is not required when \code{img_list} provided as a
+#' raster stack (where each raster layer assumed to represent each 'group').
 #' @param idvar Name of the metadata variable that identifies unique
-#' images. Should match element names in the image list.
+#' images. Should match element names in the image list. Defaults to NULL as 
+#' this is not required when \code{img_list} provided as a raster stack (where 
+#' \code{idvar} is assumed to be the names of the raster layers).
 #' @param style Style to use when calculating neighbourhood weights using
 #'  \code{spdep::}\code{\link[spdep]{nb2listw}}.
 #' @param grouping_var The name of the metadata variable that denotes the
@@ -30,8 +34,8 @@
 #'
 #' # Pixel stats = mean, max and min
 #' patch_stats_1 <-
-#'     stats_by_group(metadata = metadata,
-#'                    img_list = img_list,
+#'     stats_by_group(img_list = img_list,
+#'                    metadata = metadata,
 #'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
@@ -40,8 +44,8 @@
 #'
 #' # Pixel stats = kurtosis and sknewness
 #' patch_stats_2 <-
-#'     stats_by_group(metadata = metadata,
-#'                    img_list = img_list,
+#'     stats_by_group(img_list = img_list,
+#'                    metadata = metadata,
 #'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
@@ -50,8 +54,8 @@
 #'
 #' # Pixel stats = 5th and 95th percentiles
 #' patch_stats_3 <-
-#'     stats_by_group(metadata = metadata,
-#'                    img_list = img_list,
+#'     stats_by_group(img_list = img_list,
+#'                    metadata = metadata,
 #'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
@@ -60,8 +64,8 @@
 #'
 #' # Pixel stats = Shannon and Simpson Diversity Indices
 #' patch_stats_4 <-
-#'     stats_by_group(metadata = metadata,
-#'                    img_list = img_list,
+#'     stats_by_group(img_list = img_list,
+#'                    metadata = metadata,
 #'                    idvar = "photo_no",
 #'                    style = "C",
 #'                    grouping_var = "rep_id",
@@ -70,9 +74,9 @@
 #' @export
 #'
 # Define function to return stats for each grouping
-stats_by_group <- function(metadata,
-                           img_list,
-                           idvar,
+stats_by_group <- function(img_list,
+                           metadata = NULL,
+                           idvar = NULL,
                            grouping_var = NULL,
                            calc_connectivity = FALSE,
                            conn_threshold = 1.5,
@@ -85,6 +89,12 @@ stats_by_group <- function(metadata,
     # Determine if raster stack or list of matrices
     if(class(img_list)[1] == "RasterStack"){
         list_type <- "rasterstack"
+        
+        # May not be metadata if it's a raster stack
+        if(is.null(metadata) & is.null(idvar)){
+            metadata <- data.frame(idvar = names(img_list))
+            idvar <- "idvar"
+        }
     }else list_type <- "list"
     
     # If grouping variable is NULL, assume there is only one image per group

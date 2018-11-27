@@ -4,18 +4,23 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(metadata, img_list, idvar, grouping_var = NULL,
-  calc_connectivity = FALSE, conn_threshold = 1.5, patches = TRUE,
-  style = "C", return_vals = c("df", "patches", "pstats"),
-  round_val = NULL, sum_stats = c("mean", "max", "min"))
+stats_by_group(img_list, metadata = NULL, idvar = NULL,
+  grouping_var = NULL, calc_connectivity = FALSE,
+  conn_threshold = 1.5, patches = TRUE, style = "C",
+  return_vals = c("df", "patches", "pstats"), round_val = NULL,
+  sum_stats = c("mean", "max", "min"))
 }
 \arguments{
-\item{metadata}{A dataframe denoting the grouping of different images.}
-
 \item{img_list}{List or stack of numeric temperature matrices or rasters.}
 
+\item{metadata}{A dataframe denoting the grouping of different images. 
+Defaults to NULL as this is not required when \code{img_list} provided as a
+raster stack (where each raster layer assumed to represent each 'group').}
+
 \item{idvar}{Name of the metadata variable that identifies unique
-images. Should match element names in the image list.}
+images. Should match element names in the image list. Defaults to NULL as 
+this is not required when \code{img_list} provided as a raster stack (where 
+\code{idvar} is assumed to be the names of the raster layers).}
 
 \item{grouping_var}{The name of the metadata variable that denotes the
 grouping of images.}
@@ -51,8 +56,8 @@ img_list <- batch_convert(raw_dat, write_results = FALSE)
 
 # Pixel stats = mean, max and min
 patch_stats_1 <-
-    stats_by_group(metadata = metadata,
-                   img_list = img_list,
+    stats_by_group(img_list = img_list,
+                   metadata = metadata,
                    idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
@@ -61,8 +66,8 @@ patch_stats_1 <-
 
 # Pixel stats = kurtosis and sknewness
 patch_stats_2 <-
-    stats_by_group(metadata = metadata,
-                   img_list = img_list,
+    stats_by_group(img_list = img_list,
+                   metadata = metadata,
                    idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
@@ -71,8 +76,8 @@ patch_stats_2 <-
 
 # Pixel stats = 5th and 95th percentiles
 patch_stats_3 <-
-    stats_by_group(metadata = metadata,
-                   img_list = img_list,
+    stats_by_group(img_list = img_list,
+                   metadata = metadata,
                    idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
@@ -81,8 +86,8 @@ patch_stats_3 <-
 
 # Pixel stats = Shannon and Simpson Diversity Indices
 patch_stats_4 <-
-    stats_by_group(metadata = metadata,
-                   img_list = img_list,
+    stats_by_group(img_list = img_list,
+                   metadata = metadata,
                    idvar = "photo_no",
                    style = "C",
                    grouping_var = "rep_id",
