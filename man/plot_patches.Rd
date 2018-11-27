@@ -75,8 +75,6 @@ spots' and 'Cold spots'.}
 
 \item{val_lab}{Label to describe the variable of interest - corresponds to
 the x axis of the histogram, and the fill legend of the raster plot.}
-
-\item{facet}{Whether to plot facets by image ID. Defaults to FALSE.}
 }
 \description{
 Plot hot and cold patches returned from \code{\link{get_patches}}.
