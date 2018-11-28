@@ -31,13 +31,15 @@ data to plot correctly.}
 \value{
 A list containing:
  \item{df}{A dataframe with one row for each pixel, and variables denoting:
- the pixel value (val); the original spatial location of the pixel (x and y);
- patch classification (G_bin) into hot (1), cold (-1) or no patch (0)
+ the pixel value (val); the spatial location of the pixel (x and y);
+ its patch classification (G_bin) into a hot (1), cold (-1) or no patch (0)
  according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
  the unique ID of the patch in which the pixel fell;
- and the image ID (if applicable).}
- \item{patches}{A SpatialPolygonsDataFrame of hot and cold patches. Hot
- patches have a value of 1, and cold patches a value of -1.}
+ the image ID (if applicable); and the original spatial location of the pixel 
+ (x_orig and y_orig).}
+ \item{patches}{A SpatialPolygonsDataFrame of hot and cold patches, named
+ according to \code{id} (if applicable). Hot patches have a value of 1, 
+ and cold patches a value of -1.}
  \item{pstats}{A dataframe with patch statistics for hot patches and cold
  patches, respectively. See \code{\link{patch_stats}} for details of all the
  statistics returned.}
