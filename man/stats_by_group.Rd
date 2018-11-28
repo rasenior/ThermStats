@@ -5,10 +5,10 @@
 \title{stats_by_group}
 \usage{
 stats_by_group(img_list, metadata = NULL, idvar = NULL,
-  grouping_var = NULL, calc_connectivity = FALSE,
+  grouping_var = NULL, round_val = NULL, calc_connectivity = FALSE,
   conn_threshold = 1.5, patches = TRUE, style = "C",
-  return_vals = c("df", "patches", "pstats"), round_val = NULL,
-  sum_stats = c("mean", "max", "min"))
+  img_proj = NULL, img_extent = NULL, sum_stats = c("mean", "max",
+  "min"), return_vals = c("df", "patches", "pstats"))
 }
 \arguments{
 \item{img_list}{List or stack of numeric temperature matrices or rasters.}
@@ -23,22 +23,70 @@ this is not required when \code{img_list} provided as a raster stack (where
 \code{idvar} is assumed to be the names of the raster layers).}
 
 \item{grouping_var}{The name of the metadata variable that denotes the
-grouping of images.}
+grouping of images. Defaults to NULL, where it is assumed to equal \code{idvar} 
+(each group is assumed to have only one image).}
+
+\item{round_val}{Value to round to. Defaults to NULL.}
+
+\item{calc_connectivity}{Whether or not to calculate thermal connectivity
+across pixels (slow for large rasters). Defaults to FALSE.}
+
+\item{conn_threshold}{Climate threshold to use for calculation of thermal
+connectivity (i.e. the amount of change that organisms would be seeking
+to avoid). See \code{ThermStats::}\code{\link{connectivity}}. 
+Defaults to 1.5°C.}
+
+\item{patches}{Whether to identify hot and cold spots. Defaults to TRUE.}
 
 \item{style}{Style to use when calculating neighbourhood weights using
-\code{spdep::}\code{\link[spdep]{nb2listw}}.}
+\code{spdep::}\code{\link[spdep]{nb2listw}}. Defaults to 'C' (globally 
+standardised).}
 
-\item{round_val}{Value to round to. Use 1 for no rounding.}
+\item{img_proj}{Spatial projection. Optional, but necessary for geographic
+data to plot correctly.}
+
+\item{img_extent}{Spatial extent. Optional, but necessary for geographic
+data to plot correctly.}
 
 \item{sum_stats}{Summary statistics that should be calculated across
 all pixels. Several helper functions are included for use here:
 \code{\link{perc_5}}, \code{\link{perc_95}},
 \code{\link{SHDI}}, \code{\link{SIDI}},
-\code{\link{kurtosis}} and \code{\link{skewness}}. Also see examples below.}
+\code{\link{kurtosis}} and \code{\link{skewness}}.}
+
+\item{return_vals}{Which values to return? Any combination of the dataframe
+(\code{df}), SpatialPolygonsDataFrame of hot and cold patches
+(\code{patches}) and patch statistics dataframe (\code{pstats}), although
+\code{pstats} will always be returned -- if this is not desired, use
+\code{\link{get_patches}} instead.}
 }
 \value{
-A dataframe with pixel and patch statistics. See
-\code{\link{patch_stats}} for details of all the patch statistics returned.
+A list containing:
+ \item{df}{A dataframe with one row for each pixel, and variables denoting:
+ the pixel value (val); the spatial location of the pixel (x and y);
+ its patch classification (G_bin) into a hot (1), cold (-1) or no patch (0)
+ according to the Z value (see \code{spdep::}\code{\link[spdep]{localG}});
+ the unique ID of the patch in which the pixel fell;
+ the image ID (if applicable); and the original spatial location of the pixel 
+ (x_orig and y_orig). 
+ 
+ If calculating thermal connectivity, \code{df} will also contain: the unique
+ ID of the coldest destination pixel that can be reached by traversing a 
+ gradient of hotter to cooler pixels (dest_pixel); the pixel value of the
+ destination pixel (dest_val); the unique IDs of pixels traversed from origin
+ to destination (inter_pixel); the temperature difference between the origin
+ and destination pixel (diff_potential); and the thermal connectivity 
+ (therm_conn), which is \code{diff_potential} minus \code{conn_threshold}.}
+ \item{patches}{A list of SpatialPolygonsDataFrames of hot and cold patches, 
+ named according to \code{grouping_var}. Hot patches have a value of 1, and 
+ cold patches a value of -1.}
+ \item{pstats}{A dataframe with patch statistics for hot patches and cold
+ patches, respectively. See \code{\link{patch_stats}} for details of all the
+ statistics returned. 
+ 
+ If calculating thermal connectivity, there will also be statistics for
+ the minimum, mean, median and maximum temperature difference 
+ (\code{diff_potential}) and thermal connectivity (\code{conn_threshold}).}
 }
 \description{
 Calculate summary and spatial statistics across multiple images within groups.
