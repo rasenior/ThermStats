@@ -1,7 +1,8 @@
 #' connectivity
 #'
 #' Calculate thermal connectivity and potential for temperature change.
-#' @param mat A numeric temperature matrix.
+#' @param img A numeric temperature matrix (such as that returned from
+#' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or raster.
 #' @param conn_threshold Climate threshold to use for calculation of thermal
 #' connectivity (i.e. the amount of change that organisms would be seeking
 #' to avoid).
@@ -24,7 +25,7 @@
 #' \href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
 #' basic premise is that there is a degree of change that organisms are seeking
 #' to avoid, and when pixels are sufficiently heterogenous and well connected
-#' organisms can move through the pixels to avoid delterious temperature change.
+#' organisms can move through the pixels to avoid deleterious temperature change.
 #' @references
 #' McGuire, J. L., Lawler, J. J., McRae, B. H., Nunez, T. A. and
 #' Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
@@ -33,17 +34,17 @@
 #'
 #' @examples
 #' # Define matrix as FLIR thermal image
-#' mat <- flir11835$flir_matrix
+#' img <- flir11835$flir_matrix
 #'
 #' # Get connectivity
-#' mat_conn <-
-#' connectivity(mat = mat,
+#' img_conn <-
+#' connectivity(img = img,
 #'              conn_threshold = 1.5)
-#' head(mat_conn)
+#' head(img_conn)
 #' 
 #' # Plot the potential for temperature change
 #' library(ggplot2)
-#' ggplot(mat_conn, 
+#' ggplot(img_conn, 
 #'        aes(x = x, y = y, fill = diff_potential))+
 #'     geom_raster() +
 #'     scale_fill_viridis_c()
@@ -51,18 +52,28 @@
 #' @export
 
 connectivity <-
-    function(mat,
+    function(img,
              conn_threshold = 1.5){
         
         message("Calculating thermal connectivity")
+        
+        # Get dimensions
+        nrows <- nrow(img)
+        ncols <- ncol(img)
+        
+        # Determine whether matrix or raster
+        if(!(is.matrix(img))){
+            # Coerce to matrix
+            img <- raster::as.matrix(img)
+        }
         
         # Identify neighbours -----------------------------------------------------
         message("\t...identifying pixel neighbours")
         
         # Create a matrix of same size, with cell ID
-        id_mat <- matrix(1:length(mat),
-                         nrow = nrow(mat),
-                         ncol = ncol(mat))
+        id_mat <- matrix(1:length(img),
+                         nrow = nrow(img),
+                         ncol = ncol(img))
         
         # Define row and column length
         n_cols <- ncol(id_mat)
@@ -89,7 +100,7 @@ connectivity <-
         nbr$pixel <- as.numeric(row.names(nbr))
         
         # Coerce value matrix to dataframe
-        val_df <- reshape2::melt(mat,
+        val_df <- reshape2::melt(img,
                                  varnames = c("y", "x"),
                                  value.name = "val")
         

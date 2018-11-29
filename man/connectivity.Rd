@@ -4,10 +4,11 @@
 \alias{connectivity}
 \title{connectivity}
 \usage{
-connectivity(mat, conn_threshold = 1.5)
+connectivity(img, conn_threshold = 1.5)
 }
 \arguments{
-\item{mat}{A numeric temperature matrix.}
+\item{img}{A numeric temperature matrix (such as that returned from
+\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or raster.}
 
 \item{conn_threshold}{Climate threshold to use for calculation of thermal
 connectivity (i.e. the amount of change that organisms would be seeking
@@ -38,21 +39,21 @@ change is analogous to that described in
 \href{https://doi.org/10.1073/pnas.1602817113}{McGuire et al. 2016}. The
 basic premise is that there is a degree of change that organisms are seeking
 to avoid, and when pixels are sufficiently heterogenous and well connected
-organisms can move through the pixels to avoid delterious temperature change.
+organisms can move through the pixels to avoid deleterious temperature change.
 }
 \examples{
 # Define matrix as FLIR thermal image
-mat <- flir11835$flir_matrix
+img <- flir11835$flir_matrix
 
 # Get connectivity
-mat_conn <-
-connectivity(mat = mat,
+img_conn <-
+connectivity(img = img,
              conn_threshold = 1.5)
-head(mat_conn)
+head(img_conn)
 
 # Plot the potential for temperature change
 library(ggplot2)
-ggplot(mat_conn, 
+ggplot(img_conn, 
        aes(x = x, y = y, fill = diff_potential))+
     geom_raster() +
     scale_fill_viridis_c()
