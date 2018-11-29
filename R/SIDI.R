@@ -12,13 +12,8 @@ SIDI <- function(x, na.rm = TRUE) {
   if(is.matrix(x)) x <- as.numeric(x)
   if(na.rm){x <- na.omit(x)}
 
-  # Identify unique pixels
-  unique_temp <- unique(x)
-  # Calculate the proportion of pixels in each category
-  props <-
-    sapply(unique_temp, function(temp){
-      length(which(x == temp)) / length(x)
-    })
+  # Count all occurrences of each unique temperature
+  props <- table(x) / length(x)
 
   # Calculate Simpson diversity index
   result <- 1 - sum (props * props)
