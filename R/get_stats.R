@@ -135,7 +135,7 @@ get_stats <- function(img,
         pixel_stats <- as.data.frame(t(do.call("rbind", pixel_stats)))
         
         # Change column names
-        colnames(pixel_stats) <- sum_stats
+        colnames(pixel_stats) <- paste("img", sum_stats, sep = "_")
         # Remove any row names
         rownames(pixel_stats) <- NULL
         
