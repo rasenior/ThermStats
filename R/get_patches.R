@@ -121,6 +121,8 @@ get_patches <- function(img,
     # Identify nearest 8 neighbours
     nr_neigh <- spdep::knearneigh(cbind(df$x, df$y), k = 8)
     nr_neigh <- spdep::knn2nb(nr_neigh)
+    # Include self to calculate G* variant of local G statistic
+    nr_neigh <- spdep::include.self(nr_neigh)
     
     # Get neighbour weights
     nb_weights <- spdep::nb2listw(nr_neigh, 
@@ -128,7 +130,7 @@ get_patches <- function(img,
                                   zero.policy = FALSE)
     
     # Local Getis-Ord ---------------------------------------------------------
-    message("\t...calculating local G statistic")
+    message("\t...calculating local G* statistic")
     local_g <-
         spdep::localG(x = spdep::spNamedVec("val", df),
                       listw = nb_weights,
