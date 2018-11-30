@@ -151,7 +151,7 @@ plot_patches <- function(df,
                          sep = "")
     }
     
-    if(is.list(patches)) facet = TRUE
+    facet <- ifelse(is.list(patches), TRUE, FALSE)
     
     # Histogram --------------------------------------------------------------
     
