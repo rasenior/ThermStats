@@ -4,21 +4,28 @@
 \alias{crop_img}
 \title{crop_img}
 \usage{
-crop_img(img)
+crop_img(img, crop_poly = NULL, rtn_format = "matrix")
 }
 \arguments{
-\item{img}{A numeric temperature matrix, such as that returned from
-\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.}
+\item{img}{A numeric temperature matrix (such as that returned from
+\code{Thermimage::}\code{\link[Thermimage]{raw2temp}}) or raster.}
+
+\item{crop_poly}{If polygon of cropping area is already defined, supply here.
+Defaults to NULL.}
+
+\item{rtn_format}{Desired format ('matrix' or 'raster') of the area returned
+after cropping. Defaults to 'matrix'.}
 }
 \value{
-A cropped version of the input matrix.
+A cropped version of the input image.
 }
 \description{
-Crops temperature matrix to the desired area.
+Crops temperature data to the desired area.
 }
 \details{
-Requires user input to iteratively refine the size, location and
-angle (optional) of the cropping area.
+Unless the cropping polygon is already available, function requires 
+user input to iteratively refine the size, location and angle (optional) of 
+the cropping area.
 }
 \examples{
 # Crop thermal image of wasp nest to the nest only
