@@ -4,8 +4,8 @@
 #' @param img A numeric temperature matrix, such as that returned from
 #' \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
 #' @return A cropped version of the input matrix.
-#' @details Requires user input to iteratively refine the size and location of
-#' the cropping area.
+#' @details Requires user input to iteratively refine the size, location and
+#' angle (optional) of the cropping area.
 #' @examples
 #' # Crop thermal image of wasp nest to the nest only
 #' # N.B. For this example, a good approximation is an ellipse with
@@ -48,30 +48,33 @@ crop_img <- function(img){
     }
     
     # Ask user for cropping shape
-    shape <- menu(choices = c("ellipse", "rectangle"),
-                  title = "Crop with an ellipse or rectangle?")
+    shape <- menu(choices = c("ellipse", "rectangle", "polygon"),
+                  title = "Crop with an ellipse, rectangle or polygon?")
     
     # Ask user for parameters
-    args <- define_params()
+    args <- define_params(shape)
     # Keep asking until all parameters are either numeric or empty
     while(any(sapply(args, is.null))){
         args <- define_params()
     }
-    names(args) <- c("x", "y", "radius.x", "radius.y")
     
+    if(shape != 2){
+        names(args) <- c("x", "y", "radius.x", "radius.y", "angle")
+    }else names(args) <- c("x", "y", "radius.x", "radius.y")
+    
+    # Elliptical polygon
     if(shape == 1){
-        # Create elliptical polygon
         poly <-
             DescTools::DrawRegPolygon(x = args$x,
                                       y = args$y,
                                       radius.x = args$radius.x,
                                       radius.y = args$radius.y,
-                                      rot = 0,
+                                      rot = deg2rad(args$angle),
                                       nv = 100,
                                       col = "transparent",
                                       plot = TRUE)
-    }else{
-        
+    # Rectangle
+    }else if(shape == 2){
         xleft <- args$x - args$radius.x
         ybottom <- args$y - args$radius.y
         xright <- args$x + args$radius.x
@@ -85,6 +88,17 @@ crop_img <- function(img){
         poly <- list(x = c(xleft, xleft, xright, xright),
                      y = c(ybottom, ytop, ytop, ybottom))
         
+    # Polygon
+    }else{
+        poly <-
+            DescTools::DrawRegPolygon(x = args$x,
+                                      y = args$y,
+                                      radius.x = args$radius.x,
+                                      radius.y = args$radius.y,
+                                      rot = deg2rad(args$angle),
+                                      nv = 4,
+                                      col = "transparent",
+                                      plot = TRUE)
     }
     
     # User input
@@ -94,11 +108,14 @@ crop_img <- function(img){
     while(check == 2){
         
         # Ask user for parameters
-        new_args <- define_params()
+        new_args <- define_params(shape)
         while(any(sapply(new_args, is.null))){
             new_args <- define_params()
         }
-        names(new_args) <- c("x", "y", "radius.x", "radius.y")
+        
+        if(shape != 2){
+            names(new_args) <- c("x", "y", "radius.x", "radius.y", "angle")
+        }else names(new_args) <- c("x", "y", "radius.x", "radius.y")
         
         new_ind <- which(!(is.na(new_args)))
         
@@ -112,18 +129,19 @@ crop_img <- function(img){
             raster::plot(img, col = heat.colors(255))
         }
         
+        # Elliptical polygon
         if(shape == 1){
             poly <-
                 DescTools::DrawRegPolygon(x = args$x,
                                           y = args$y,
                                           radius.x = args$radius.x,
                                           radius.y = args$radius.y,
-                                          rot = 0,
+                                          rot = deg2rad(args$angle),
                                           nv = 100,
                                           col = "transparent",
                                           plot = TRUE)
-        }else{
-            
+        # Rectangle
+        }else if(shape == 2){
             xleft <- args$x - args$radius.x
             ybottom <- args$y - args$radius.y
             xright <- args$x + args$radius.x
@@ -137,6 +155,17 @@ crop_img <- function(img){
             poly <- list(x = c(xleft, xleft, xright, xright),
                          y = c(ybottom, ytop, ytop, ybottom))
             
+        # Polygon
+        }else{
+            poly <-
+                DescTools::DrawRegPolygon(x = args$x,
+                                          y = args$y,
+                                          radius.x = args$radius.x,
+                                          radius.y = args$radius.y,
+                                          rot = deg2rad(args$angle),
+                                          nv = 4,
+                                          col = "transparent",
+                                          plot = TRUE)
         }
         
         # User input
@@ -168,12 +197,25 @@ readlines <- function(...) {
     lapply(list(...), readline)
 }
 
-define_params <- function(){
-    # Ask user for parameters
-    new_args <- readlines("x coordinate of origin: ",
-                          "y coordinate of origin: ",
-                          "x-axis radius: ",
-                          "y-axis radius: ")
+# Function to convert degrees to radians
+deg2rad <- function(deg) deg * (pi /180)
+
+define_params <- function(shape){
+    
+    if(shape != 2){
+        # Ask user for parameters
+        new_args <- readlines("x coordinate of origin: ",
+                              "y coordinate of origin: ",
+                              "x-axis radius: ",
+                              "y-axis radius: ",
+                              "angle (in degrees): " )
+    }else{
+        # Ask user for parameters
+        new_args <- readlines("x coordinate of origin: ",
+                              "y coordinate of origin: ",
+                              "x-axis radius: ",
+                              "y-axis radius: ") 
+    }
     
     # Coerce to numeric
     new_args <- lapply(new_args, function(x){

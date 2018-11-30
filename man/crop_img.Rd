@@ -17,8 +17,8 @@ A cropped version of the input matrix.
 Crops temperature matrix to the desired area.
 }
 \details{
-Requires user input to iteratively refine the size and location of
-the cropping area.
+Requires user input to iteratively refine the size, location and
+angle (optional) of the cropping area.
 }
 \examples{
 # Crop thermal image of wasp nest to the nest only
