@@ -36,14 +36,8 @@
 #'                              
 #' # With raster stack ---------------------------------------------------------
 #' 
-#' # Coerce each matrix to a raster
-#' mat_stack <-
-#'     lapply(img_list,
-#'            function(x) raster::raster(x,
-#'                                       xmn=0, xmx=ncol(img_list[[1]]),
-#'                                       ymn=0, ymx=nrow(img_list[[1]])))
-#' # Stack
-#' mat_stack <- raster::stack(mat_stack)
+#' # Coerce matrix list to raster stack
+#' mat_stack <- stack_imgs(img_list)
 #' 
 #' # Average in raster stack
 #' avg_stack <- average_by_group(metadata = metadata,
