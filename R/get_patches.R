@@ -274,10 +274,20 @@ get_patches <- function(img,
     
     rm(raw, patchID)
     
+    # Function to determine what the first character of a string is
+    char_is_numeric <- function(str){
+        str <- as.character(str)
+        firstchar <- unlist(strsplit(str, ""))[1]
+        firstchar <- suppressWarnings(as.numeric(firstchar))
+        is_numeric <- ifelse(is.na(firstchar), FALSE, TRUE)
+        
+        return(is_numeric)
+    }
+    
     if(!(is.null(id))){
-        if(is.numeric(id)) id <- paste("X", id, sep = "")
+        if(char_is_numeric(id)) id <- as.character(paste("X", id, sep = ""))
         df$id <- id
-        names(patches) <- id
+        names(patches) <- as.character(id)
     }
     
     ### 3. Calculate patch stats
