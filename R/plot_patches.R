@@ -227,6 +227,9 @@ plot_patches <- function(df,
                 rgeos::createPolygonsComment(patches@polygons[[x]])
         }
         
+        lyr_id <- names(patches)
+        names(patches) <- "layer"
+        
         # Fortify patch polygons to dataframe
         patches <- fortify(patches, region = "layer")
     }
