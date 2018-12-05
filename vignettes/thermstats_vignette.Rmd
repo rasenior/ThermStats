@@ -65,7 +65,7 @@ Raw data are encoded in each thermal image as a 16 bit analog-to-digital signal,
 
 * Emissivity = the amount of radiation emitted by a particular object, for a given temperature.
 * Object distance = the distance between the camera and the object of interest.
-* Reflected apparent temperature = the temperature resulting from radiation that originates from the atmosphere and is reflected by the object.
+* Reflected apparent temperature = thermal radiation that originates from other objects and is reflected by the object of interest.
 * Atmospheric temperature = the temperature of the atmosphere.
 * Relative humidity = the relative humidity of the atmosphere.
 
@@ -81,22 +81,21 @@ metadata <- flir_metadata
 photo_index <- match(names(raw_dat), 
                      metadata$photo_no)
 
-# Batch convert
+# Batch convert ---------------------------------
 flir_converted <-
     batch_convert(
         raw_dat = raw_dat,
-        # Emissivity = mean of the range in Scheffers et al. 2017
+        # Emissivity = 
+        # mean of the range in Scheffers et al. 2017
         E = mean(c(0.982,0.99)),
-        # Object distance = hypotenuse of a right triangle where the vertical side is 1.3 m 
-        # (breast height) & the angle down is 45 degrees
+        # Object distance = 
+        # hypotenuse of a right triangle where the vertical side is 
+        # 1.3 m (breast height) & the angle down is 45 degrees
         OD = (sqrt(2))*1.3,
-        # Apparent reflected temperature, atmospheric temperature & infrared window temperature =
+        # Apparent reflected temperature & atmospheric temperature =
         # atmospheric temperature measured in the field
         RTemp = metadata$atm_temp[photo_index],
         ATemp = metadata$atm_temp[photo_index],
-        IRWTemp = metadata$atm_temp[photo_index],
-        # Infrared Window transmission = default value of 1
-        IRT = 1,
         # Relative humidity = relative humidity measured in the field
         RH = metadata$rel_humidity[photo_index],
         # Calibration constants from 'batch_extract'
@@ -111,27 +110,26 @@ flir_converted <-
 
 # Calculating thermal statistics
 
-Statistics can be calculated for individual temperature matrices, or across multiple matrices within a specified grouping. The latter is useful for sampling designs where multiple images are collected at each sampling event to capture temperature across a wider sampling unit, such as a plot. In either case, statistics include summary statistics specified by the user -- for example, mean, minimum and maximum -- as well as spatial statistics for hot and cold spots, identified using the Getis-Ord local statistic [@getis_local_1996].
+Statistics can be calculated for individual thermal images (in a matrix or raster format), or across multiple images within a specified grouping. The latter is useful for sampling designs where multiple images are collected at each sampling event to capture temperature across a wider sampling unit, such as a plot. In either case, statistics can include summary statistics specified by the user -- for example, mean, minimum and maximum -- as well as thermal connectivity [based on the climate connectivity measure of @mcguire_achieving_2016] and spatial statistics for hot and cold spots, identified using the G\* variant of the Getis-Ord local statistic [@getis_local_1996].
 
-For an individual matrix, `get_stats` requires the user to specify the matrix and the desired statistics. Statistics can be calculated for geographic temperature data (in a matrix or raster format), in which case the user should also define the extent and projection of the data.
+For an individual image, `get_stats` requires the user to specify the image and the desired statistics. Statistics can be calculated for geographic temperature data, in which case the user should also define the extent and projection of the data.
 
 ```{r get-stats, echo= TRUE, results = "hide"}
 flir_stats <-
-    get_stats(
-        # The temperature matrix 
-        val_mat = flir_converted$`8565`,
-        # The ID of the matrix
-        matrix_id = "8565",
+    get_stats( 
+        # The temperature dataset
+        img = flir_converted$`8565`,
+        # The ID of the dataset
+        id = "8565",
+        # Whether or not to calculate thermal connectivity
+        # (slow for large images)
+        calc_connectivity = FALSE,
         # Whether or not to identify hot and cold spots
-        get_patches = TRUE,
-        # The size of the neighourhood (for calculating local G stat)
-        k = 8,
-        # The neghbour weighting style (for calculating local G stat)
-        style = "W",
-        # The matrix projection (only relevant for geographic data)
-        mat_proj = NULL,
-        # The matrix extent (only relevant for geographic data)
-        mat_extent = NULL,
+        patches = TRUE,  
+        # The image projection (only relevant for geographic data)
+        img_proj = NULL,
+        # The image extent (only relevant for geographic data)
+        img_extent = NULL, 
         # The data to return
         return_vals = c(
             # Temperature data as dataframe
@@ -140,18 +138,17 @@ flir_stats <-
             "patches", 
             # Patch statistics dataframe
             "pstats"),
-        # The names of the statistics functions (to manually name columns in 'pstats')
-        pixel_fns = NULL,
         # The summary statistics of interest
-        median, perc_5, perc_95, SHDI
+        sum_stats = c("median", "SHDI",
+                      "perc_5", "perc_95")
     )
 ```
 
-For grouped matrices, `stats_by_group` requires the user to supply a list of matrices along with metadata and the name of the variable in the metadata that defines the matrix grouping. Table 1 shows the metadata used in the code snippet, where photo number ('photo_no') defines individual temperature matrices, and the replicate identity ('rep_id') defines the grouping of photos. There are two replicates, 'T7P1' and 'T7P2', and each has two associated photos.
+For grouped images, `stats_by_group` requires the user to supply a list of matrices or a raster stack, and (optionally) the metadata and the name of the variable in the metadata that defines the grouping. Table 1 shows the metadata used in the code snippet, where photo number ('photo_no') defines individual temperature matrices, and the replicate identity ('rep_id') defines the grouping of photos. There are two replicates, 'T7P1' and 'T7P2', and each has two associated photos.
 
 ```{r tab-B-1, results='asis'}
 tab1 <- "
-Table: Table 1: Example metadata denoting the grouping ('rep_id') of different temperature matrices. Statistics can be calculated over multiple matrices within a group, using the function `stats_by_group`.
+Table: Table 1: Example metadata denoting the grouping ('rep_id') of different thermal images. Statistics can be calculated over multiple images within a group, using the function `stats_by_group`.
 
 | photo_no|rep_id | atm_temp| rel_humidity|
 |--------:|:------|--------:|------------:|
@@ -168,34 +165,39 @@ cat(tab1) # output the table in a format good for HTML/PDF/docx conversion
 flir_stats_group <-
     stats_by_group(
         # A dataframe denoting the grouping
-        metadata = metadata,
-        # List of temperature matrices
-        mat_list = flir_converted,
-        # Variable denoting the matrix IDs
-        matrix_id = "photo_no",
+        metadata = metadata,  
+        # List of images
+        img_list = flir_converted,
+        # Variable denoting the ID of unique images
+        idvar = "photo_no",
         # Variable denoting the grouping
         grouping_var = "rep_id",
         # Desired precision of data
         round_val = 0.5,
-        # The size of the neighourhood (for calculating local G stat)
-        k = 8,
-        # The neghbour weighting style (for calculating local G stat)
-        style = "W",
+        # The data to return
+        return_vals = c(
+            # Temperature data as dataframe
+            "df", 
+            # SpatialPolygonsDataFrame of patch outlines
+            "patches", 
+            # Patch statistics dataframe
+            "pstats"),
         # The summary statistics of interest
-        median, perc_5, perc_95, SHDI
+        sum_stats = c("median", "SHDI",
+                      "perc_5", "perc_95")
     )
 ```
 
-By default, both `get_stats` and `stats_by_group` return a dataframe with patch statistics (Table 2) for each matrix or matrix group, respectively. 
+By default, both `get_stats` and `stats_by_group` return a dataframe with patch statistics (Table 2) for each image or group, respectively. 
 
 ```{r tab-B-2, results='asis'}
 tab2 <- "
 Table: Table 2: A snippet of hot spot patch statistics returned by `stats_by_group`, which implements `get_stats` within groups.
 
-| median| perc_5| perc_95|     SHDI| hot_shape_index| hot_aggregation|
-|------:|------:|-------:|--------:|---------------:|---------------:|
-|   23.5|     23|    24.5|     1.16|            7.54|           0.895|
-|   24.0|     23|    25.0|     1.68|            7.80|           0.855|
+| img_median| img_perc_5| img_perc_95|     img_SHDI| hot_shape_index| hot_aggregation|
+|----------:|----------:|-----------:|------------:|---------------:|---------------:|
+|       23.5|         23|        24.5|         1.16|            7.54|           0.895|
+|       24.0|         23|        25.0|         1.68|            7.80|           0.855|
 "
 
 cat(tab2) # output the table in a format good for HTML/PDF/docx conversion
@@ -210,9 +212,9 @@ cat(tab2) # output the table in a format good for HTML/PDF/docx conversion
 
 # Plotting
 
-In addition to patch statistics, `get_stats` can return (1) the temperature matrix in a dataframe format, and (2) a `SpatialPolygonsDataFrame` of its hot and cold spots. The function `plot_patches` can then recreate the original thermal image overlaid with outlines of hot and cold spots, as well as the temperature distribution (if `plot_distribution = TRUE`).
+In addition to patch statistics, `get_stats` can return (1) the temperature dataset in a dataframe format, and (2) a `SpatialPolygonsDataFrame` of its hot and cold spots. The function `plot_patches` can then recreate the original thermal image overlaid with outlines of hot and cold spots, as well as the temperature distribution if `plot_distribution = TRUE` (Figure 1).
 
-```{r fig-B-1, fig.cap= "The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the Getis-Ord local statistic.", echo = TRUE}
+```{r fig-B-1, fig.cap= "Figure 1: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic.", echo = TRUE}
 plot_patches(
     # The raw temperature data
     df = flir_stats$df,
