@@ -20,21 +20,17 @@ raw_dat <- flir_raw$raw_dat
 camera_params <- flir_raw$camera_params
 # Define metadata
 metadata <- flir_metadata
-
 # Create vector denoting the position of each photo within metadata
 photo_index <- match(names(raw_dat), 
                      metadata$photo_no)
-
-# Batch convert ---------------------------------
+# Batch convert
 flir_converted <-
     batch_convert(
         raw_dat = raw_dat,
-        # Emissivity = 
-        # mean of the range in Scheffers et al. 2017
+        # Emissivity = mean of range in Scheffers et al. 2017
         E = mean(c(0.982,0.99)),
-        # Object distance = 
-        # hypotenuse of a right triangle where the vertical side is 
-        # 1.3 m (breast height) & the angle down is 45 degrees
+        # Object distance = hypotenuse of right triangle where 
+        # vertical side is 1.3 m (breast height) & angle down is 45°
         OD = (sqrt(2))*1.3,
         # Apparent reflected temperature & atmospheric temperature =
         # atmospheric temperature measured in the field
@@ -59,7 +55,6 @@ flir_stats <-
         # The ID of the dataset
         id = "8565",
         # Whether or not to calculate thermal connectivity
-        # (slow for large images)
         calc_connectivity = FALSE,
         # Whether or not to identify hot and cold spots
         patches = TRUE,  
@@ -68,17 +63,12 @@ flir_stats <-
         # The image extent (only relevant for geographic data)
         img_extent = NULL, 
         # The data to return
-        return_vals = c(
-            # Temperature data as dataframe
-            "df", 
-            # SpatialPolygonsDataFrame of patch outlines
-            "patches", 
-            # Patch statistics dataframe
-            "pstats"),
+        return_vals = c("df", # Temperature data as dataframe
+                        "patches", # Patch outlines
+                        "pstats"), # Patch statistics dataframe
         # The summary statistics of interest
         sum_stats = c("median", "SHDI",
-                      "perc_5", "perc_95")
-    )
+                      "perc_5", "perc_95"))
 
 ## ----tab-B-1, results='asis'---------------------------------------------
 tab1 <- "
@@ -108,17 +98,12 @@ flir_stats_group <-
         # Desired precision of data
         round_val = 0.5,
         # The data to return
-        return_vals = c(
-            # Temperature data as dataframe
-            "df", 
-            # SpatialPolygonsDataFrame of patch outlines
-            "patches", 
-            # Patch statistics dataframe
-            "pstats"),
+        return_vals = c("df", # Temperature data as dataframe
+                        "patches", # Patch outlines
+                        "pstats"), # Patch statistics dataframe
         # The summary statistics of interest
         sum_stats = c("median", "SHDI",
-                      "perc_5", "perc_95")
-    )
+                      "perc_5", "perc_95"))
 
 ## ----tab-B-2, results='asis'---------------------------------------------
 tab2 <- "
@@ -137,6 +122,5 @@ plot_patches(
     # The raw temperature data
     df = flir_stats$df,
     # The patch outlines
-    patches = flir_stats$patches
-)
+    patches = flir_stats$patches)
 
