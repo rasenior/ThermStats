@@ -118,6 +118,10 @@ get_stats <- function(img,
         img <- raster::as.matrix(img)
     }
     
+    # Flip
+    img <-
+        Thermimage::mirror.matrix(Thermimage::rotate180.matrix(img))
+    
     # Record no cols & rows
     ncols <- ncol(img)
     nrows <- nrow(img)

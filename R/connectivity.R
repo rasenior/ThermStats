@@ -67,10 +67,6 @@ connectivity <-
             img <- raster::as.matrix(img)
         }
         
-        # Flip
-        img <-
-            Thermimage::mirror.matrix(Thermimage::rotate180.matrix(img))
-        
         # Identify neighbours -----------------------------------------------------
         message("\t...identifying pixel neighbours")
         
