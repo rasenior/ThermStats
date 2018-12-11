@@ -34,6 +34,10 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
                       fig.align = "centre", fig.width = 16.6/2.54)
 ```
 
+```{r fig-B-1, fig.cap= "Figure 1: Schematic summarising the key functions for processing groups of images (left) or a single image (right).", fig.pos = 'H', out.width = "400px"}
+knitr::include_graphics("schematic.png")
+```
+
 # Summary
 
 `ThermStats` is designed for biologists using thermography to quantify thermal heterogeneity. It uses the `Thermimage` package [@tattersall_thermimage:_2017] to batch process data from FLIR thermal cameras, and takes inspiration from FRAGSTATS [@fragstats_2012], `SDMTools` [@sdmtools_2014], @faye_toolbox_2016 and @shi_framework_2016 to facilitate the calculation of various metrics of thermal heterogeneity for any gridded temperature data.
@@ -197,9 +201,9 @@ cat(tab2) # output the table in a format good for HTML/PDF/docx conversion
 
 # Plotting
 
-In addition to patch statistics, `get_stats` can return (1) the temperature dataset in a dataframe format, and (2) a `SpatialPolygonsDataFrame` of its hot and cold spots. The function `plot_patches` can then recreate the original thermal image overlaid with outlines of hot and cold spots, as well as the temperature distribution if `plot_distribution = TRUE` (Figure 1).
+In addition to patch statistics, `get_stats` can return (1) the temperature dataset in a dataframe format, and (2) a `SpatialPolygonsDataFrame` of its hot and cold spots. The function `plot_patches` can then recreate the original thermal image overlaid with outlines of hot and cold spots, as well as the temperature distribution if `plot_distribution = TRUE` (Figure 2).
 
-```{r fig-B-1, fig.cap= "Figure 1: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic.", echo = TRUE}
+```{r fig-B-2, fig.cap= "Figure 2: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic.", echo = TRUE}
 plot_patches(
     # The raw temperature data
     df = flir_stats$df,

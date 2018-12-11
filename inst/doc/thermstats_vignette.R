@@ -2,6 +2,9 @@
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
                       fig.align = "centre", fig.width = 16.6/2.54)
 
+## ----fig-B-1, fig.cap= "Figure 1: Schematic summarising the key functions for processing groups of images (left) or a single image (right).", fig.pos = 'H', out.width = "400px"----
+knitr::include_graphics("schematic.png")
+
 ## ----install, echo = TRUE------------------------------------------------
 devtools::install_github("rasenior/ThermStats")
 library(ThermStats)
@@ -117,7 +120,7 @@ Table: Table 2: A snippet of hot spot patch statistics returned by `stats_by_gro
 
 cat(tab2) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----fig-B-1, fig.cap= "Figure 1: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic.", echo = TRUE----
+## ----fig-B-2, fig.cap= "Figure 2: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic.", echo = TRUE----
 plot_patches(
     # The raw temperature data
     df = flir_stats$df,
