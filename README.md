@@ -1,27 +1,27 @@
 # ThermStats
 
-Calculate statistics for thermal images in R.
+Quantify thermal heterogeneity using gridded temperature data in R. 
 
-Designed primarily for FLIR thermal images, but some functions can also be applied to any temperature raster coerced to a matrix. For FLIR images, the following steps should be followed:
+Variation in temperature at fine spatiotemporal scales strongly influence physiological, behavioural and demographic responses to environmental change. The package addresses current constraints on applying thermography in ecology, by speeding up and simplifying the extraction of data from (FLIR) thermal images, and by facilitating the calculation of different metrics of thermal heterogeneity for any gridded temperature data. 
 
-1. `batch_extract`is a batch implementation of the `readflirJPG` function in `Thermimage`. Requires only a directory of FLIR thermal images, and the external software ['Exiftool'](http://www.sno.phy.queensu.ca/~phil/exiftool/ "Exiftool"). Also retrieves camera-specific parameters for converting raw thermal data, using the function `flirsettings` in `Thermimage`.
-2. `batch_convert` is a batch implementation of the `raw2temp` function in `Thermimage`. It uses environmental parameters defined by the user, and Planck constants specific to the camera (extracted in `batch_extract`).
-3. `stats_by_group` calculates pixel and patch statistics across photos within a specified grouping. Ideal for sampling designs where multiple images are obtained per sampling event, and where the user wishes to summarise statistics across all photos within a single sampling event. The function will also work just as well with individual photos.
+Data extraction and processing of FLIR thermal images relies heavily on [`Thermimage`](https://CRAN.R-project.org/package=Thermimage "Thermimage package on CRAN").   
 
-The functions called by `stats_by_group` can also be called directly. This is useful if the data are not derived from a FLIR camera, or the user wishes to process single matrices (e.g. for plotting):
+Analytical functions and metrics take inspiration from: [FRAGSTATS](http://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf), [`SDMTools`](https://CRAN.R-project.org/package=SDMTools),[Faye et al. 2016](https://doi.org/10.1111/2041-210X.12488), [Shi et al. 2016](https://doi.org/10.1016/j.biocon.2016.11.006), [McGuire et al. 2016](https://doi.org/10.1073/pnas.1602817113) and [Senior et al. 2018](https://doi.org/10.1111/gcb.13914).
 
-1. `get_patches` identifies hot and cold spots in temperature matrices, using `localG` in the `spdep` package. Calculates patch statistics, such as the size, diversity and average value of hot and cold spots. Also calculates the number of observed shared edges versus maximum number of shared edges, across pixels within hot and cold spots. This can be used to calculate Aggregation Index (number of observed shared edges / maximum number of shared edges), or used within a Generalized Linear Modelling framework (number of observed shared edges versus number of non-shared edges, with binomial error distribution).
-2. `count_edges` is called by `get_patches` to count the number of shared edges for unique classes in a matrix. Can be used for any numeric matrix.
-3. `perc_5` is a helper function for `stats_by_group` to calculate 5th percentile. Can be used for any numeric vector.
-4. `perc_95` is a helper function for `stats_by_group` to calculate 95th percentile. Can be used for any numeric vector.
-5. `SHDI` is a helper function for `stats_by_group` to calculate Shannon Diversity Index. Can be used for any numeric vector.
-6. `SIDI` is a helper function for `stats_by_group` to calculate Simpson Diversity Index. Can be used for any numeric vector.
+See the package vignette for details and worked examples.
 
-Patches can also be plotted:
+## References
 
-1. Use `get_patches` with `return_vals = c("df","patches")` to return a dataframe of raw data and patch polygons for a single matrix.
-1. Use `plot_patches` to plot:
-    1. Temperature distribution  (if `plot_distribution = TRUE`).
-    2. Raw temperature raster overlaid with outlines of hot and cold spots. 
+Faye, E., Rebaudo, F., Yánez‐Cajo, D., Cauvy‐Fraunié, S., Dangles, O. and Tatem, A. (2016), A toolbox for studying thermal heterogeneity across spatial scales: from unmanned aerial vehicle imagery to landscape metrics. Methods Ecol Evol, 7: 437-446. https://doi.org/10.1111/2041-210X.12488
 
-Example data are included for demonstration (`flir11835`). The temperature matrix can be extracted directly using the functions `readflirJPG` and `raw2temp` from the package [`Thermimage`](https://CRAN.R-project.org/package=Thermimage "Thermimage package on CRAN"). An alternative is to use the freely available software ['FLIR Tools'](http://www.flir.com/instruments/display/?id=54865 "FLIR Tools software download"). 
+McGarigal, K., Cushman, S.A., Neel, M.C., and Ene, E. (2002). FRAGSTATS: Spatial Pattern Analysis Program for Categorical Maps. Computer software program produced by the authors at the University of Massachusetts, Amherst. www.umass.edu/landeco/research/fragstats/fragstats.html
+
+McGuire, J.L., Lawler, J.J., McRae, B.H., Nuñez, T.A., and Theobald, D.M. (2016). Achieving climate connectivity in a fragmented landscape. PNAS, 113: 7195-7200. https://doi.org/10.1073/pnas.1602817113
+
+Senior, R.A., Hill, J.K., Benedick, S. and Edwards, D.P. (2018). Tropical forests are thermally buffered despite intensive selective logging. Glob Change Biol. 24:1267–1278. https://doi.org/10.1111/gcb.13914
+
+Shi, H., Wen, Z., Paull, D., Guo, M. (2016). A framework for quantifying the thermal buffering effect of microhabitats. Biological Conservation, 204: 175-180. https://doi.org/10.1016/j.biocon.2016.11.006
+
+Tattersall, G.J. (2018). Thermimage: Thermal Image Analysis. doi: 10.5281/zenodo.1069704. R package version 3.1.2. https://CRAN.R-project.org/package=Thermimage
+
+VanDerWal, J., Falconi, L., Januchowski, S., Shoo, L., and Storlie, C. (2014). SDMTools: Species Distribution Modelling Tools: Tools for processing data associated with species distribution modelling exercises. R package version 1.1-221. https://CRAN.R-project.org/package=SDMTools
