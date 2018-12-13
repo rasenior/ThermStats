@@ -2,7 +2,7 @@
 
 Quantify thermal heterogeneity using gridded temperature data in R. 
 
-Variation in temperature at fine spatiotemporal scales strongly influence physiological, behavioural and demographic responses to environmental change. The package addresses current constraints on applying thermography in ecology, by speeding up and simplifying the extraction of data from (FLIR) thermal images, and by facilitating the calculation of different metrics of thermal heterogeneity for any gridded temperature data. 
+Variation in temperature at fine spatiotemporal scales strongly influences physiological, behavioural and demographic responses to environmental change. This `R` package addresses current constraints on applying thermography in ecology, by speeding up and simplifying the extraction of data from (FLIR) thermal images, and by facilitating the calculation of different metrics of thermal heterogeneity for any gridded temperature data. 
 
 Data extraction and processing of FLIR thermal images relies heavily on [`Thermimage`](https://CRAN.R-project.org/package=Thermimage "Thermimage package on CRAN").   
 
