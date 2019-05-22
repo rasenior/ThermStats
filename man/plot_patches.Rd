@@ -4,7 +4,7 @@
 \alias{plot_patches}
 \title{plot_patches}
 \usage{
-plot_patches(df, patches, bg_poly = NULL, bg_colour = NULL,
+plot_patches(df, patches, bg_poly = NULL, bg_colour = "grey",
   facet_cols = NULL, facet_rows = NULL, plot_distribution = TRUE,
   print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
   out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
@@ -12,6 +12,7 @@ plot_patches(df, patches, bg_poly = NULL, bg_colour = NULL,
   fig_units = "cm", val_pal = c("black", "#050155", "#120172",
   "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
   "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
+  hatching = TRUE, hatch_density = c(1, 2), hatch_angle = c(45, 135),
   fill_breaks = waiver(), patch_cols = c("mistyrose",
   "cornflowerblue"), patch_labs = c("Hot spots", "Cold spots"),
   val_lab = NULL)
@@ -63,6 +64,14 @@ derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
 "#7200a9", "#8f00a0","#ba187f", "#d9365b", "#ed5930","#f76323", "#fa8600",
 "#f6a704","#fad61e", "#fad61e")}.}
 
+\item{hatching}{Option to add hatching to patch polygons. Defaults to TRUE.}
+
+\item{hatch_density}{Option to specify density of hatching (hot spot value 
+followed by cold spot value). Defaults to: \code{c(1, 2)}.}
+
+\item{hatch_angle}{Option to specify angle of hatching (hot spot value 
+followed by cold spot value). Defaults to: \code{c(45, 135)}.}
+
 \item{fill_breaks}{Option to manually specify breaks in colourbar. Defaults
 to \code{waiver()}, where breaks are computed by the transformation object
 (see \code{ggplot2::}\code{scale_colour_gradient}).}
@@ -95,13 +104,46 @@ flir_results$pstats
 # Plot the patches
 sp::plot(flir_results$patches)
 
-# Plot using ThermStats::plot_patches
+# Plot using ThermStats::plot_patches with hatching
 plot_patches(df = flir_results$df,
              patches = flir_results$patches,
+             hatching = TRUE,
              print_plot = TRUE,
              save_plot = FALSE)
+             
+# Plot using ThermStats::plot_patches without hatching
+plot_patches(df = flir_results$df,
+             patches = flir_results$patches,
+             hatching = FALSE,
+             print_plot = TRUE,
+             save_plot = FALSE)
+             
+ # FLIR facets --------------------------------------------------------------
+ # Load raw data
+ raw_dat <- flir_raw$raw_dat
+ camera_params <- flir_raw$camera_params
+ metadata <- flir_metadata
 
-# Worldclim2 temperature raster ---------------------------------------
+ # Batch convert
+ img_list <- batch_convert(raw_dat, write_results = FALSE)
+ 
+ # Get patches
+ patch_stats <-
+     stats_by_group(img_list = img_list,
+                    metadata = metadata,
+                    idvar = "photo_no",
+                    style = "C",
+                    grouping_var = "rep_id",
+                    round_val = 0.5,
+                    sum_stats = c("mean", "max", "min"))
+ 
+ # Plot
+ plot_patches(df = patch_stats$df,
+              patches = patch_stats$patches,
+              print_plot = TRUE,
+              save_plot = FALSE)  
+
+# Worldclim2 temperature raster ---------------------------------------------
 # Dataset 'sulawesi_temp' represents mean January temperature for the
 # island of Sulawesi
 
@@ -130,6 +172,8 @@ sp::plot(worldclim_results$patches)
 plot_patches(df = worldclim_results$df,
              patches = worldclim_results$patches,
              bg_poly = sulawesi_bg,
+             bg_colour = "grey",
+             hatch_density = c(50, 80),
              print_plot = TRUE,
              save_plot = FALSE)
 
