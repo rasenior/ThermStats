@@ -32,6 +32,7 @@
 #' followed by cold spot value). Defaults to: \code{c(1, 2)}.
 #' @param hatch_angle Option to specify angle of hatching (hot spot value 
 #' followed by cold spot value). Defaults to: \code{c(45, 135)}.
+#' @param hatch_size Line thickness of hatching. Defaults to 0.5
 #' @param fill_breaks Option to manually specify breaks in colourbar. Defaults
 #' to \code{waiver()}, where breaks are computed by the transformation object
 #' (see \code{ggplot2::}\code{scale_colour_gradient}).
@@ -161,6 +162,7 @@ plot_patches <- function(df,
                          hatching = TRUE,
                          hatch_density = c(1, 2), 
                          hatch_angle = c(45, 135),
+                         hatch_size = 0.5,
                          fill_breaks = waiver(),
                          patch_cols = c("mistyrose", "cornflowerblue"),
                          patch_labs = c("Hot spots", "Cold spots"),
@@ -418,7 +420,8 @@ plot_patches <- function(df,
     if (hatching) {
         p2 <- p2 +
             geom_line(data = hatches,
-                      aes(y = lat,x = long, group = group, colour = id))
+                      aes(y = lat,x = long, group = group, colour = id),
+                      size = hatch_size)
     }
     
     # If facetting is required:

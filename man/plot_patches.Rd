@@ -13,9 +13,9 @@ plot_patches(df, patches, bg_poly = NULL, bg_colour = "grey",
   "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
   "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
   hatching = TRUE, hatch_density = c(1, 2), hatch_angle = c(45, 135),
-  fill_breaks = waiver(), patch_cols = c("mistyrose",
-  "cornflowerblue"), patch_labs = c("Hot spots", "Cold spots"),
-  val_lab = NULL)
+  hatch_size = 0.5, fill_breaks = waiver(),
+  patch_cols = c("mistyrose", "cornflowerblue"),
+  patch_labs = c("Hot spots", "Cold spots"), val_lab = NULL)
 }
 \arguments{
 \item{df}{A dataframe returned from \code{\link{get_patches}}.}
@@ -71,6 +71,8 @@ followed by cold spot value). Defaults to: \code{c(1, 2)}.}
 
 \item{hatch_angle}{Option to specify angle of hatching (hot spot value 
 followed by cold spot value). Defaults to: \code{c(45, 135)}.}
+
+\item{hatch_size}{Line thickness of hatching. Defaults to 0.5}
 
 \item{fill_breaks}{Option to manually specify breaks in colourbar. Defaults
 to \code{waiver()}, where breaks are computed by the transformation object
