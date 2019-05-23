@@ -12,8 +12,8 @@ plot_patches(df, patches, bg_poly = NULL, bg_colour = "grey",
   fig_units = "cm", val_pal = c("black", "#050155", "#120172",
   "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
   "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
-  hatching = TRUE, hatch_density = c(1, 2), hatch_angle = c(45, 135),
-  hatch_size = 0.5, fill_breaks = waiver(),
+  hatching = FALSE, hatch_density = c(1, 2), hatch_angle = c(45,
+  135), hatch_size = 0.5, fill_breaks = waiver(),
   patch_cols = c("mistyrose", "cornflowerblue"),
   patch_labs = c("Hot spots", "Cold spots"), val_lab = NULL)
 }
@@ -64,7 +64,7 @@ derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
 "#7200a9", "#8f00a0","#ba187f", "#d9365b", "#ed5930","#f76323", "#fa8600",
 "#f6a704","#fad61e", "#fad61e")}.}
 
-\item{hatching}{Option to add hatching to patch polygons. Defaults to TRUE.}
+\item{hatching}{Option to add hatching to patch polygons. Defaults to FALSE}
 
 \item{hatch_density}{Option to specify density of hatching (hot spot value 
 followed by cold spot value). Defaults to: \code{c(1, 2)}.}
