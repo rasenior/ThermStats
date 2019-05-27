@@ -6,6 +6,12 @@
 #' Defaults to true.
 #' @param out_dir Path to directory where output Rdata file will be stored.
 #' Defaults to working directory.
+#' @param file_name File name (without extension). Defaults to NULL, with the 
+#' name 'flir_raw_' plus the current date. File format is .Rds 
+#' @param inc Vector of photo numbers to include. Defaults to NULL, meaning 
+#' all files are included.
+#' @param exc Vector of photo numbers to exclude. Defaults to NULL, meaning 
+#' all files are included.
 #' @return A list containing:
 #'  \item{raw_dat}{A list with one element per input thermal image. Each element
 #'  is a numeric matrix of the raw infrared data.}

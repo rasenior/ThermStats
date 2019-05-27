@@ -15,6 +15,15 @@ Defaults to true.}
 
 \item{out_dir}{Path to directory where output Rdata file will be stored.
 Defaults to working directory.}
+
+\item{file_name}{File name (without extension). Defaults to NULL, with the 
+name 'flir_raw_' plus the current date. File format is .Rds}
+
+\item{inc}{Vector of photo numbers to include. Defaults to NULL, meaning 
+all files are included.}
+
+\item{exc}{Vector of photo numbers to exclude. Defaults to NULL, meaning 
+all files are included.}
 }
 \value{
 A list containing:
