@@ -5,7 +5,7 @@
 #' @param na.rm Logical. Should missing values be removed? Defaults to TRUE.
 #' @examples
 #' SIDI(c(1:100, NA))
-#' @export
+#' @keywords internal
 
 SIDI <- function(x, na.rm = TRUE) {
   # Convert to numeric vector if matrix

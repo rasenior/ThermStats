@@ -19,3 +19,4 @@ Helper function to calculate skewness, using
 skewness(1:100)
 skewness(matrix(1:100))
 }
+\keyword{internal}

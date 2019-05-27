@@ -31,7 +31,7 @@
 #' Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
 #' landscape. PNAS, 113: 7195-7200.
 #' \url{https://doi.org/10.1073/pnas.1602817113}
-#'
+#' @keywords internal
 #' @examples
 #' # Define matrix as FLIR thermal image
 #' img <- flir11835$flir_matrix
@@ -48,18 +48,12 @@
 #'        aes(x = x, y = y, fill = diff_potential))+
 #'     geom_raster() +
 #'     scale_fill_viridis_c()
-#'                
-#' @export
 
 connectivity <-
     function(img,
              conn_threshold = 1.5){
         
         message("Calculating thermal connectivity")
-        
-        # Get dimensions
-        nrows <- nrow(img)
-        ncols <- ncol(img)
         
         # Determine whether matrix or raster
         if(!(is.matrix(img))){

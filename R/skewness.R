@@ -7,7 +7,7 @@
 #' @examples
 #' skewness(1:100)
 #' skewness(matrix(1:100))
-#' @export
+#' @keywords internal
 
 skewness <- function(x, na.rm = TRUE) {
   # Convert to numeric vector if matrix

@@ -5,7 +5,7 @@
 #' @param na.rm Logical. Should missing values be removed? Defaults to TRUE.
 #' @examples
 #' perc_95(c(1:100, NA))
-#' @export
+#' @keywords internal
 
 perc_95 <- function(x, na.rm = TRUE) {
   return(quantile(x = x, probs = 0.95, names = FALSE, na.rm = na.rm))

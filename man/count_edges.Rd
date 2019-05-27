@@ -40,3 +40,4 @@ do.call("rbind", results)
 > [3,] 1028
 
 }
+\keyword{internal}

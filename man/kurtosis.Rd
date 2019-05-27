@@ -19,3 +19,4 @@ Helper function to calculate kurtosis, using
 kurtosis(1:100)
 kurtosis(matrix(1:100))
 }
+\keyword{internal}

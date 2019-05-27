@@ -5,12 +5,12 @@
 #' @param na.rm Logical. Should missing values be removed? Defaults to TRUE.
 #' @examples
 #' SHDI(c(1:100, NA))
-#' @export
+#' @keywords internal
 
 SHDI <- function(x, na.rm = TRUE) {
   # Convert to numeric vector if matrix
-  if(is.matrix(x)) x <- as.numeric(x)
-  if(na.rm) x <- na.omit(x)
+  if (is.matrix(x)) x <- as.numeric(x)
+  if (na.rm) x <- na.omit(x)
   
   # Count all occurrences of each unique temperature
   props <- table(x) / length(x)

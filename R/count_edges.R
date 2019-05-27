@@ -8,6 +8,7 @@
 #' @param diagonals Should diagonal neighbours be included? Defaults to FALSE.
 #' @return A numeric value for the number of edges shared by cells of the given
 #' class.
+#' @keywords internal
 #' @examples
 #' # Create matrix
 #' set.seed(317)

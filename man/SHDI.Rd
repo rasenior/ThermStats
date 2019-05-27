@@ -17,3 +17,4 @@ Helper function to calculate Shannon Diversity Index.
 \examples{
 SHDI(c(1:100, NA))
 }
+\keyword{internal}

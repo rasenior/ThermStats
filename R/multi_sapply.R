@@ -12,7 +12,7 @@
 #' multi_sapply(1:100, mean, max, min)
 #' multi_sapply(c(1:100, NA), mean, max, min)
 #' multi_sapply(1:100, Mean = mean, Max = max, Min = min)
-#' @export
+#' @keywords internal
 #'
 # Function to apply multiple functions to a vector
 multi_sapply <- function(...) {

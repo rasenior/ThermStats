@@ -7,7 +7,7 @@
 #' @examples
 #' kurtosis(1:100)
 #' kurtosis(matrix(1:100))
-#' @export
+#' @keywords internal
 
 kurtosis <- function(x, na.rm = TRUE) {
   # Convert to numeric vector if matrix

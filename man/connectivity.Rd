@@ -57,7 +57,6 @@ ggplot(img_conn,
        aes(x = x, y = y, fill = diff_potential))+
     geom_raster() +
     scale_fill_viridis_c()
-               
 }
 \references{
 McGuire, J. L., Lawler, J. J., McRae, B. H., Nunez, T. A. and
@@ -65,3 +64,4 @@ Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
 landscape. PNAS, 113: 7195-7200.
 \url{https://doi.org/10.1073/pnas.1602817113}
 }
+\keyword{internal}
