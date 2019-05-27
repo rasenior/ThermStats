@@ -5,7 +5,8 @@
 \title{batch_extract}
 \usage{
 batch_extract(in_dir, write_results = TRUE, out_dir = NULL,
-  file_name = NULL, inc = NULL, exc = NULL)
+  file_name = NULL, inc = NULL, exc = NULL,
+  exiftoolpath = "installed")
 }
 \arguments{
 \item{in_dir}{Path to directory where thermal images are stored.}
@@ -24,6 +25,12 @@ all files are included.}
 
 \item{exc}{Vector of photo numbers to exclude. Defaults to NULL, meaning 
 all files are included.}
+
+\item{exiftoolpath}{Passed directly to 
+\code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}: 
+"A character string that determines whether Exiftool has been 'installed' 
+(http://www.sno.phy.queensu.ca/~phil/exiftool/) or not. If Exiftool has been 
+installed in a specific location, use to direct to the folder location."}
 }
 \value{
 A list containing:
@@ -37,10 +44,23 @@ Batch extraction of raw data from FLIR thermal images.
 }
 \details{
 Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}.
+
+Note that Exiftool is essential for this function to work correctly. See the
+documentation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}:
+
+"Exiftool should install on most operating systems. Consult with 
+http://www.sno.phy.queensu.ca/~phil/exiftool/ for information on installing 
+Exiftool. If trouble installing, download Exiftool and set exiftoolpath to 
+the custom folder location. To test if the custom path to Exiftool will work 
+on your OS, try your own system or system2 call: 
+system2('/custompath/exiftool') to see if you get an error or not."
 }
 \examples{
 # Batch extract four FLIR thermal images included in this package.
 results <-
     batch_extract(system.file("extdata", package = "ThermStats"),
                   write_results = FALSE)
+}
+\references{
+Exiftool Command line tool: http://www.sno.phy.queensu.ca/~phil/exiftool/
 }
