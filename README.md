@@ -4,7 +4,8 @@ Quantify thermal heterogeneity using gridded temperature data in R.
 
 Variation in temperature at fine spatiotemporal scales strongly influences physiological, behavioural and demographic responses to environmental change. This `R` package addresses current constraints on applying thermography in ecology, by speeding up and simplifying the extraction of data from (FLIR) thermal images, and by facilitating the calculation of different metrics of thermal heterogeneity for any gridded temperature data. 
 
-Data extraction and processing of FLIR thermal images relies heavily on [`Thermimage`](https://CRAN.R-project.org/package=Thermimage "Thermimage package on CRAN").   
+Data extraction and processing of FLIR thermal images relies heavily on [`Thermimage`](https://CRAN.R-project.org/package=Thermimage "Thermimage package on CRAN"). The `ThermStats` function `batch_extract` uses two functions in particular (`Thermimage::readflirJPG` and `Thermimage::flirsettings`) that also require the external software ExifTool. Installation instructions for ExifTool can be found here: http://www.sno.phy.queensu.ca/~phil/exiftool/install.html
+   
 
 Analytical functions and metrics take inspiration from: [FRAGSTATS](http://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf), [`SDMTools`](https://CRAN.R-project.org/package=SDMTools),[Faye et al. 2016](https://doi.org/10.1111/2041-210X.12488), [Shi et al. 2016](https://doi.org/10.1016/j.biocon.2016.11.006), [McGuire et al. 2016](https://doi.org/10.1073/pnas.1602817113) and [Senior et al. 2018](https://doi.org/10.1111/gcb.13914).
 
