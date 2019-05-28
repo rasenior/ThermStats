@@ -28,8 +28,8 @@ all files are included.}
 
 \item{exiftoolpath}{Passed directly to 
 \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}: 
-"A character string that determines whether Exiftool has been 'installed' 
-(http://www.sno.phy.queensu.ca/~phil/exiftool/) or not. If Exiftool has been 
+"A character string that determines whether ExifTool has been 'installed' 
+(http://www.sno.phy.queensu.ca/~phil/exiftool/) or not. If ExifTool has been 
 installed in a specific location, use to direct to the folder location."}
 }
 \value{
@@ -45,7 +45,7 @@ Batch extraction of raw data from FLIR thermal images.
 \details{
 Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}.
 
-Note that Exiftool is essential for this function to work correctly. See the
+Note that ExifTool is essential for this function to work correctly. See the
 documentation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}:
 
 "Exiftool should install on most operating systems. Consult with 
@@ -62,5 +62,5 @@ results <-
                   write_results = FALSE)
 }
 \references{
-Exiftool Command line tool: http://www.sno.phy.queensu.ca/~phil/exiftool/
+ExifTool Command line tool: http://www.sno.phy.queensu.ca/~phil/exiftool/
 }

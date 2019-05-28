@@ -14,8 +14,8 @@
 #' all files are included.
 #' @param exiftoolpath Passed directly to 
 #' \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}: 
-#' "A character string that determines whether Exiftool has been 'installed' 
-#' (http://www.sno.phy.queensu.ca/~phil/exiftool/) or not. If Exiftool has been 
+#' "A character string that determines whether ExifTool has been 'installed' 
+#' (http://www.sno.phy.queensu.ca/~phil/exiftool/) or not. If ExifTool has been 
 #' installed in a specific location, use to direct to the folder location."
 #' @return A list containing:
 #'  \item{raw_dat}{A list with one element per input thermal image. Each element
@@ -24,7 +24,7 @@
 #'  camera.}
 #' @details Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}.
 #' 
-#' Note that Exiftool is essential for this function to work correctly. See the
+#' Note that ExifTool is essential for this function to work correctly. See the
 #' documentation of \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}:
 #' 
 #' "Exiftool should install on most operating systems. Consult with 
@@ -34,7 +34,7 @@
 #' on your OS, try your own system or system2 call: 
 #' system2('/custompath/exiftool') to see if you get an error or not."
 #' @references
-#' Exiftool Command line tool: http://www.sno.phy.queensu.ca/~phil/exiftool/
+#' ExifTool Command line tool: http://www.sno.phy.queensu.ca/~phil/exiftool/
 #' @examples
 #' # Batch extract four FLIR thermal images included in this package.
 #' results <-
