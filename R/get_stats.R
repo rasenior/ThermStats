@@ -133,7 +133,7 @@ get_stats <- function(img,
         
         # Apply pixel-level summary stats
         pixel_stats <-
-            lapply(sum_stats, function(x) get(x)(na.omit(as.vector(img))))
+            lapply(sum_stats, function(x) get(x)(stats::na.omit(as.vector(img))))
         
         # Coerce to df
         pixel_stats <- as.data.frame(t(do.call("rbind", pixel_stats)))
@@ -147,9 +147,9 @@ get_stats <- function(img,
     
     # Connectivity ---------------------------------------------------------------
     # -> calculated across pixels
-    if(calc_connectivity){
+    if (calc_connectivity) {
         pixel_conn <- connectivity(img,
-                                   conn_thresh = conn_threshold)
+                                   conn_threshold = conn_threshold)
         # Order by row & col
         pixel_conn <-
             pixel_conn[order(pixel_conn["y"],

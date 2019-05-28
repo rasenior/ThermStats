@@ -10,8 +10,13 @@
 #' @keywords internal
 
 kurtosis <- function(x, na.rm = TRUE) {
-  # Convert to numeric vector if matrix
-  if(is.matrix(x)) x <- as.numeric(x)
-  if(na.rm) x <- na.omit(x)
-  return(moments::kurtosis(x))
+    # Convert to numeric vector if matrix
+    if (is.matrix(x)) x <- as.numeric(x)
+    if (na.rm) x <- na.omit(x)
+    
+    if (requireNamespace("moments", quietly = TRUE)) {
+        return(moments::kurtosis(x))
+    }else {
+        stop("Requires package 'moments'")
+    }
 }

@@ -235,7 +235,7 @@ get_patches <- function(img,
     
     if(n_features > 10^5){
         lims <- seq(0, n_features, 10^5)
-        lims[lims == tail(lims, n = 1)] <- n_features
+        lims[lims == utils::tail(lims, n = 1)] <- n_features
         
         # Overlay by subset
         patchID <-
@@ -299,7 +299,7 @@ get_patches <- function(img,
         patch_val <-
             dplyr::summarise(dplyr::group_by(df[df$G_bin != 0, ],
                                              patchID, G_bin),
-                             val = median(val, na.rm = TRUE))
+                             val = stats::median(val, na.rm = TRUE))
         patch_val <- as.data.frame(patch_val)
     }else{
         patchIDs <- unique(df[df[,"G_bin"] != 0, "patchID"])
@@ -307,7 +307,7 @@ get_patches <- function(img,
             lapply(patchIDs, function(x){
                 patchID <- x
                 G_bin <- df[df[,"patchID"] == x,"G_bin"][1]
-                val <- median(df[df[,"patchID"] == x,"val"], na.rm = TRUE)
+                val <- stats::median(df[df[,"patchID"] == x,"val"], na.rm = TRUE)
                 return(data.frame(patchID = patchID,
                                   G_bin = G_bin,
                                   val = val))

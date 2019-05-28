@@ -74,10 +74,10 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
         }
         
         # Plot
-        if(requireNamespace("viridisLite", quietly = TRUE)){
+        if (requireNamespace("viridisLite", quietly = TRUE)) {
             raster::plot(img, col = viridisLite::magma(255))
         }else{
-            raster::plot(img, col = heat.colors(255))
+            raster::plot(img, col = grDevices::heat.colors(255))
         }
         
         # Ask user for cropping shape
@@ -155,15 +155,15 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
             args <- replace(args, new_ind,new_args[new_ind])
             
             # Create the ellipse again
-            plot.new()
+            graphics::plot.new()
             if(requireNamespace("viridisLite", quietly = TRUE)){
                 raster::plot(img, col = viridisLite::magma(255))
             }else{
-                raster::plot(img, col = heat.colors(255))
+                raster::plot(img, col = grDevices::heat.colors(255))
             }
             
             # Elliptical polygon
-            if(shape == 1){
+            if (shape == 1) {
                 poly <-
                     DescTools::DrawRegPolygon(x = args$x,
                                               y = args$y,
@@ -174,16 +174,16 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
                                               col = "transparent",
                                               plot = TRUE)
                 # Rectangle
-            }else if(shape == 2){
+            }else if (shape == 2) {
                 xleft <- args$x - args$radius.x
                 ybottom <- args$y - args$radius.y
                 xright <- args$x + args$radius.x
                 ytop <- args$y + args$radius.y
                 
-                rect(xleft = xleft,
-                     ybottom = ybottom,
-                     xright = xright,
-                     ytop = ytop)
+                graphics::rect(xleft = xleft,
+                               ybottom = ybottom,
+                               xright = xright,
+                               ytop = ytop)
                 
                 poly <- list(x = c(xleft, xleft, xright, xright),
                              y = c(ybottom, ytop, ytop, ybottom))
@@ -202,8 +202,8 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
             }
             
             # User input
-            check <- menu(choices = c("yes", "no"),
-                          title = "Happy with this cropping area?")
+            check <- utils::menu(choices = c("yes", "no"),
+                                 title = "Happy with this cropping area?")
             
         }
     }
@@ -216,7 +216,7 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
     img <- raster::crop(img, raster::extent(sps))
     img <- raster::mask(img, sps)
     
-    if(rtn_format == "matrix"){
+    if (rtn_format == "matrix") {
         # Coerce to matrix
         img <- raster::as.matrix(img)
         # Flip
@@ -234,11 +234,11 @@ readlines <- function(...) {
 }
 
 # Function to convert degrees to radians
-deg2rad <- function(deg) deg * (pi /180)
+deg2rad <- function(deg) deg * (pi / 180)
 
 define_params <- function(shape){
     
-    if(shape != 2){
+    if (shape != 2) {
         # Ask user for parameters
         new_args <- readlines("x coordinate of origin: ",
                               "y coordinate of origin: ",
@@ -259,7 +259,7 @@ define_params <- function(shape){
             {
                 as.numeric(x)
             },
-            warning=function(w) {
+            warning = function(w) {
                 message("Non-numeric value specified: ", x, "\n")
             })
     })

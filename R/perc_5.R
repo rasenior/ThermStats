@@ -8,6 +8,6 @@
 #' @keywords internal
 
 perc_5 <- function(x, na.rm = TRUE) {
-  return(quantile(x = x, probs = 0.05, names = FALSE, na.rm = na.rm))
+  return(stats::quantile(x = x, probs = 0.05, names = FALSE, na.rm = na.rm))
   }
 

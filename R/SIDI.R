@@ -10,7 +10,7 @@
 SIDI <- function(x, na.rm = TRUE) {
   # Convert to numeric vector if matrix
   if(is.matrix(x)) x <- as.numeric(x)
-  if(na.rm){x <- na.omit(x)}
+  if(na.rm){x <- stats::na.omit(x)}
 
   # Count all occurrences of each unique temperature
   props <- table(x) / length(x)

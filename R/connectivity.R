@@ -105,12 +105,12 @@ connectivity <-
         nbr <- cbind(nbr, val_df)
         
         # Wide to long format (one row for each neighbour)
-        nbr <- reshape(nbr,
-                       varying = 1:4,
-                       timevar = "direction",
-                       idvar = "pixel",
-                       direction = "long",
-                       sep = "_")
+        nbr <- stats::reshape(nbr,
+                              varying = 1:4,
+                              timevar = "direction",
+                              idvar = "pixel",
+                              direction = "long",
+                              sep = "_")
         
         # Remove NAs & direction col
         nbr <- nbr[!(is.na(nbr$nbrs)), c("y","x","pixel", "nbrs", "val")]
@@ -169,7 +169,7 @@ connectivity <-
         # Join on origin pixel
         connectsto <-
             dplyr::left_join(val_df, nbr[,c("origin_pixel", "dest_pixel")], 
-                  by = c("pixel" = "origin_pixel"))[,c("pixel", "dest_pixel")]
+                             by = c("pixel" = "origin_pixel"))[,c("pixel", "dest_pixel")]
         # Summarise by origin pixel
         connectsto <- 
             dplyr::summarise(

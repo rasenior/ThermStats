@@ -319,7 +319,7 @@ create_subset <- function(metadata,
         sub_list <- img_list[[inds]]
         # Unstack
         if(class(sub_list) == "RasterStack"){
-            raster_list <- unstack(sub_list)
+            raster_list <- raster::unstack(sub_list)
         }else raster_list <- list(sub_list)
         
     }else{

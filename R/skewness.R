@@ -11,7 +11,12 @@
 
 skewness <- function(x, na.rm = TRUE) {
   # Convert to numeric vector if matrix
-  if(is.matrix(x)) x <- as.numeric(x)
-  if(na.rm) x <- na.omit(x)
-  return(moments::skewness(x))
+  if (is.matrix(x)) x <- as.numeric(x)
+  if (na.rm) x <- na.omit(x)
+  
+  if (requireNamespace("moments", quietly = TRUE)) {
+      return(moments::skewness(x))
+  }else {
+      stop("Requires package 'moments'")
+  }
 }
