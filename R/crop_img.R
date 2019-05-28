@@ -16,7 +16,8 @@
 #' # N.B. For this example, a good approximation is an ellipse with
 #' # origin coordinates at x = 350, y = 290, x-axis radius of 145
 #' # and y-axis radius of 190.
-#'
+#' 
+#' \dontrun{
 #' cropped <- crop_img(img = waspnest_mat)
 #'
 #' # Get patches
@@ -26,10 +27,10 @@
 #' plot_patches(df = crop_patches$df,
 #'              patches = crop_patches$patches,
 #'              plot_distribution = FALSE)
+#' }
 #'
-#' @export
 #' @importClassesFrom sp SpatialPolygonsDataFrame
-#'
+#' @export
 
 crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
     
@@ -81,8 +82,8 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
         }
         
         # Ask user for cropping shape
-        shape <- menu(choices = c("ellipse", "rectangle", "polygon"),
-                      title = "Crop with an ellipse, rectangle or polygon?")
+        shape <- utils::menu(choices = c("ellipse", "rectangle", "polygon"),
+                             title = "Crop with an ellipse, rectangle or polygon?")
         
         # Ask user for parameters
         args <- define_params(shape)
@@ -113,7 +114,7 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
             xright <- args$x + args$radius.x
             ytop <- args$y + args$radius.y
             
-            rect(xleft = xleft,
+            graphics::rect(xleft = xleft,
                  ybottom = ybottom,
                  xright = xright,
                  ytop = ytop)
@@ -135,8 +136,8 @@ crop_img <- function(img, crop_poly = NULL, rtn_format = "matrix"){
         }
         
         # User input
-        check <- menu(choices = c("yes", "no"),
-                      title = "Happy with this cropping area?")
+        check <- utils::menu(choices = c("yes", "no"),
+                             title = "Happy with this cropping area?")
         
         while(check == 2){
             

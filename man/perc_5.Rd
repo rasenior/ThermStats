@@ -14,7 +14,4 @@ perc_5(x, na.rm = TRUE)
 \description{
 Helper function to calculate 5th percentile.
 }
-\examples{
-perc_5(c(1:100, NA))
-}
 \keyword{internal}

@@ -15,8 +15,4 @@ kurtosis(x, na.rm = TRUE)
 Helper function to calculate kurtosis, using
 \code{moments::}\code{\link[moments]{kurtosis}}.
 }
-\examples{
-kurtosis(1:100)
-kurtosis(matrix(1:100))
-}
 \keyword{internal}

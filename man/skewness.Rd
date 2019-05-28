@@ -15,8 +15,4 @@ skewness(x, na.rm = TRUE)
 Helper function to calculate skewness, using
 \code{moments::}\code{\link[moments]{skewness}}.
 }
-\examples{
-skewness(1:100)
-skewness(matrix(1:100))
-}
 \keyword{internal}

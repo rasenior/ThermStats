@@ -1,7 +1,7 @@
 Package: ThermStats
 Type: Package
 Title: Calculate statistics for thermal images
-Version: 0.7.0
+Version: 0.7.2
 Date: 2019-05-22
 Authors@R: person("Rebecca A.", "Senior", 
   email = "rebecca.a.senior@gmail.com",
@@ -13,7 +13,7 @@ Description: Takes a temperature matrix or raster, such as that returned using
     purposes in biological applications of gridded temperature data.
 Depends: R (>= 3.3.3)
 SystemRequirements: ExifTool
-License: GPL (>= 2)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
@@ -34,12 +34,15 @@ Imports:
     grDevices,
     graphics,
     utils,
-    devtools
+    devtools,
+    maptools,
+    rlang
 Suggests: 
     gridExtra,
     pbapply,
     knitr,
     rmarkdown,
     viridisLite,
-    moments
+    moments,
+    rasterVis
 VignetteBuilder: knitr

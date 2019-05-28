@@ -44,8 +44,11 @@ knitr::include_graphics("schematic.png")
 
 The package is available to download from GitHub using `devtools`:
 
-```{r install, echo = TRUE}
+```{r install, echo = TRUE, eval = FALSE}
 devtools::install_github("rasenior/ThermStats")
+```
+
+```{r load, echo = TRUE}
 library(ThermStats)
 ```
 
@@ -53,7 +56,7 @@ Once loaded, the code below can be followed step-by-step.
 
 # Extracting raw data
 
-Data are extracted from FLIR images using `batch_extract`. This is a batch implementation of the `readflirJPG` function from `Thermimage`. It requires only the path to the directory of FLIR thermal images, and the freely available external software ['Exiftool'](https://www.sno.phy.queensu.ca/~phil/exiftool/ "Exiftool"). Besides raw data, this step also retrieves camera-specific calibration parameters which are required later to convert raw data to temperature values.
+Data are extracted from FLIR images using `batch_extract`. This is a batch implementation of the `readflirJPG` function from `Thermimage`. It requires only the path to the directory of FLIR thermal images, and the freely available external software ['ExifTool'](https://www.sno.phy.queensu.ca/~phil/exiftool/ "ExifTool"). Besides raw data, this step also retrieves camera-specific calibration parameters which are required later to convert raw data to temperature values.
 
 ```{r batch-extract, echo= TRUE, results = "hide"}
 # Batch extract thermal images included in ThermStats installation

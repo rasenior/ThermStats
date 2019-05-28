@@ -29,6 +29,7 @@
 #'  \item{pstats}{A dataframe with patch statistics for hot patches and cold
 #'  patches, respectively. See \code{\link{patch_stats}} for details of all the
 #'  statistics returned.}
+#' @importFrom rlang .data
 #' @examples
 #'
 #' # FLIR temperature matrix ----------------------------------------
@@ -298,8 +299,8 @@ get_patches <- function(img,
     if (requireNamespace("dplyr", quietly = TRUE)) {
         patch_val <-
             dplyr::summarise(dplyr::group_by(df[df$G_bin != 0, ],
-                                             patchID, G_bin),
-                             val = stats::median(val, na.rm = TRUE))
+                                             patchID, .data$G_bin),
+                             val = stats::median(.data$val, na.rm = TRUE))
         patch_val <- as.data.frame(patch_val)
     }else{
         patchIDs <- unique(df[df[,"G_bin"] != 0, "patchID"])

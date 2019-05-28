@@ -37,6 +37,7 @@
 #' numeric matrix of the
 #' converted temperature data, in °C.
 #' @details Batch implementation of \code{Thermimage::}\code{\link[Thermimage]{raw2temp}}.
+#' @encoding UTF-8
 #' @examples
 #'
 #' # Setup ----------------------------------------------------------
@@ -44,7 +45,7 @@
 #' # Load raw data
 #' raw_dat <- flir_raw$raw_dat
 #' camera_params <- flir_raw$camera_params
-#' metadata <- flir_raw$metadata
+#' metadata <- flir_metadata
 #'
 #' # Create vector denoting the position of each element of raw_dat 
 #' # (each photo) within the metadata dataframe

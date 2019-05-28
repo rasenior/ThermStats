@@ -33,6 +33,7 @@ the cropping area.
 # origin coordinates at x = 350, y = 290, x-axis radius of 145
 # and y-axis radius of 190.
 
+\dontrun{
 cropped <- crop_img(img = waspnest_mat)
 
 # Get patches
@@ -42,5 +43,6 @@ crop_patches <- get_patches(cropped)
 plot_patches(df = crop_patches$df,
              patches = crop_patches$patches,
              plot_distribution = FALSE)
+}
 
 }

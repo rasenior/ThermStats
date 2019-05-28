@@ -12,7 +12,7 @@
 #' Worldclim 2: New 1-km spatial resolution climate surfaces for global land
 #' areas. International Journal of Climatology. Available at:
 #' \url{http://worldclim.org/version2}.
+#' @encoding UTF-8
 #' @examples
 #' raster::plot(sulawesi_temp)
-#' hist(sulawesi_temp)
 "sulawesi_temp"

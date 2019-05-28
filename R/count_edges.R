@@ -9,23 +9,6 @@
 #' @return A numeric value for the number of edges shared by cells of the given
 #' class.
 #' @keywords internal
-#' @examples
-#' # Create matrix
-#' set.seed(317)
-#' cols <- 100
-#' rows <- 50
-#' mat <- matrix(sample(1:3, cols * rows, replace = TRUE),
-#'               nrow = rows, ncol = cols)
-#'
-#' # Count edges in each of the three classes (1, 2 or 3)
-#' results <- lapply(1:3, count_edges, mat = mat)
-#' do.call("rbind", results)
-#' [,1]
-#' [1,] 1051
-#' [2,] 1179
-#' [3,] 1028
-#' 
-#' @export
 
 count_edges <- function(mat, class,
                         bidirectional = FALSE, diagonals = FALSE){

@@ -19,11 +19,6 @@ Apply multiple functions to a numeric vector.
 \details{
 NA values are always removed.
 }
-\examples{
-multi_sapply(1:100, mean, max, min)
-multi_sapply(c(1:100, NA), mean, max, min)
-multi_sapply(1:100, Mean = mean, Max = max, Min = min)
-}
 \references{
 Code snippet by \href{http://bogumilkaminski.pl/about/}{Bogumił Kamiński},
 adapted from:

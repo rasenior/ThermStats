@@ -14,7 +14,4 @@ SIDI(x, na.rm = TRUE)
 \description{
 Helper function to calculate Simpson Diversity Index.
 }
-\examples{
-SIDI(c(1:100, NA))
-}
 \keyword{internal}

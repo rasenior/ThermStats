@@ -82,8 +82,8 @@
 #' # island of Sulawesi
 #'
 #' # Define projection and extent
-#' img_proj <- projection(sulawesi_temp)
-#' img_extent <- extent(sulawesi_temp)
+#' img_proj <- raster::projection(sulawesi_temp)
+#' img_extent <- raster::extent(sulawesi_temp)
 #'
 #' # Find hot and cold patches
 #' worldclim_results <-
@@ -159,11 +159,11 @@ get_stats <- function(img,
         conn_summ <-
             data.frame(temp_diff_min = min(pixel_conn$diff_potential, na.rm = TRUE),
                        temp_diff_mean = mean(pixel_conn$diff_potential, na.rm = TRUE),
-                       temp_diff_median = median(pixel_conn$diff_potential, na.rm = TRUE),
+                       temp_diff_median = stats::median(pixel_conn$diff_potential, na.rm = TRUE),
                        temp_diff_max = max(pixel_conn$diff_potential, na.rm = TRUE),
                        cc_min = min(pixel_conn$therm_conn, na.rm = TRUE),
                        cc_mean = mean(pixel_conn$therm_conn, na.rm = TRUE),
-                       cc_median = median(pixel_conn$therm_conn, na.rm = TRUE),
+                       cc_median = stats::median(pixel_conn$therm_conn, na.rm = TRUE),
                        cc_max = max(pixel_conn$therm_conn, na.rm = TRUE))
     }
     

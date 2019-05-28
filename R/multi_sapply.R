@@ -8,10 +8,6 @@
 #' @references Code snippet by \href{http://bogumilkaminski.pl/about/}{Bogumił Kamiński},
 #' adapted from:
 #' \url{http://rsnippets.blogspot.co.uk/2011/11/applying-multiple-functions-to-data.html}
-#' @examples
-#' multi_sapply(1:100, mean, max, min)
-#' multi_sapply(c(1:100, NA), mean, max, min)
-#' multi_sapply(1:100, Mean = mean, Max = max, Min = min)
 #' @keywords internal
 #'
 # Function to apply multiple functions to a vector

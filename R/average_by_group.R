@@ -52,9 +52,11 @@
 #' # Photos 8589 and 8613 were averaged to make T7P2
 #' 
 #' allstack <- raster::stack(mat_stack, avg_stack)
-#' rasterVis::levelplot(allstack,
-#'                     layout=c(2, 3),
-#'                     index.cond=list(c(1, 3, 2, 4, 5, 6)))
+#' if (requireNamespace("rasterVis", quietly = TRUE)){
+#'     rasterVis::levelplot(allstack,
+#'                         layout=c(2, 3),
+#'                         index.cond=list(c(1, 3, 2, 4, 5, 6)))
+#' }
 #'                     
 #' @export
 #'

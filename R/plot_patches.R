@@ -42,6 +42,7 @@
 #' spots' and 'Cold spots'.
 #' @param val_lab Label to describe the variable of interest - corresponds to
 #' the x axis of the histogram, and the fill legend of the raster plot.
+#' @importFrom rlang .data
 #' @examples
 #' # FLIR temperature matrix ---------------------------------------------------
 #' # Find hot and cold patches
@@ -210,10 +211,11 @@ plot_patches <- function(df,
         p1 <-
             ggplot() +
             geom_histogram(data = df,
-                           aes(x = val, y = ..density..),
+                           aes(x = .data$val, y = .data$..density..),
                            colour = "black", fill = "white") +
             geom_density(data = df,
-                         aes(x = val), alpha = 0.2, fill = "grey") +
+                         aes(x = .data$val), 
+                         alpha = 0.2, fill = "grey") +
             xlab(val_lab) +
             ylab("Density") +
             theme_bw() +
@@ -372,9 +374,14 @@ plot_patches <- function(df,
     # Create the plot
     p2 <- ggplot() +
         geom_raster(data = df,
-                    aes(x = x, y = y, fill = val)) +
+                    aes(x = .data$x, 
+                        y = .data$y, 
+                        fill = .data$val)) +
         geom_polygon(data = patches,
-                     aes(y = lat,x = long, group = group, colour = id),
+                     aes(y = .data$lat, 
+                         x = .data$long, 
+                         group = .data$group, 
+                         colour = .data$id),
                      alpha = 0, size = outline_size) +
         theme_bw() +
         theme(axis.title = element_blank(),
@@ -409,9 +416,9 @@ plot_patches <- function(df,
     if(!(is.null(bg_poly))){
         p2 <- p2 +
             geom_polygon(data = bg_poly,
-                         aes(x = long,
-                             y = lat,
-                             group = group),
+                         aes(x = .data$long,
+                             y = .data$lat,
+                             group = .data$group),
                          colour = bg_colour,
                          alpha = 0)
     }
@@ -420,7 +427,10 @@ plot_patches <- function(df,
     if (hatching) {
         p2 <- p2 +
             geom_line(data = hatches,
-                      aes(y = lat,x = long, group = group, colour = id),
+                      aes(y = .data$lat,
+                          x = .data$long, 
+                          group = .data$group, 
+                          colour = .data$id),
                       size = hatch_size)
     }
     

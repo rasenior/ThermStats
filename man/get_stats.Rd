@@ -106,8 +106,8 @@ get_stats(img = val_raster,
 # island of Sulawesi
 
 # Define projection and extent
-img_proj <- projection(sulawesi_temp)
-img_extent <- extent(sulawesi_temp)
+img_proj <- raster::projection(sulawesi_temp)
+img_extent <- raster::extent(sulawesi_temp)
 
 # Find hot and cold patches
 worldclim_results <-
