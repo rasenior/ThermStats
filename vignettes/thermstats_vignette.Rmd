@@ -31,6 +31,7 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      cache = TRUE,
                       fig.align = "centre", fig.width = 16.6/2.54)
 ```
 
@@ -39,6 +40,8 @@ knitr::include_graphics("schematic.png")
 ```
 
 # Summary
+
+TESTING
 
 `ThermStats` is designed for biologists using thermography to quantify thermal heterogeneity. It uses the `Thermimage` package [@tattersall_thermimage:_2017] to batch process data from FLIR thermal cameras, and takes inspiration from FRAGSTATS [@fragstats_2012], `SDMTools` [@sdmtools_2014], @faye_toolbox_2016 and @shi_framework_2016 to facilitate the calculation of various metrics of thermal heterogeneity for any gridded temperature data.
 
