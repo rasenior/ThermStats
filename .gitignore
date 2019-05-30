@@ -3,3 +3,4 @@
 .RData
 /vignettes/overview_cache
 /vignettes/overview_files
+/vignettes/.gitignore
