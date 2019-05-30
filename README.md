@@ -9,7 +9,7 @@ Data extraction and processing of FLIR thermal images relies heavily on [`Thermi
 
 Analytical functions and metrics take inspiration from: [FRAGSTATS](http://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf), [`SDMTools`](https://CRAN.R-project.org/package=SDMTools), [Faye et al. 2016](https://doi.org/10.1111/2041-210X.12488), [Shi et al. 2016](https://doi.org/10.1016/j.biocon.2016.11.006), [McGuire et al. 2016](https://doi.org/10.1073/pnas.1602817113) and [Senior et al. 2018](https://doi.org/10.1111/gcb.13914).
 
-See the package vignette for details and worked examples. You can view the vignette using `browseVignettes("ThermStats")` or at https://github.com/rasenior/ThermStats/blob/master/vignettes/overview.md.
+See the package vignette for details and worked examples. You can view the vignette using `browseVignettes("ThermStats")` or by clicking [here](https://github.com/rasenior/ThermStats/blob/master/vignettes/overview.md).
 
 ## References
 
