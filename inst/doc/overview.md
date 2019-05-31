@@ -236,13 +236,6 @@ with patch statistics (Table 2) for each image or group, respectively.
 </tbody>
 </table>
 
-<!-- # ```{r tab-B-2, tidy = FALSE, echo = FALSE} -->
-<!-- # knitr::kable( -->
-<!-- #     head(flir_stats_group[, c(1:5,8,13:17)], 10), booktabs = TRUE  -->
-<!-- # ) -->
-<!-- #  -->
-<!-- # ``` -->
-
 Plotting
 ========
 
@@ -259,7 +252,7 @@ distribution if `plot_distribution = TRUE` (Figure 2).
         # The patch outlines
         patches = flir_stats$patches)
 
-<img src="overview_files/figure-markdown_strict/fig-B-2-1.png" alt="Figure 2: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic."  />
+<img src="overview_files/figure-markdown_strict/fig-2-1.png" alt="Figure 2: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic."  />
 <p class="caption">
 Figure 2: The output of `plot_patches` includes a histogram and the
 original temperature data overlaid with outlines of hot and cold spots,
