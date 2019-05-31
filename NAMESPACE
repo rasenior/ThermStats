@@ -3,6 +3,7 @@
 export(average_by_group)
 export(batch_convert)
 export(batch_extract)
+export(connectivity)
 export(crop_img)
 export(get_patches)
 export(get_stats)

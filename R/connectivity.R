@@ -31,8 +31,24 @@
 #' Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
 #' landscape. PNAS, 113: 7195-7200.
 #' \url{https://doi.org/10.1073/pnas.1602817113}
-#' @keywords internal
 #' @importFrom rlang .data
+#' @export
+#' @examples
+#' # Define matrix as FLIR thermal image
+#' img <- flir11835$flir_matrix
+#'
+#' # Get connectivity
+#' img_conn <-
+#' connectivity(img = img,
+#'              conn_threshold = 1.5)
+#' head(img_conn)
+#' 
+#' # Plot the potential for temperature change
+#' library(ggplot2)
+#' ggplot(img_conn, 
+#'        aes(x = x, y = y, fill = diff_potential))+
+#'     geom_raster() +
+#'     scale_fill_viridis_c()
 
 connectivity <-
     function(img,

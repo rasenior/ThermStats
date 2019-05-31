@@ -41,10 +41,26 @@ basic premise is that there is a degree of change that organisms are seeking
 to avoid, and when pixels are sufficiently heterogenous and well connected
 organisms can move through the pixels to avoid deleterious temperature change.
 }
+\examples{
+# Define matrix as FLIR thermal image
+img <- flir11835$flir_matrix
+
+# Get connectivity
+img_conn <-
+connectivity(img = img,
+             conn_threshold = 1.5)
+head(img_conn)
+
+# Plot the potential for temperature change
+library(ggplot2)
+ggplot(img_conn, 
+       aes(x = x, y = y, fill = diff_potential))+
+    geom_raster() +
+    scale_fill_viridis_c()
+}
 \references{
 McGuire, J. L., Lawler, J. J., McRae, B. H., Nunez, T. A. and
 Theobald, D. M. (2016), Achieving climate connectivity in a fragmented
 landscape. PNAS, 113: 7195-7200.
 \url{https://doi.org/10.1073/pnas.1602817113}
 }
-\keyword{internal}
