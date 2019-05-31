@@ -31,11 +31,10 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
-                      cache = TRUE,
                       fig.align = "centre", fig.width = 16.6/2.54)
 ```
 
-```{r fig-B-1, fig.cap= "Figure 1: Schematic summarising the key functions for processing groups of images (left) or a single image (right).", fig.pos = 'H', out.width = "400px"}
+```{r fig-1, fig.cap= "Figure 1: Schematic summarising the key functions for processing groups of images (left) or a single image (right).", fig.pos = 'H', out.width = "400px"}
 knitr::include_graphics("schematic.png")
 ```
 
@@ -59,7 +58,7 @@ Once loaded, the code below can be followed step-by-step.
 
 Data are extracted from FLIR images using `batch_extract`. This is a batch implementation of the `readflirJPG` function from `Thermimage`. It requires only the path to the directory of FLIR thermal images, and the freely available external software ['ExifTool'](https://www.sno.phy.queensu.ca/~phil/exiftool/ "ExifTool"). Besides raw data, this step also retrieves camera-specific calibration parameters which are required later to convert raw data to temperature values.
 
-```{r batch-extract, echo= TRUE, results = "hide"}
+```{r batch-extract, echo= TRUE, eval = FALSE}
 # Batch extract thermal images included in ThermStats installation
 flir_raw <-
     batch_extract(in_dir = system.file("extdata", 
@@ -77,7 +76,7 @@ Raw data are encoded in each thermal image as a 16 bit analog-to-digital signal,
 * Atmospheric temperature = the temperature of the atmosphere.
 * Relative humidity = the relative humidity of the atmosphere.
 
-```{r batch-convert, echo= TRUE, results = "hide"}
+```{r batch-convert, echo = TRUE, results = "hide"}
 # Define raw data
 raw_dat <- flir_raw$raw_dat
 # Define camera calibration constants dataframe
@@ -118,7 +117,7 @@ Statistics can be calculated for individual thermal images (in a matrix or raste
 
 For an individual image, `get_stats` requires the user to specify the image and the desired statistics. Statistics can be calculated for geographic temperature data, in which case the user should also define the extent and projection of the data.
 
-```{r get-stats, echo= TRUE, results = "hide"}
+```{r get-stats, echo= TRUE, eval = FALSE}
 flir_stats <-
     get_stats( 
         # The temperature dataset
@@ -144,7 +143,7 @@ flir_stats <-
 
 For grouped images, `stats_by_group` requires the user to supply a list of matrices or a raster stack, and (optionally) the metadata and the name of the variable in the metadata that defines the grouping. Table 1 shows the metadata used in the code snippet, where photo number ('photo_no') defines individual temperature matrices, and the replicate identity ('rep_id') defines the grouping of photos. There are two replicates, 'T7P1' and 'T7P2', and each has two associated photos.
 
-```{r tab-B-1, results='asis'}
+```{r tab-1, results='asis'}
 tab1 <- "
 Table: Table 1: Example metadata denoting the grouping ('rep_id') of different thermal images. Statistics can be calculated over multiple images within a group, using the function `stats_by_group`.
 
@@ -156,10 +155,10 @@ Table: Table 1: Example metadata denoting the grouping ('rep_id') of different t
 |     8613|T7P2   |    23.50|           96|
 "
 
-cat(tab1) # output the table in a format good for HTML/PDF/docx conversion
+cat(tab1)
 ```
 
-```{r stats-by-group, results = "hide"}
+```{r stats-by-group, eval = FALSE}
 flir_stats_group <-
     stats_by_group(
         # A dataframe denoting the grouping
@@ -183,7 +182,7 @@ flir_stats_group <-
 
 By default, both `get_stats` and `stats_by_group` return a dataframe with patch statistics (Table 2) for each image or group, respectively. 
 
-```{r tab-B-2, results='asis'}
+```{r tab-2, results='asis'}
 tab2 <- "
 Table: Table 2: A snippet of hot spot patch statistics returned by `stats_by_group`, which implements `get_stats` within groups.
 
@@ -193,21 +192,14 @@ Table: Table 2: A snippet of hot spot patch statistics returned by `stats_by_gro
 |       24.0|         23|        25.0|         1.68|            7.80|           0.855|
 "
 
-cat(tab2) # output the table in a format good for HTML/PDF/docx conversion
+cat(tab2)
 ```
-
-<!-- # ```{r tab-B-2, tidy = FALSE, echo = FALSE} -->
-<!-- # knitr::kable( -->
-<!-- #     head(flir_stats_group[, c(1:5,8,13:17)], 10), booktabs = TRUE  -->
-<!-- # ) -->
-<!-- #  -->
-<!-- # ``` -->
 
 # Plotting
 
 In addition to patch statistics, `get_stats` can return (1) the temperature dataset in a dataframe format, and (2) a `SpatialPolygonsDataFrame` of its hot and cold spots. The function `plot_patches` can then recreate the original thermal image overlaid with outlines of hot and cold spots, as well as the temperature distribution if `plot_distribution = TRUE` (Figure 2).
 
-```{r fig-B-2, fig.cap= "Figure 2: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic.", echo = TRUE}
+```{r fig-2, fig.cap= "Figure 2: The output of `plot_patches` includes a histogram and the original temperature data overlaid with outlines of hot and cold spots, identified using the G* variant of the Getis-Ord local statistic.", echo = TRUE}
 plot_patches(
     # The raw temperature data
     df = flir_stats$df,
