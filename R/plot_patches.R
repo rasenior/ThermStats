@@ -256,7 +256,7 @@ plot_patches <- function(df,
                 if (hatching) {
                     hot_hatch_i <- 
                         tryCatch({
-                            HatchedPolygons::hatched.SpatialPolygons(x = patches[patches$layer == 1,], 
+                            HatchedPolygons::hatched.SpatialPolygons(x = patches_i[patches_i$layer == 1,], 
                                                                      density = hatch_density[1], 
                                                                      angle = hatch_angle[1])
                         }, error = function(e) {
@@ -266,7 +266,7 @@ plot_patches <- function(df,
                         })
                     cold_hatch_i <- 
                         tryCatch({
-                            HatchedPolygons::hatched.SpatialPolygons(x = patches[patches$layer == -1,], 
+                            HatchedPolygons::hatched.SpatialPolygons(x = patches_i[patches_i$layer == -1,], 
                                                                      density = hatch_density[2], 
                                                                      angle = hatch_angle[2])
                         }, error = function(e) {
