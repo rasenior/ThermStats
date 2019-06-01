@@ -1,5 +1,7 @@
 # ThermStats
 
+[![DOI](https://zenodo.org/badge/95905773.svg)](https://zenodo.org/badge/latestdoi/95905773)
+
 Quantify thermal heterogeneity using gridded temperature data in R. 
 
 Variation in temperature at fine spatiotemporal scales strongly influences physiological, behavioural and demographic responses to environmental change. This `R` package addresses current constraints on applying thermography in ecology, by speeding up and simplifying the extraction of data from (FLIR) thermal images, and by facilitating the calculation of different metrics of thermal heterogeneity for any gridded temperature data. 
