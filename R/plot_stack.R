@@ -23,7 +23,6 @@
 #' (see \code{ggplot2::}\code{scale_colour_gradient}).
 #' @param custom_theme Option to replace existing theme with a customised 
 #' \code{ggplot} theme. See \code{ggplot2::}\code{theme}.
-#' created 
 #' @importFrom rlang .data
 #' @examples
 #' plot_stack(img_stack = flir_stack, 
@@ -65,6 +64,8 @@ plot_stack <- function(img_stack,
                        ylabel = NULL,
                        lab_size = 8,
                        text_size = 6,
+                       point_size = 0.5,
+                       quant_linetype = "dotted",
                        y_breaks = waiver(),
                        custom_theme = NULL) {
     
@@ -84,13 +85,13 @@ plot_stack <- function(img_stack,
     p <-
         ggplot(group_sample,
                aes(x = .data$rep_id, y = .data$val)) +
-        geom_jitter(size = 0.8,
+        geom_jitter(size = point_size,
                     shape = 21, 
                     fill = "grey",
                     colour = "transparent") +
         geom_violin(draw_quantiles = c(0.25, 0.5, 0.75),
                     alpha = 0.5,
-                    linetype = "dashed") +
+                    linetype = quant_linetype) +
         geom_violin(draw_quantiles = 0.5,
                     alpha = 0) +
         theme_classic() +
