@@ -18,6 +18,11 @@
 #' @param ylabel Option to specify the y axis label.
 #' @param lab_size Size of axis labels. Defaults to 8.
 #' @param text_size Size of axis text. Defaults to 6.
+#' @param point_size Point size for raw data. Defaults to 0.5
+#' @param quant_linetype Linetype for the upper and lower quantile lines. 
+#' Defaults to "dotted".
+#' @param quant_colour Line colour for the upper and lower quantile lines. 
+#' Defaults to "black".
 #' @param y_breaks Option to manually specify breaks in y axis. Defaults
 #' to \code{waiver()}, where breaks are computed by the transformation object
 #' (see \code{ggplot2::}\code{scale_colour_gradient}).
@@ -66,6 +71,7 @@ plot_stack <- function(img_stack,
                        text_size = 6,
                        point_size = 0.5,
                        quant_linetype = "dotted",
+                       quant_colour = "black",
                        y_breaks = waiver(),
                        custom_theme = NULL) {
     
@@ -91,7 +97,8 @@ plot_stack <- function(img_stack,
                     colour = "transparent") +
         geom_violin(draw_quantiles = c(0.25, 0.5, 0.75),
                     alpha = 0.5,
-                    linetype = quant_linetype) +
+                    linetype = quant_linetype,
+                    colour = quant_colour) +
         geom_violin(draw_quantiles = 0.5,
                     alpha = 0) +
         theme_classic() +

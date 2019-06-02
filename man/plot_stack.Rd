@@ -9,7 +9,7 @@ plot_stack(img_stack, n = 100, print_plot = TRUE, save_plot = FALSE,
   file_ext = "png", fig_width = 8, fig_height = 9,
   fig_units = "cm", xlabel = NULL, ylabel = NULL, lab_size = 8,
   text_size = 6, point_size = 0.5, quant_linetype = "dotted",
-  y_breaks = waiver(), custom_theme = NULL)
+  quant_colour = "black", y_breaks = waiver(), custom_theme = NULL)
 }
 \arguments{
 \item{img_stack}{The RasterStack to plot.}
@@ -41,6 +41,14 @@ plot_stack(img_stack, n = 100, print_plot = TRUE, save_plot = FALSE,
 \item{lab_size}{Size of axis labels. Defaults to 8.}
 
 \item{text_size}{Size of axis text. Defaults to 6.}
+
+\item{point_size}{Point size for raw data. Defaults to 0.5}
+
+\item{quant_linetype}{Linetype for the upper and lower quantile lines. 
+Defaults to "dotted".}
+
+\item{quant_colour}{Line colour for the upper and lower quantile lines. 
+Defaults to "black".}
 
 \item{y_breaks}{Option to manually specify breaks in y axis. Defaults
 to \code{waiver()}, where breaks are computed by the transformation object
