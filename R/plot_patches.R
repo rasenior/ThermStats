@@ -73,6 +73,7 @@
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
 #'              
+#'  \dontrun{
 #'  # FLIR facets --------------------------------------------------------------
 #'  # Load raw data
 #'  raw_dat <- flir_raw$raw_dat
@@ -131,6 +132,7 @@
 #'              hatch_density = c(50, 80),
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
+#' }
 #'
 #' @export
 #' @import ggplot2

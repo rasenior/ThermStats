@@ -41,6 +41,7 @@
 #'  statistics returned.}
 #' @examples
 #'
+#' \dontrun{
 #' # FLIR temperature matrix ---------------------------------------------------
 #'
 #' # Define individual matrix and raster
@@ -100,6 +101,7 @@
 #' df <- worldclim_results$df
 #' patches <- worldclim_results$patches
 #' plot_patches(df, patches, print_plot = TRUE, save_plot = FALSE)
+#' }
 #' @export
 
 get_stats <- function(img,

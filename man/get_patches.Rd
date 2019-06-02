@@ -49,6 +49,7 @@ Find hot and cold patches in a numeric matrix or raster, and calculate patch sta
 }
 \examples{
 
+\dontrun{
 # FLIR temperature matrix ----------------------------------------
 # Find hot and cold patches
 flir_results <-
@@ -99,5 +100,6 @@ plot_patches(df = worldclim_results$df,
              patches = worldclim_results$patches,
              print_plot = TRUE,
              save_plot = FALSE)
+}
 
 }

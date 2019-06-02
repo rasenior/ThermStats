@@ -31,7 +31,8 @@
 #'  statistics returned.}
 #' @importFrom rlang .data
 #' @examples
-#'
+#' 
+#' \dontrun{
 #' # FLIR temperature matrix ----------------------------------------
 #' # Find hot and cold patches
 #' flir_results <-
@@ -82,6 +83,7 @@
 #'              patches = worldclim_results$patches,
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
+#' }
 #'
 #' @importClassesFrom sp SpatialPolygonsDataFrame SpatialPointsDataFrame
 #' @export

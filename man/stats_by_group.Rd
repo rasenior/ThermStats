@@ -100,7 +100,8 @@ metadata <- flir_metadata
 # Batch convert
 img_list <- batch_convert(raw_dat, write_results = FALSE)
 
-# Calculate patch and pixel stats! ------------------------------------------
+\dontrun{
+# Calculate patch and pixel stats -------------------------------------------
 
 # Pixel stats = mean, max and min
 patch_stats_1 <-
@@ -141,4 +142,5 @@ patch_stats_4 <-
                    grouping_var = "rep_id",
                    round_val = 0.5,
                    sum_stats = c("SHDI", "SIDI"))
+}
 }

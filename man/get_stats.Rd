@@ -65,6 +65,7 @@ Calculate summary and spatial statistics across a single matrix or raster.
 }
 \examples{
 
+\dontrun{
 # FLIR temperature matrix ---------------------------------------------------
 
 # Define individual matrix and raster
@@ -124,4 +125,5 @@ worldclim_results <-
 df <- worldclim_results$df
 patches <- worldclim_results$patches
 plot_patches(df, patches, print_plot = TRUE, save_plot = FALSE)
+}
 }

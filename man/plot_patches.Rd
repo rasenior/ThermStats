@@ -120,6 +120,7 @@ plot_patches(df = flir_results$df,
              print_plot = TRUE,
              save_plot = FALSE)
              
+ \dontrun{
  # FLIR facets --------------------------------------------------------------
  # Load raw data
  raw_dat <- flir_raw$raw_dat
@@ -178,5 +179,6 @@ plot_patches(df = worldclim_results$df,
              hatch_density = c(50, 80),
              print_plot = TRUE,
              save_plot = FALSE)
+}
 
 }
