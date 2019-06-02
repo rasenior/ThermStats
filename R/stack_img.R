@@ -2,7 +2,7 @@
 #'
 #' Helper function to create raster stack from a list of matrices.
 #' @param img_list List of temperature matrices to convert.
-#' @return Raster stack with one layer for each list element.
+#' @return RasterStack with one layer for each list element.
 #' @examples
 #' # Load raw data
 #' raw_dat <- flir_raw$raw_dat

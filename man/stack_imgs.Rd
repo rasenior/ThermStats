@@ -10,7 +10,7 @@ stack_imgs(img_list)
 \item{img_list}{List of temperature matrices to convert.}
 }
 \value{
-Raster stack with one layer for each list element.
+RasterStack with one layer for each list element.
 }
 \description{
 Helper function to create raster stack from a list of matrices.
