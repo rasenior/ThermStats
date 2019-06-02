@@ -53,6 +53,14 @@
 #'              patches = flir_results$patches,
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
+#'              
+#' # Plot using landscapemetrics package
+#' flir_patch_rast <- raster::rasterFromXYZ(flir_results$df[,c("x", "y", "G_bin")]) 
+#' if (requireNamespace("landscapemetrics", quietly = TRUE)){
+#'     show_landscape(flir_patch_rast)
+#'     show_patches(flir_patch_rast, class = "all", labels = FALSE)
+#'     show_cores(flir_patch_rast, class = c(1, -1), labels = FALSE)
+#' }
 #'
 #' # Worldclim2 temperature raster ----------------------------------
 #' # Dataset 'sulawesi_temp' represents mean January temperature for 
