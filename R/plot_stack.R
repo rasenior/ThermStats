@@ -38,7 +38,9 @@
 #'            ylabel = "Temperature",
 #'            y_breaks = seq(25, 35, 1))
 #'            
+#' \dontrun{
 #' # Specify custom theme
+#' library(ggplot2)
 #' custom_theme <- 
 #'     theme_classic() + 
 #'     theme(axis.title = element_text(size = 8),
@@ -51,6 +53,7 @@
 #'            print_plot = TRUE,
 #'            save_plot = FALSE,
 #'            custom_theme = custom_theme)
+#' }
 #' @export
 #' @import ggplot2
 #'
