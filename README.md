@@ -1,4 +1,4 @@
-# ThermStats
+# ThermStats <img src="man/figures/hexsticker.png" align="right" />
 
 [![DOI](https://zenodo.org/badge/95905773.svg)](https://zenodo.org/badge/latestdoi/95905773)
 
