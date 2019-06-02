@@ -7,11 +7,11 @@
 plot_patches(df, patches, bg_poly = NULL, bg_colour = "grey",
   facet_cols = NULL, facet_rows = NULL, plot_distribution = TRUE,
   print_plot = TRUE, save_plot = FALSE, return_plot = FALSE,
-  out_dir = NULL, file_name = NULL, file_ext = "png", lab_size = 8,
-  text_size = 6, outline_size = 0.7, fig_width = 8, fig_height = 9,
-  fig_units = "cm", val_pal = c("black", "#050155", "#120172",
-  "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b", "#ed5930",
-  "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
+  out_dir = NULL, file_name = NULL, file_ext = "png",
+  fig_width = 8, fig_height = 9, fig_units = "cm", lab_size = 8,
+  text_size = 6, outline_size = 0.7, val_pal = c("black", "#050155",
+  "#120172", "#3b008e", "#7200a9", "#8f00a0", "#ba187f", "#d9365b",
+  "#ed5930", "#f76323", "#fa8600", "#f6a704", "#fad61e", "#fad61e"),
   hatching = FALSE, hatch_density = c(1, 2), hatch_angle = c(45,
   135), hatch_size = 0.5, fill_breaks = waiver(),
   patch_cols = c("mistyrose", "cornflowerblue"),
@@ -47,17 +47,17 @@ specified, uses generic names 'distribution' and 'patches'.}
 
 \item{file_ext}{File extension. Defaults to '.png'.}
 
-\item{lab_size}{Size of axes labels. Defaults to 8.}
-
-\item{text_size}{Size of axes text and legend text. Defaults to 6.}
-
-\item{outline_size}{Size of the outline. Defaults to 0.7.}
-
 \item{fig_width}{Figure width (if saved). Defaults to 8.}
 
 \item{fig_height}{Figure height (if saved). Defaults to 9.}
 
 \item{fig_units}{Figure dimension units (if saved). Defaults to "cm".}
+
+\item{lab_size}{Size of axis labels. Defaults to 8.}
+
+\item{text_size}{Size of axis text and legend text. Defaults to 6.}
+
+\item{outline_size}{Size of the outline. Defaults to 0.7.}
 
 \item{val_pal}{Colour palette to use for raster. Defaults to palette
 derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",

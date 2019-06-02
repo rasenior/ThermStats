@@ -17,12 +17,12 @@
 #' @param file_name Prefix for plot filenames (if applicable). If none
 #' specified, uses generic names 'distribution' and 'patches'.
 #' @param file_ext File extension. Defaults to '.png'.
-#' @param lab_size Size of axes labels. Defaults to 8.
-#' @param text_size Size of axes text and legend text. Defaults to 6.
-#' @param outline_size Size of the outline. Defaults to 0.7.
 #' @param fig_width Figure width (if saved). Defaults to 8.
 #' @param fig_height Figure height (if saved). Defaults to 9.
 #' @param fig_units Figure dimension units (if saved). Defaults to "cm".
+#' @param lab_size Size of axis labels. Defaults to 8.
+#' @param text_size Size of axis text and legend text. Defaults to 6.
+#' @param outline_size Size of the outline. Defaults to 0.7.
 #' @param val_pal Colour palette to use for raster. Defaults to palette
 #' derived from a FLIR jpeg: \code{c("black", "#050155", "#120172", "#3b008e",
 #' "#7200a9", "#8f00a0","#ba187f", "#d9365b", "#ed5930","#f76323", "#fa8600",
@@ -149,12 +149,12 @@ plot_patches <- function(df,
                          out_dir = NULL,
                          file_name = NULL,
                          file_ext = "png",
-                         lab_size = 8,
-                         text_size = 6,
-                         outline_size = 0.7,
                          fig_width = 8,
                          fig_height = 9,
                          fig_units = "cm",
+                         lab_size = 8,
+                         text_size = 6,
+                         outline_size = 0.7,
                          val_pal = c("black", "#050155", "#120172",
                                      "#3b008e", "#7200a9", "#8f00a0",
                                      "#ba187f", "#d9365b", "#ed5930",
@@ -472,13 +472,13 @@ plot_patches <- function(df,
     
     # Printing/saving plots -----------------------------------------------------
     
-    if(isTRUE (print_plot)){
+    if (print_plot) {
         
         if (requireNamespace("gridExtra", quietly = TRUE)) {
             
-            if(plot_distribution){
+            if (plot_distribution) {
                 suppressMessages(
-                    gridExtra::grid.arrange(p1, p2, ncol=2)
+                    gridExtra::grid.arrange(p1, p2, ncol = 2)
                 )
             } else{
                 print(p2)
@@ -490,10 +490,10 @@ plot_patches <- function(df,
         }
     }
     
-    if(isTRUE (save_plot)){
+    if (save_plot) {
         
         # Define file names
-        if(is.null(file_name)){
+        if (is.null(file_name)) {
             p1_filename <-
                 file.path(out_dir, paste("distribution.",file_ext, sep = ""))
             p2_filename <-
@@ -508,7 +508,7 @@ plot_patches <- function(df,
             
         }
         
-        if(plot_distribution){
+        if (plot_distribution) {
             # Plot distribution
             suppressMessages(
                 ggsave(plot = p1, filename = p1_filename,
@@ -523,8 +523,8 @@ plot_patches <- function(df,
     }
     
     # Return plot objects if required
-    if(return_plot){
-        if(plot_distribution){
+    if (return_plot) {
+        if (plot_distribution) {
             return(list(fig_distribution = p1, fig_patches = p2))
         } else{
             return(fig_patches = p2)
