@@ -67,6 +67,15 @@ average_by_group <- function(metadata,
                              grouping_var,
                              round_val = NULL){
     
+    # Test that id variable in metadata
+    if (!(id %in% names(metadata))) {
+        stop("Given id variable is missing from metadata")
+    }
+    # Test that grouping variable in metadata
+    if (!(grouping_var %in% names(metadata))) {
+        stop("Given grouping variable is missing from metadata")
+    }
+    
     # Determine if raster stack or list of matrices
     if(class(img_list)[1] == "RasterStack"){
         mat_type <- "rasters"

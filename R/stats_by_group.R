@@ -71,8 +71,9 @@
 #'
 #' # Batch convert
 #' img_list <- batch_convert(raw_dat, write_results = FALSE)
-#'
-#' # Calculate patch and pixel stats! ------------------------------------------
+#' 
+#' \dontrun{
+#' # Calculate patch and pixel stats -------------------------------------------
 #'
 #' # Pixel stats = mean, max and min
 #' patch_stats_1 <-
@@ -113,6 +114,7 @@
 #'                    grouping_var = "rep_id",
 #'                    round_val = 0.5,
 #'                    sum_stats = c("SHDI", "SIDI"))
+#' }
 #' @export
 #'
 # Define function to return stats for each grouping
@@ -129,6 +131,15 @@ stats_by_group <- function(img_list,
                            img_extent = NULL,
                            sum_stats = c("mean", "max", "min"),
                            return_vals = c("df", "patches", "pstats")){
+    
+    # Test that id variable in metadata
+    if (!(idvar %in% names(metadata))) {
+        stop("Given id variable is missing from metadata")
+    }
+    # Test that grouping variable in metadata
+    if (!(grouping_var %in% names(metadata))) {
+        stop("Given grouping variable is missing from metadata")
+    }
     
     # Determine if raster stack or list of matrices
     if(class(img_list)[1] == "RasterStack"){
