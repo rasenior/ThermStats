@@ -8,7 +8,7 @@ plot_stack(img_stack, n = 100, print_plot = TRUE, save_plot = FALSE,
   return_plot = FALSE, out_dir = NULL, file_name = NULL,
   file_ext = "png", fig_width = 8, fig_height = 9,
   fig_units = "cm", xlabel = NULL, ylabel = NULL, lab_size = 8,
-  text_size = 6, y_breaks = waiver())
+  text_size = 6, y_breaks = waiver(), custom_theme = NULL)
 }
 \arguments{
 \item{img_stack}{The RasterStack to plot.}
@@ -44,6 +44,10 @@ plot_stack(img_stack, n = 100, print_plot = TRUE, save_plot = FALSE,
 \item{y_breaks}{Option to manually specify breaks in y axis. Defaults
 to \code{waiver()}, where breaks are computed by the transformation object
 (see \code{ggplot2::}\code{scale_colour_gradient}).}
+
+\item{custom_theme}{Option to replace existing theme with a customised 
+\code{ggplot} theme. See \code{ggplot2::}\code{theme}.
+created}
 }
 \description{
 Create violin plots of raster stacks, such as those returned from 
@@ -58,4 +62,18 @@ plot_stack(img_stack = flir_stack,
            xlabel = "Time",
            ylabel = "Temperature",
            y_breaks = seq(25, 35, 1))
+           
+# Specify custom theme
+custom_theme <- 
+    theme_classic() + 
+    theme(axis.title = element_text(size = 8),
+          axis.text.x = element_text(size = 7,
+          angle = 45,
+          vjust = 0.5),
+          axis.text.y = element_text(size = 7))
+          
+plot_stack(img_stack = flir_stack,
+           print_plot = TRUE,
+           save_plot = FALSE,
+           custom_theme = custom_theme)
 }

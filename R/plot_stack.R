@@ -21,6 +21,9 @@
 #' @param y_breaks Option to manually specify breaks in y axis. Defaults
 #' to \code{waiver()}, where breaks are computed by the transformation object
 #' (see \code{ggplot2::}\code{scale_colour_gradient}).
+#' @param custom_theme Option to replace existing theme with a customised 
+#' \code{ggplot} theme. See \code{ggplot2::}\code{theme}.
+#' created 
 #' @importFrom rlang .data
 #' @examples
 #' plot_stack(img_stack = flir_stack, 
@@ -30,6 +33,20 @@
 #'            xlabel = "Time",
 #'            ylabel = "Temperature",
 #'            y_breaks = seq(25, 35, 1))
+#'            
+#' # Specify custom theme
+#' custom_theme <- 
+#'     theme_classic() + 
+#'     theme(axis.title = element_text(size = 8),
+#'           axis.text.x = element_text(size = 7,
+#'           angle = 45,
+#'           vjust = 0.5),
+#'           axis.text.y = element_text(size = 7))
+#'           
+#' plot_stack(img_stack = flir_stack,
+#'            print_plot = TRUE,
+#'            save_plot = FALSE,
+#'            custom_theme = custom_theme)
 #' @export
 #' @import ggplot2
 #'
@@ -48,7 +65,8 @@ plot_stack <- function(img_stack,
                        ylabel = NULL,
                        lab_size = 8,
                        text_size = 6,
-                       y_breaks = waiver()) {
+                       y_breaks = waiver(),
+                       custom_theme = NULL) {
     
     group_sample <-
         raster::sampleRandom(img_stack, 
@@ -65,7 +83,7 @@ plot_stack <- function(img_stack,
     # Plot --------------------------------------------------------------------
     p <-
         ggplot(group_sample,
-               aes(x = rep_id, y = val)) +
+               aes(x = .data$rep_id, y = .data$val)) +
         geom_jitter(size = 0.8,
                     shape = 21, 
                     fill = "grey",
@@ -85,6 +103,10 @@ plot_stack <- function(img_stack,
     }
     if (!(is.null(ylabel))) {
         p <- p + ylab(ylabel)
+    }
+    # Customise theme
+    if (!(is.null(custom_theme))) {
+        p <- p + custom_theme
     }
     
     # Printing/saving plots ----------------------------------------------------
