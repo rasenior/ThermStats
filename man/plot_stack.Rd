@@ -8,7 +8,8 @@ plot_stack(img_stack, n = 100, print_plot = TRUE, save_plot = FALSE,
   return_plot = FALSE, out_dir = NULL, file_name = NULL,
   file_ext = "png", fig_width = 8, fig_height = 9,
   fig_units = "cm", xlabel = NULL, ylabel = NULL, lab_size = 8,
-  text_size = 6, y_breaks = waiver(), custom_theme = NULL)
+  text_size = 6, point_size = 0.5, quant_linetype = "dotted",
+  y_breaks = waiver(), custom_theme = NULL)
 }
 \arguments{
 \item{img_stack}{The RasterStack to plot.}
@@ -46,8 +47,7 @@ to \code{waiver()}, where breaks are computed by the transformation object
 (see \code{ggplot2::}\code{scale_colour_gradient}).}
 
 \item{custom_theme}{Option to replace existing theme with a customised 
-\code{ggplot} theme. See \code{ggplot2::}\code{theme}.
-created}
+\code{ggplot} theme. See \code{ggplot2::}\code{theme}.}
 }
 \description{
 Create violin plots of raster stacks, such as those returned from 
