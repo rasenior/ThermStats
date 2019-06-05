@@ -19,19 +19,24 @@ mainfont: Calibri
 lang: en-GB
 papersize: a4
 documentclass: article
-header-includes:
-- \usepackage{url}
-- \usepackage{fancyhdr}
-- \pagestyle{fancy}
-- \fancyhf{}
-- \fancyfoot[CO,CE]{\thepage}
-- \usepackage{setspace}
-- \doublespacing
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
                       fig.align = "centre", fig.width = 16.6/2.54)
+```
+
+```{r logo, echo=FALSE}
+htmltools::img(src = knitr::image_uri("../man/figures/hexsticker.png"), 
+               alt = 'logo', 
+               style = paste('position:absolute',
+                             'top:0', 'right:0',
+                             'padding:10px',
+                             'width:150px',
+                             'height:160px', 
+                             'background:none', 
+                             'border:none', 
+                             'box-shadow:none', sep = ";"))
 ```
 
 ```{r fig-1, fig.cap= "Figure 1: Schematic summarising the key functions for processing groups of images (left) or a single image (right).", fig.pos = 'H', out.width = "400px"}

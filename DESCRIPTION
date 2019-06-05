@@ -1,7 +1,7 @@
 Package: ThermStats
 Type: Package
 Title: Calculate statistics for thermal images
-Version: 0.9.2
+Version: 0.9.3
 Date: 2019-06-02
 Authors@R: person("Rebecca A.", "Senior", 
   email = "rebecca.a.senior@gmail.com",
@@ -37,7 +37,8 @@ Imports:
     devtools,
     maptools,
     rlang,
-    vdiffr
+    vdiffr,
+    htmltools
 Suggests: 
     gridExtra,
     pbapply,
