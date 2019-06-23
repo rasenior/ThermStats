@@ -37,7 +37,8 @@ Imports:
     maptools,
     rlang,
     vdiffr,
-    htmltools
+    htmltools,
+    HatchedPolygons
 Remotes: github::statnmap/HatchedPolygons
 Suggests: 
     gridExtra,
