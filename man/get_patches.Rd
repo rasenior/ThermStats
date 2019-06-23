@@ -71,7 +71,7 @@ plot_patches(df = flir_results$df,
              print_plot = TRUE,
              save_plot = FALSE)
              
-# Plot using landscapemetrics::show_landscape
+# Plot using landscapemetrics package
 flir_patch_rast <- raster::rasterFromXYZ(flir_results$df[,c("x", "y", "G_bin")]) 
 if (requireNamespace("landscapemetrics", quietly = TRUE)){
     show_landscape(flir_patch_rast)
