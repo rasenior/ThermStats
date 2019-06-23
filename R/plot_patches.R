@@ -336,8 +336,10 @@ plot_patches <- function(df,
                                                              density = hatch_density[1], 
                                                              angle = hatch_angle[1])
                 }, error = function(e) {
-                    if (grepl("positive length", e)){
+                    if (grepl("positive length", e)) {
                         stop("Hatching density of hot spots too low, please increase and try again")
+                    }else {
+                        stop(e)
                     }
                 })
             cold_hatch <- 
@@ -346,8 +348,10 @@ plot_patches <- function(df,
                                                              density = hatch_density[2], 
                                                              angle = hatch_angle[2])
                 }, error = function(e) {
-                    if (grepl("positive length", e)){
+                    if (grepl("positive length", e)) {
                         stop("Hatching density of cold spots too low, please increase and try again")
+                    }else {
+                        stop(e)
                     }
                 })
             
