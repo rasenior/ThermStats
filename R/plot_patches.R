@@ -129,7 +129,6 @@
 #'              patches = worldclim_results$patches,
 #'              bg_poly = sulawesi_bg,
 #'              bg_colour = "grey",
-#'              hatch_density = c(50, 80),
 #'              print_plot = TRUE,
 #'              save_plot = FALSE)
 #' }
@@ -178,7 +177,7 @@ plot_patches <- function(df,
               sep = "", collapse = " ")
     }
     
-    if(any(names(df) == "id")){
+    if (any(names(df) == "id")) {
         
         img_id_orig <- unique(df$id)
         img_id <- vapply(img_id_orig, simpleCap, FUN.VALUE = character(1))
@@ -194,7 +193,7 @@ plot_patches <- function(df,
     # Fix patch outline colours
     names(patch_cols) <- patch_labs
     
-    if(is.null(val_lab)){
+    if (is.null(val_lab)) {
         val_lab <- paste("Temperature (", "\U00B0", "C)",
                          sep = "")
     }
@@ -203,7 +202,7 @@ plot_patches <- function(df,
     
     # Histogram --------------------------------------------------------------
     
-    if(plot_distribution){
+    if (plot_distribution) {
         
         message("Plotting distribution")
         
@@ -225,7 +224,7 @@ plot_patches <- function(df,
                   axis.text = element_text(size = text_size),
                   panel.grid = element_blank(),
                   plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"))
-        if(facet){
+        if (facet) {
             p1 <- p1 + 
                 facet_wrap(~ img_id, 
                            nrow = facet_rows, ncol = facet_cols, 
@@ -240,7 +239,7 @@ plot_patches <- function(df,
     
     message("Plotting image with hot and cold spots")
     
-    if(facet){
+    if (facet) {
         # If facetting, need to apply this over multiple patch dfs
         patches <-
             lapply(patches, function(patches_i){
@@ -256,39 +255,77 @@ plot_patches <- function(df,
                 
                 # If hatching desired, create here
                 if (hatching) {
-                    hot_hatch_i <- 
-                        tryCatch({
-                            HatchedPolygons::hatched.SpatialPolygons(x = patches_i[patches_i$layer == 1,], 
+                    # If background polygon supplied, hatch that and clip 
+                    # (this avoids hatching problems with very small/irregular
+                    # polygons)
+                    if (!(is.null(bg_poly))) {
+                        # With hatching parameters for hot spots
+                        bg_hatch_hot <- 
+                            HatchedPolygons::hatched.SpatialPolygons(x = bg_poly, 
                                                                      density = hatch_density[1], 
                                                                      angle = hatch_angle[1])
-                        }, error = function(e) {
-                            if (grepl("positive length", e)){
-                                stop("Hatching density of hot spots too low, please increase and try again")
-                            }
-                        })
-                    cold_hatch_i <- 
-                        tryCatch({
-                            HatchedPolygons::hatched.SpatialPolygons(x = patches_i[patches_i$layer == -1,], 
+                        # With hatching parameters for cold spots
+                        bg_hatch_cold <- 
+                            HatchedPolygons::hatched.SpatialPolygons(x = bg_poly, 
                                                                      density = hatch_density[2], 
                                                                      angle = hatch_angle[2])
-                        }, error = function(e) {
-                            if (grepl("positive length", e)){
-                                stop("Hatching density of cold spots too low, please increase and try again")
-                            }
-                        })
+                        
+                        proj4string(bg_hatch_hot) <- proj4string(bg_poly)
+                        proj4string(bg_hatch_cold) <- proj4string(bg_poly)
+                        
+                        # Clip to patches
+                        hot_hatch_i <- 
+                            suppressWarnings(
+                                raster::intersect(bg_hatch_hot, 
+                                                  patches_i[patches_i$layer == 1,]))
+                        cold_hatch_i <- 
+                            suppressWarnings(
+                                raster::intersect(bg_hatch_cold, 
+                                                  patches_i[patches_i$layer == -1,]))
+                        
+                        # If no background polygon supplied, hatch the patches directly
+                    }else {
+                        hot_hatch_i <- 
+                            tryCatch({
+                                HatchedPolygons::hatched.SpatialPolygons(x = patches_i[patches_i$layer == 1,], 
+                                                                         density = hatch_density[1], 
+                                                                         angle = hatch_angle[1])
+                            }, error = function(e) {
+                                if (grepl("positive length", e)) {
+                                    stop("Hatching density of hot spots too low, please increase and try again")
+                                }
+                            })
+                        cold_hatch_i <- 
+                            tryCatch({
+                                HatchedPolygons::hatched.SpatialPolygons(x = patches_i[patches_i$layer == -1,], 
+                                                                         density = hatch_density[2], 
+                                                                         angle = hatch_angle[2])
+                            }, error = function(e) {
+                                if (grepl("positive length", e)) {
+                                    stop("Hatching density of cold spots too low, please increase and try again")
+                                }
+                            })
+                    }
                     
                     # Fortify
                     hot_hatch_i <- fortify(hot_hatch_i)
                     cold_hatch_i <- fortify(cold_hatch_i)
                     
-                    # Merge
+                    # Add id
                     hot_hatch_i$id <- patch_labs[1]
                     cold_hatch_i$id <- patch_labs[2]
-                    hatches_i <- rbind(hot_hatch_i, cold_hatch_i)
+                    
+                    # If either is empty, make NULL
+                    if (is.null(nrow(hot_hatch_i))) hot_hatch_i <- NULL
+                    if (is.null(nrow(cold_hatch_i))) cold_hatch_i <- NULL
+                    
+                    # Merge
+                    hatches <- rbind(hot_hatch_i, cold_hatch_i)
                     rm(hot_hatch_i, cold_hatch_i)
                     
                     # Add image ID
                     hatches_i$img_id <- lyr_id
+                    
                 }else{
                     hatches_i <- NULL
                 }
@@ -301,7 +338,7 @@ plot_patches <- function(df,
                 
                 return(list(patches_i = patches_i, hatches_i = hatches_i))
             })
-
+        
         patches <- do.call(Map, c(f = rbind, patches))
         hatches <- patches$hatches_i
         patches <- patches$patches_i
@@ -330,38 +367,77 @@ plot_patches <- function(df,
         
         # If hatching desired, create here
         if (hatching) {
-            hot_hatch <- 
-                tryCatch({
-                    HatchedPolygons::hatched.SpatialPolygons(x = patches[patches$layer == 1,], 
+            
+            # If background polygon supplied, hatch that and clip 
+            # (this avoids hatching problems with very small/irregular
+            # polygons)
+            if (!(is.null(bg_poly))) {
+                # With hatching parameters for hot spots
+                bg_hatch_hot <- 
+                    HatchedPolygons::hatched.SpatialPolygons(x = bg_poly, 
                                                              density = hatch_density[1], 
                                                              angle = hatch_angle[1])
-                }, error = function(e) {
-                    if (grepl("positive length", e)) {
-                        stop("Hatching density of hot spots too low, please increase and try again")
-                    }else {
-                        stop(e)
-                    }
-                })
-            cold_hatch <- 
-                tryCatch({
-                    HatchedPolygons::hatched.SpatialPolygons(x = patches[patches$layer == -1,], 
+                # With hatching parameters for cold spots
+                bg_hatch_cold <- 
+                    HatchedPolygons::hatched.SpatialPolygons(x = bg_poly, 
                                                              density = hatch_density[2], 
                                                              angle = hatch_angle[2])
-                }, error = function(e) {
-                    if (grepl("positive length", e)) {
-                        stop("Hatching density of cold spots too low, please increase and try again")
-                    }else {
-                        stop(e)
-                    }
-                })
+                
+                proj4string(bg_hatch_hot) <- proj4string(bg_poly)
+                proj4string(bg_hatch_cold) <- proj4string(bg_poly)
+                
+                # Clip to patches
+                hot_hatch <- 
+                    suppressWarnings(
+                        raster::intersect(bg_hatch_hot, 
+                                          patches[patches$layer == 1,]))
+                cold_hatch <- 
+                    suppressWarnings(
+                        raster::intersect(bg_hatch_cold, 
+                                          patches[patches$layer == -1,]))
+                
+                # If no background polygon supplied, hatch the patches directly
+            }else {
+                
+                hot_hatch <- 
+                    tryCatch({
+                        HatchedPolygons::hatched.SpatialPolygons(x = patches[patches$layer == 1,], 
+                                                                 density = hatch_density[1], 
+                                                                 angle = hatch_angle[1])
+                    }, error = function(e) {
+                        if (grepl("positive length", e)) {
+                            stop("Hatching density of hot spots too low, please increase and try again")
+                        }else {
+                            stop(e)
+                        }
+                    })
+                cold_hatch <- 
+                    tryCatch({
+                        HatchedPolygons::hatched.SpatialPolygons(x = patches[patches$layer == -1,], 
+                                                                 density = hatch_density[2], 
+                                                                 angle = hatch_angle[2])
+                    }, error = function(e) {
+                        if (grepl("positive length", e)) {
+                            stop("Hatching density of cold spots too low, please increase and try again")
+                        }else {
+                            stop(e)
+                        }
+                    })
+            }
             
             # Fortify
             hot_hatch <- fortify(hot_hatch)
             cold_hatch <- fortify(cold_hatch)
             
-            # Merge
+            # Add id
             hot_hatch$id <- patch_labs[1]
             cold_hatch$id <- patch_labs[2]
+            
+            # If either is empty, make NULL
+            if (is.null(nrow(hot_hatch))) hot_hatch <- NULL
+            if (is.null(nrow(cold_hatch))) cold_hatch <- NULL
+            
+            # Merge
             hatches <- rbind(hot_hatch, cold_hatch)
             rm(hot_hatch, cold_hatch)
         }
@@ -419,7 +495,7 @@ plot_patches <- function(df,
         scale_x_continuous(expand = c(0,0))
     
     # If background polygon is supplied:
-    if(!(is.null(bg_poly))){
+    if (!(is.null(bg_poly))) {
         p2 <- p2 +
             geom_polygon(data = bg_poly,
                          aes(x = .data$long,
@@ -441,7 +517,7 @@ plot_patches <- function(df,
     }
     
     # If facetting is required:
-    if(facet){
+    if (facet) {
         p2 <- p2 +
             facet_wrap(~ img_id, nrow = facet_rows, ncol = facet_cols) +
             theme()
