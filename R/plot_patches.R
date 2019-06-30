@@ -270,8 +270,8 @@ plot_patches <- function(df,
                                                                      density = hatch_density[2], 
                                                                      angle = hatch_angle[2])
                         
-                        proj4string(bg_hatch_hot) <- proj4string(bg_poly)
-                        proj4string(bg_hatch_cold) <- proj4string(bg_poly)
+                        sp::proj4string(bg_hatch_hot) <- sp::proj4string(bg_poly)
+                        sp::proj4string(bg_hatch_cold) <- sp::proj4string(bg_poly)
                         
                         # Clip to patches
                         hot_hatch_i <- 
@@ -383,8 +383,8 @@ plot_patches <- function(df,
                                                              density = hatch_density[2], 
                                                              angle = hatch_angle[2])
                 
-                proj4string(bg_hatch_hot) <- proj4string(bg_poly)
-                proj4string(bg_hatch_cold) <- proj4string(bg_poly)
+                sp::proj4string(bg_hatch_hot) <- sp::proj4string(bg_poly)
+                sp::proj4string(bg_hatch_cold) <- sp::proj4string(bg_poly)
                 
                 # Clip to patches
                 hot_hatch <- 
