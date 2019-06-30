@@ -176,7 +176,6 @@ plot_patches(df = worldclim_results$df,
              patches = worldclim_results$patches,
              bg_poly = sulawesi_bg,
              bg_colour = "grey",
-             hatch_density = c(50, 80),
              print_plot = TRUE,
              save_plot = FALSE)
 }
