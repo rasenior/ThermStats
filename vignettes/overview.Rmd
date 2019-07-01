@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
 ```
 
 ```{r logo, echo=FALSE}
-htmltools::img(src = knitr::image_uri("hexsticker.png"), 
+htmltools::img(src = knitr::image_uri("../man/figures/hexsticker.png"), 
                alt = 'logo', 
                style = paste('position:absolute',
                              'top:0', 'right:0',
