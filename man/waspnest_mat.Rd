@@ -4,7 +4,9 @@
 \name{waspnest_mat}
 \alias{waspnest_mat}
 \title{Temperature matrix from thermal image of wasp nest}
-\format{A 640 x 480 numeric temperature matrix.}
+\format{
+A 640 x 480 numeric temperature matrix.
+}
 \usage{
 waspnest_mat
 }

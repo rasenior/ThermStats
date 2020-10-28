@@ -4,8 +4,14 @@
 \alias{get_patches}
 \title{get_patches}
 \usage{
-get_patches(img, id = NULL, style = "C", img_proj = NULL,
-  img_extent = NULL, return_vals = c("df", "patches", "pstats"))
+get_patches(
+  img,
+  id = NULL,
+  style = "C",
+  img_proj = NULL,
+  img_extent = NULL,
+  return_vals = c("df", "patches", "pstats")
+)
 }
 \arguments{
 \item{img}{A numeric temperature matrix (such as that returned from

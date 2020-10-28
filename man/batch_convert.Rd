@@ -5,10 +5,24 @@
 \alias{batch_convert}
 \title{batch_convert}
 \usage{
-batch_convert(raw_dat, E = 1, OD = 1, RTemp = 20, ATemp = RTemp,
-  IRWTemp = RTemp, IRT = 1, RH = 50, PR1 = 21106.77, PB = 1501,
-  PF = 1, PO = -7340, PR2 = 0.012545258, write_results = TRUE,
-  out_dir = NULL, file_name = NULL)
+batch_convert(
+  raw_dat,
+  E = 1,
+  OD = 1,
+  RTemp = 20,
+  ATemp = RTemp,
+  IRWTemp = RTemp,
+  IRT = 1,
+  RH = 50,
+  PR1 = 21106.77,
+  PB = 1501,
+  PF = 1,
+  PO = -7340,
+  PR2 = 0.012545258,
+  write_results = TRUE,
+  out_dir = NULL,
+  file_name = NULL
+)
 }
 \arguments{
 \item{raw_dat}{A list of raw FLIR matrices returned from

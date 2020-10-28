@@ -4,9 +4,15 @@
 \alias{batch_extract}
 \title{batch_extract}
 \usage{
-batch_extract(in_dir, write_results = TRUE, out_dir = NULL,
-  file_name = NULL, inc = NULL, exc = NULL,
-  exiftoolpath = "installed")
+batch_extract(
+  in_dir,
+  write_results = TRUE,
+  out_dir = NULL,
+  file_name = NULL,
+  inc = NULL,
+  exc = NULL,
+  exiftoolpath = "installed"
+)
 }
 \arguments{
 \item{in_dir}{Path to directory where thermal images are stored.}
@@ -20,10 +26,10 @@ Defaults to working directory.}
 \item{file_name}{File name (without extension). Defaults to NULL, with the 
 name 'flir_raw_' plus the current date. File format is .Rds}
 
-\item{inc}{Vector of photo numbers to include. Defaults to NULL, meaning 
+\item{inc}{Vector of file names to include. Defaults to NULL, meaning 
 all files are included.}
 
-\item{exc}{Vector of photo numbers to exclude. Defaults to NULL, meaning 
+\item{exc}{Vector of file names to exclude. Defaults to NULL, meaning 
 all files are included.}
 
 \item{exiftoolpath}{Passed directly to 

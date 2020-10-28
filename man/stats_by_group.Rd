@@ -4,11 +4,21 @@
 \alias{stats_by_group}
 \title{stats_by_group}
 \usage{
-stats_by_group(img_list, metadata = NULL, idvar = NULL,
-  grouping_var = NULL, round_val = NULL, calc_connectivity = FALSE,
-  conn_threshold = 1.5, patches = TRUE, style = "C",
-  img_proj = NULL, img_extent = NULL, sum_stats = c("mean", "max",
-  "min"), return_vals = c("df", "patches", "pstats"))
+stats_by_group(
+  img_list,
+  metadata = NULL,
+  idvar = NULL,
+  grouping_var = NULL,
+  round_val = NULL,
+  calc_connectivity = FALSE,
+  conn_threshold = 1.5,
+  patches = TRUE,
+  style = "C",
+  img_proj = NULL,
+  img_extent = NULL,
+  sum_stats = c("mean", "max", "min"),
+  return_vals = c("df", "patches", "pstats")
+)
 }
 \arguments{
 \item{img_list}{List or stack of numeric temperature matrices or rasters.}

@@ -5,7 +5,8 @@
 \name{flir_stats}
 \alias{flir_stats}
 \title{Statistics from \code{get_stats} for photo FLIR8565.jpg}
-\format{A list consisting of:
+\format{
+A list consisting of:
   \itemize{
     \item{df} {= A dataframe with one row for each pixel, and variables denoting:
     the pixel value (val); the original spatial location of the pixel (x and y);
@@ -18,7 +19,8 @@
     \item{pstats} {= A dataframe with patch statistics for hot patches and cold
     patches, respectively. See \code{\link{patch_stats}} for details of all the
     statistics returned.}
-  }}
+  }
+}
 \usage{
 flir_stats
 }
@@ -57,7 +59,7 @@ flir_converted <-
         # Emissivity = mean of range in Scheffers et al. 2017
         E = mean(c(0.982,0.99)),
         # Object distance = hypotenuse of right triangle where 
-        # vertical side is 1.3 m (breast height) & angle down is 45°
+        # vertical side is 1.3 m (breast height) & angle down is 45Â°
         OD = (sqrt(2))*1.3,
         # Apparent reflected temperature & atmospheric temperature =
         # atmospheric temperature measured in the field

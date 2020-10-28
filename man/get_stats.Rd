@@ -4,10 +4,18 @@
 \alias{get_stats}
 \title{get_stats}
 \usage{
-get_stats(img, id = NULL, calc_connectivity, conn_threshold = 1.5,
-  patches = TRUE, style = "C", img_proj = NULL, img_extent = NULL,
-  return_vals = c("df", "patches", "pstats"), sum_stats = c("mean",
-  "min", "max"))
+get_stats(
+  img,
+  id = NULL,
+  calc_connectivity,
+  conn_threshold = 1.5,
+  patches = TRUE,
+  style = "C",
+  img_proj = NULL,
+  img_extent = NULL,
+  return_vals = c("df", "patches", "pstats"),
+  sum_stats = c("mean", "min", "max")
+)
 }
 \arguments{
 \item{img}{A numeric temperature matrix (such as that returned from

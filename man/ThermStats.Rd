@@ -3,7 +3,6 @@
 \docType{package}
 \name{ThermStats}
 \alias{ThermStats}
-\alias{ThermStats-package}
 \title{\code{ThermStats} package}
 \description{
 Calculate statistics for thermal images

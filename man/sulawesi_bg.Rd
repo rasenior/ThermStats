@@ -4,7 +4,9 @@
 \name{sulawesi_bg}
 \alias{sulawesi_bg}
 \title{Boundary polygon of Sulawesi}
-\format{A SpatialPolygonsDataFrame}
+\format{
+A SpatialPolygonsDataFrame
+}
 \usage{
 sulawesi_bg
 }

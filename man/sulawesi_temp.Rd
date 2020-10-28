@@ -5,7 +5,9 @@
 \name{sulawesi_temp}
 \alias{sulawesi_temp}
 \title{WorldClim2 mean monthly temperature data for Sulawesi}
-\format{A geographic temperature raster}
+\format{
+A geographic temperature raster
+}
 \usage{
 sulawesi_temp
 }

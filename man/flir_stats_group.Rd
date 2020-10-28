@@ -5,7 +5,8 @@
 \name{flir_stats_group}
 \alias{flir_stats_group}
 \title{Statistics from \code{stats_by_group}}
-\format{A list consisting of:
+\format{
+A list consisting of:
   \itemize{
     \item{df} {= A dataframe with one row for each pixel, and variables denoting:
     the pixel value (val); the original spatial location of the pixel (x and y);
@@ -19,7 +20,8 @@
     \item{pstats} {= A dataframe with patch statistics for hot patches and cold
     patches, respectively. See \code{\link{patch_stats}} for details of all the
     statistics returned.}
-  }}
+  }
+}
 \usage{
 flir_stats_group
 }

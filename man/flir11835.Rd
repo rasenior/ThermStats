@@ -4,11 +4,13 @@
 \name{flir11835}
 \alias{flir11835}
 \title{FLIR E40 thermal image data}
-\format{A list consisting of:
+\format{
+A list consisting of:
   \itemize{
     \item{flir_matrix} {= A 120 x 160 numeric temperature matrix.}
     \item{photo_no} {= The photo number.}
-  }}
+  }
+}
 \usage{
 flir11835
 }

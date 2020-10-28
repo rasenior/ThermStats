@@ -4,8 +4,10 @@
 \name{flir_metadata}
 \alias{flir_metadata}
 \title{Metadata associated with FLIR E40 thermal images}
-\format{A dataframe of environmental parameters with one row for each photo.
-The photo number corresponds to the element name in \code{\link{flir_raw}$raw_dat}.}
+\format{
+A dataframe of environmental parameters with one row for each photo.
+The photo number corresponds to the element name in \code{\link{flir_raw}$raw_dat}.
+}
 \usage{
 flir_metadata
 }

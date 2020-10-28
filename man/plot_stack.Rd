@@ -4,12 +4,28 @@
 \alias{plot_stack}
 \title{plot_stack}
 \usage{
-plot_stack(img_stack, n = 100, print_plot = TRUE, save_plot = FALSE,
-  return_plot = FALSE, out_dir = NULL, file_name = NULL,
-  file_ext = "png", fig_width = 8, fig_height = 9,
-  fig_units = "cm", xlabel = NULL, ylabel = NULL, lab_size = 8,
-  text_size = 6, point_size = 0.5, quant_linetype = "dotted",
-  quant_colour = "black", y_breaks = waiver(), custom_theme = NULL)
+plot_stack(
+  img_stack,
+  n = 100,
+  print_plot = TRUE,
+  save_plot = FALSE,
+  return_plot = FALSE,
+  out_dir = NULL,
+  file_name = NULL,
+  file_ext = "png",
+  fig_width = 8,
+  fig_height = 9,
+  fig_units = "cm",
+  xlabel = NULL,
+  ylabel = NULL,
+  lab_size = 8,
+  text_size = 6,
+  point_size = 0.5,
+  quant_linetype = "dotted",
+  quant_colour = "black",
+  y_breaks = waiver(),
+  custom_theme = NULL
+)
 }
 \arguments{
 \item{img_stack}{The RasterStack to plot.}

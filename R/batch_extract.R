@@ -8,9 +8,9 @@
 #' Defaults to working directory.
 #' @param file_name File name (without extension). Defaults to NULL, with the 
 #' name 'flir_raw_' plus the current date. File format is .Rds 
-#' @param inc Vector of photo numbers to include. Defaults to NULL, meaning 
+#' @param inc Vector of file names to include. Defaults to NULL, meaning 
 #' all files are included.
-#' @param exc Vector of photo numbers to exclude. Defaults to NULL, meaning 
+#' @param exc Vector of file names to exclude. Defaults to NULL, meaning 
 #' all files are included.
 #' @param exiftoolpath Passed directly to 
 #' \code{Thermimage::}\code{\link[Thermimage]{readflirJPG}}: 
@@ -55,23 +55,18 @@ batch_extract <- function(in_dir,
   # Get file names
   file.names <- list.files(in_dir, full.names = TRUE)
   
+  # Subset files
+  if(!(is.null(inc))) {
+    file.names <- file.names[file.names %in% file.path(in_dir, inc)]
+  }
+  if(!(is.null(exc))) {
+    file.names <- file.names[!(file.names %in% file.path(in_dir, exc))]
+  }
+  
   # Remove path & file extension to get photo number
   photo_no <- basename(file.names)
   photo_no <- gsub("FLIR","",photo_no)
   photo_no <- gsub(".jpg","", photo_no)
-  
-  # Subset files
-  if(!(is.null(inc))){
-      photo_no <- photo_no[(photo_no %in% inc)]
-  }
-
-  # Exclude files
-  if(!(is.null(exc))){
-      photo_no <- photo_no[!(photo_no %in% exc)]
-  }
-  
-  # Reconstruct file names
-  file.names <- file.path(in_dir, paste("FLIR", photo_no, ".jpg", sep = ""))
 
   # Create empty list to populate with temperature matrices
   raw_dat <- vector("list", length(photo_no))
@@ -93,7 +88,6 @@ batch_extract <- function(in_dir,
         message(paste("Couldn't process file:",file.names[i]))
         return(NA)
       })
-
 
     # Flip the matrix (makes plotting later on easier)
     photo_i <- Thermimage::mirror.matrix(Thermimage::rotate180.matrix(photo_i))

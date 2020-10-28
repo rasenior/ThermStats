@@ -1,8 +1,8 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
                       fig.align = "centre", fig.width = 16.6/2.54)
 
-## ----logo, echo=FALSE----------------------------------------------------
+## ----logo, echo=FALSE---------------------------------------------------------
 htmltools::img(src = knitr::image_uri("../man/figures/hexsticker.png"), 
                alt = 'logo', 
                style = paste('position:absolute',
@@ -17,20 +17,20 @@ htmltools::img(src = knitr::image_uri("../man/figures/hexsticker.png"),
 ## ----fig-1, fig.cap= "Figure 1: Schematic summarising the key functions for processing groups of images (left) or a single image (right).", fig.pos = 'H', out.width = "400px"----
 knitr::include_graphics("schematic.png")
 
-## ----install, echo = TRUE, eval = FALSE----------------------------------
+## ----install, echo = TRUE, eval = FALSE---------------------------------------
 #  devtools::install_github("rasenior/ThermStats")
 
-## ----load, echo = TRUE---------------------------------------------------
+## ----load, echo = TRUE--------------------------------------------------------
 library(ThermStats)
 
-## ----batch-extract, echo= TRUE, eval = FALSE-----------------------------
+## ----batch-extract, echo= TRUE, eval = FALSE----------------------------------
 #  # Batch extract thermal images included in ThermStats installation
 #  flir_raw <-
 #      batch_extract(in_dir = system.file("extdata",
 #                                         package = "ThermStats"),
 #                    write_results = FALSE)
 
-## ----batch-convert, echo = TRUE, results = "hide"------------------------
+## ----batch-convert, echo = TRUE, results = "hide"-----------------------------
 # Define raw data
 raw_dat <- flir_raw$raw_dat
 # Define camera calibration constants dataframe
@@ -64,7 +64,7 @@ flir_converted <-
         # Whether to write results or just return
         write_results = FALSE)
 
-## ----get-stats, echo= TRUE, eval = FALSE---------------------------------
+## ----get-stats, echo= TRUE, eval = FALSE--------------------------------------
 #  flir_stats <-
 #      get_stats(
 #          # The temperature dataset
@@ -87,7 +87,7 @@ flir_converted <-
 #          sum_stats = c("median", "SHDI",
 #                        "perc_5", "perc_95"))
 
-## ----tab-1, results='asis'-----------------------------------------------
+## ----tab-1, results='asis'----------------------------------------------------
 tab1 <- "
 Table: Table 1: Example metadata denoting the grouping ('rep_id') of different thermal images. Statistics can be calculated over multiple images within a group, using the function `stats_by_group`.
 
@@ -101,7 +101,7 @@ Table: Table 1: Example metadata denoting the grouping ('rep_id') of different t
 
 cat(tab1)
 
-## ----stats-by-group, eval = FALSE----------------------------------------
+## ----stats-by-group, eval = FALSE---------------------------------------------
 #  flir_stats_group <-
 #      stats_by_group(
 #          # A dataframe denoting the grouping
@@ -122,7 +122,7 @@ cat(tab1)
 #          sum_stats = c("median", "SHDI",
 #                        "perc_5", "perc_95"))
 
-## ----tab-2, results='asis'-----------------------------------------------
+## ----tab-2, results='asis'----------------------------------------------------
 tab2 <- "
 Table: Table 2: A snippet of hot spot patch statistics returned by `stats_by_group`, which implements `get_stats` within groups.
 

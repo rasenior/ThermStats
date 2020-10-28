@@ -4,7 +4,9 @@
 \name{flir_stack}
 \alias{flir_stack}
 \title{Raster stack of FLIR images}
-\format{A RasterStack}
+\format{
+A RasterStack
+}
 \usage{
 flir_stack
 }

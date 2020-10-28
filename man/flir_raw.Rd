@@ -4,7 +4,8 @@
 \name{flir_raw}
 \alias{flir_raw}
 \title{Raw FLIR E40 thermal image data and camera parameters}
-\format{A list consisting of:
+\format{
+A list consisting of:
   \itemize{
     \item{raw_dat} {= A list of 120 x 160 numeric matrices of the raw 16-bit encoded
     values from four FLIR thermal images included in the package distribution.
@@ -12,7 +13,14 @@
     \item{camera_params} {= A dataframe of calibration constants unique to
     each FLIR camera.
     Extracted using \code{Thermimage::}\code{\link[Thermimage]{flirsettings}}.}
-  }}
+  }
+
+A list consisting of:
+  \itemize{
+    \item{flir_matrix} {= A 120 x 160 numeric temperature matrix.}
+    \item{photo_no} {= The photo number.}
+  }
+}
 \usage{
 flir_raw
 
