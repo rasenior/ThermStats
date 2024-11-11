@@ -46,10 +46,7 @@
 #'
 #' # Define individual matrix and raster
 #' img <- flir11835$flir_matrix
-#' val_raster <- 
-#'     raster::raster(img,
-#'                    xmn=0, xmx=ncol(img),
-#'                    ymn=0, ymx=nrow(img))
+#' val_raster <- terra::rast(x = img)
 #'
 #' # Define image ID (the photo number in this case)
 #' id <- flir11835$photo_no
@@ -118,6 +115,8 @@ get_stats <- function(img,
     # If raster, coerce to matrix ------------------------------------------------
     if(class(img)[1] == "RasterLayer"){
         img <- raster::as.matrix(img)
+    } else if(class(img)[1] == "SpatRaster"){
+        img <- terra::as.matrix(img, wide = TRUE)
     }
     
     # Flip
