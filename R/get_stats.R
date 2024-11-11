@@ -152,9 +152,7 @@ get_stats <- function(img,
         pixel_conn <- connectivity(img,
                                    conn_threshold = conn_threshold)
         # Order by row & col
-        pixel_conn <-
-            pixel_conn[order(pixel_conn["y"],
-                             pixel_conn["x"]),]
+        pixel_conn <- dplyr::arrange(pixel_conn, y, x)
         
         # Summarise
         conn_summ <-
