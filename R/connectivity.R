@@ -57,9 +57,10 @@ connectivity <-
         message("Calculating thermal connectivity")
         
         # Determine whether matrix or raster
-        if(!(is.matrix(img))){
-            # Coerce to matrix
+        if(class(img)[1] == "RasterLayer"){
             img <- raster::as.matrix(img)
+        } else if(class(img)[1] == "SpatRaster"){
+            img <- terra::as.matrix(img, wide = TRUE)
         }
         
         # Identify neighbours -----------------------------------------------------
@@ -98,6 +99,8 @@ connectivity <-
         val_df <- reshape2::melt(img,
                                  varnames = c("y", "x"),
                                  value.name = "val")
+        # Remove 'V' from x column
+        val_df[,"x"] <- as.integer(gsub("V","",val_df[,"x"]))
         
         # Assign pixel ID (row index)
         val_df$pixel <- as.numeric(row.names(val_df))
