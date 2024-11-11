@@ -182,13 +182,11 @@ get_stats <- function(img,
         
         if("df" %in% return_vals){
             # Rescale coordinates
-            all_stats[["df"]]["x_orig"] <- all_stats[["df"]]["x"] * ncols + 0.5
-            all_stats[["df"]]["y_orig"] <- all_stats[["df"]]["y"] * nrows + 0.5
+            all_stats[["df"]]["x"] <- all_stats[["df"]]["x"] + 0.5
+            all_stats[["df"]]["y"] <- all_stats[["df"]]["y"] + 0.5
             
             # Order by row & col
-            all_stats[["df"]] <-
-                all_stats[["df"]][order(all_stats[["df"]]["y"],
-                                        all_stats[["df"]]["x"]),]
+            all_stats[["df"]] <- dplyr::arrange(all_stats[["df"]],y, x)
         }
         
         # Return results -------------------------------------------------------------

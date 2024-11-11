@@ -104,7 +104,6 @@ get_patches <- function(img,
                         return_vals = c("df","patches","pstats")) {
     
     # Setup --------------------------------------------------------------------
-    
     message("Getting patches")
     
     # Get dimensions
@@ -121,10 +120,14 @@ get_patches <- function(img,
         # Coerce to dataframe
         df <- raster::as.data.frame(img, xy = TRUE)
         colnames(df)[3] <- "val"
+    } else if(class(img)[1] == "SpatRaster"){
+        img <- terra::as.matrix(img, wide = TRUE)
     }
     
     # Remove NA values
     df <- df[!(is.na(df[, "val"])),]
+    # Remove 'V' from x column
+    df[,"x"] <- as.integer(gsub("V","",df[,"x"]))
     
     # Neighbour weights -------------------------------------------------------
     message("\t...calculating neighbourhood weights")
@@ -189,21 +192,19 @@ get_patches <- function(img,
         Thermimage::mirror.matrix(Thermimage::rotate180.matrix(patch_mat))
     
     # Rasterise matrix
-    # patches <- raster::raster(patch_mat)
-    patches <-
-        raster::raster(patch_mat,
-                       xmn=0, xmx=ncols,
-                       ymn=0, ymx=nrows)
+    patches <- terra::rast(patch_mat)
     
     # Specify coordinates and img_projection (if applicable)
     if(!(is.null(img_proj))){
-        raster::extent(patches) <- img_extent
-        raster::projection(patches) <- img_proj
+        terra::ext(patches) <- img_extent
+        terra::project(patches) <- img_proj
     }
     
     # Raster to dissolved polygons
-    patches <- suppressMessages(raster::rasterToPolygons(patches, dissolve = TRUE))
-    patches <- raster::disaggregate(patches)
+    patches <- suppressMessages(terra::as.polygons(patches))
+    patches <- terra::disagg(patches)
+    names(patches) <- "G_bin"
+    patches$patchID <- seq.int(nrow(patches))
     
     # 2. Assign to each temperature cell the ID of the patch that it falls into
     # Matrix to raster to points
@@ -213,18 +214,18 @@ get_patches <- function(img,
         Thermimage::mirror.matrix(Thermimage::rotate180.matrix(img))
     
     # Matrix to raster
-    raw <- raster::raster(img,
-                          xmn=0, xmx=ncols,
-                          ymn=0, ymx=nrows)
+    raw <- terra::rast(img)
     
     # Specify coordinates and img_projection (if applicable)
     if(!(is.null(img_proj))){
-        raster::extent(raw) <- img_extent
-        raster::projection(raw) <- img_proj
+        terra::ext(raw) <- img_extent
+        terra::project(raw) <- img_proj
     }
     
     # Raster to points
-    raw <- raster::rasterToPoints(raw, spatial = TRUE)
+    raw <- terra::as.points(raw)
+    raw[,c("x","y")] <- as.data.frame(raw, geom="XY")[,c("x","y")]
+    raw[,"pixelID"] <- 1:nrow(as.data.frame(raw))
     
     # Return overlay list where each element is the point, and within that the
     # value is the hot/coldspot classification and the row name is the patch ID
@@ -233,15 +234,8 @@ get_patches <- function(img,
     # Define function to overlay in subsets if too many features
     over_sub <- function(min_i, max_i){
         subdat <- raw[(min_i + 1):max_i,]
-        patchID <- sp::over(subdat, patches, returnList = TRUE)
+        patchID <- terra::extract(patches,subdat)
         return(patchID)
-    }
-    
-    # Define function to reformat each dataframe within the list
-    reform <- function(x) {
-        x$patchID <- row.names(x)
-        colnames(x) <- c("G_bin", "patchID")
-        return(x)
     }
     
     if(n_features > 10^5){
@@ -268,20 +262,18 @@ get_patches <- function(img,
         
         # Bind all subsets
         patchID <- do.call("rbind", patchID)
+        raw$id <- 1:nrow(pts)
+        intersect(pts, pols)$id 
         
     }else{
-        patchID <- sp::over(raw, patches, returnList = TRUE)
-        # Reform each element (pixel) into a dataframe
-        patchID <- lapply(patchID, reform)
-        
-        # Bind pixel dataframes
-        patchID <- do.call("rbind", patchID)
+        patchID <- terra::extract(patches, raw)
+        colnames(patchID) <- c("pixelID", "G_bin","patchID")
     }
     
     # Recreate dataframe
-    df <- data.frame(raw)[-4]
-    colnames(df)[which(names(df) == "layer")] <- "val"
-    df[, c("G_bin", "patchID")] <- patchID
+    df <- data.frame(raw)
+    colnames(df)[which(names(df) == "lyr.1")] <- "val"
+    df <- dplyr::left_join(df, patchID, by = "pixelID")
     
     rm(raw, patchID)
     
@@ -295,11 +287,11 @@ get_patches <- function(img,
         return(is_numeric)
     }
     
-    if(!(is.null(id))){
-        if(char_is_numeric(id)) id <- as.character(paste("X", id, sep = ""))
-        df$id <- id
-        names(patches) <- as.character(id)
-    }
+    # if(!(is.null(id))){
+    #     if(char_is_numeric(id)) id <- as.character(paste("X", id, sep = ""))
+    #     df$id <- id
+    #     names(patches) <- as.character(id)
+    # }
     
     ### 3. Calculate patch stats
     
